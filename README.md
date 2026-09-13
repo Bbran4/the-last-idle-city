@@ -4,15 +4,17 @@
 
 The Last City is a dystopian steampunk incremental game about rebuilding the last functioning civilization on Earth.
 
-Start with a single scrap yard.
+Start with a single Scrap Yard.
 
-Assign workers.
+Build it up.
 
-Process the ruins into useful materials.
+Process the ruins into useful Materials.
 
-Build a functioning city.
+Grow the workforce.
 
-Then discover that keeping millions of people alive requires energy, security, science, information, and increasingly questionable government decisions.
+Build increasingly advanced production chains.
+
+Then discover that keeping a civilization functioning creates problems that cannot be solved by simply making the numbers bigger.
 
 Eventually, civilization will collapse.
 
@@ -55,7 +57,7 @@ Security can suppress unrest while creating other problems.
 
 Automation can increase production while reducing the need for workers.
 
-Population growth creates a larger workforce while also creating greater demands for food, energy, housing, security, and infrastructure.
+Population growth creates a larger workforce, but also changes the social and political balance of the civilization.
 
 The player is constantly balancing three overlapping games:
 
@@ -65,7 +67,7 @@ Production chains, automation, multipliers, exponential growth, offline progress
 
 ### 2. The Civilization
 
-Population, Labour, Energy, Security, Research, Compliance, housing, infrastructure, unrest, morale, and other social pressures.
+Population, Labour, Energy, Security, Research, Compliance, unrest, morale, inequality, trust, and other social pressures.
 
 ### 3. The Government
 
@@ -173,9 +175,9 @@ Your job is to keep the settlement functioning while expanding its industrial, s
 
 The player will:
 
-- Assign workers
-- Build production facilities
-- Expand population
+- Grow Population
+- Manage Workforce allocation
+- Build and upgrade production operations
 - Generate Materials
 - Produce Energy
 - Maintain Security
@@ -202,46 +204,42 @@ The central fantasy is:
 # 🔄 Core Gameplay Loop
 
 ```text
-Population + Labour
-        ↓
-Assign Labour to Scrap Yards
-        ↓
-Produce Materials
-        ↓
-Purchase Production Buildings
-        ↓
-Buildings produce lower-tier buildings
-        ↓
-Expand Housing and Infrastructure
-        ↓
-Population grows
-        ↓
-More Population → More Labour
-        ↓
+Population
+    ↓
+Workforce
+    ↓
+Allocate Workforce by percentage
+    ↓
+Production
+    ↓
+Materials / Energy / Security / Research / Compliance
+    ↓
+Upgrade production operations
+    ↓
+Build additional production operations
+    ↓
 Unlock new Departments
-        ↓
+    ↓
 Create interconnected production chains
-        ↓
-Manage Energy, Security, Research and Compliance
-        ↓
-Manage Unrest and other social pressures
-        ↓
+    ↓
+Manage social pressures
+    ↓
 Use Emergency Allocation for temporary surges
-        ↓
+    ↓
 Purchase Directives and permanent upgrades
-        ↓
+    ↓
 Research technologies that change system rules
-        ↓
+    ↓
 Respond to civilization crises
-        ↓
+    ↓
 Reach major civilization milestones
-        ↓
+    ↓
 Initiate / endure The Collapse
-        ↓
+    ↓
 Earn Legacy
-        ↓
+    ↓
 Begin the next civilization with permanent advantages
-        ↓
+    ↓
 Repeat at a greater scale
 ```
 
@@ -255,43 +253,87 @@ Population is the number of people living in the civilization.
 
 It is **not simply another currency**.
 
-Citizens provide the potential workforce of the civilization, but they also create demands.
+Population provides the potential workforce of the civilization and influences the scale of the society.
 
-Population growth can require:
+Population growth should remain relatively simple rather than becoming a survival simulation.
 
-- Housing
-- Food
-- Energy
+Population should not require the player to manage individual needs such as food, housing, or healthcare.
+
+Instead, population growth is influenced by broad civilization-level conditions such as:
+
+- Morale
+- Unrest
 - Security
-- Healthcare
-- Infrastructure
-- Employment
-- Social stability
+- Government policy
+- Technology
+- Major crises
 
-As the civilization grows, population becomes both an enormous economic advantage and an enormous responsibility.
+A larger population creates a larger potential workforce, but the civilization must still decide how that workforce is used.
 
-## Labour
+## Labour / Workforce
 
-Labour is an allocated resource rather than something that is simply spent.
+The player does **not** assign individual numbers of workers to buildings.
+
+Instead, the available workforce is divided using **percentage-based allocation sliders**.
 
 Example:
 
 ```text
-Population:        100
-Available Labour:  100
+Available Workforce: 100,000
 
-Scrap Yard:         25 workers
-Workshop:           15 workers
-Power Station:      20 workers
-Security:           10 workers
-Research:            5 workers
-
-Unassigned Labour:  25
+Industrial Authority     50%
+Security Directorate     20%
+Central Government       15%
+Scientific Directorate   10%
+Information Ministry      5%
 ```
 
-Moving workers between departments changes production.
+If the workforce grows to 150,000, the same percentages automatically scale:
 
-This creates meaningful decisions even before the deeper government systems appear.
+```text
+Available Workforce: 150,000
+
+Industrial Authority     50% = 75,000
+Security Directorate     20% = 30,000
+Central Government       15% = 22,500
+Scientific Directorate   10% = 15,000
+Information Ministry      5% =  7,500
+```
+
+This means population growth automatically feeds into the existing allocation without requiring the player to repeatedly reassign raw worker counts.
+
+### Workforce Allocation UI
+
+Each allocation slider should visually communicate how effective the current percentage is.
+
+The allocation range can transition through:
+
+**Red → Orange → Green → Orange → Red**
+
+The green region represents the department's current efficient allocation range.
+
+The optimal range is not fixed. It can move as the civilization changes.
+
+For example:
+
+- Automation may reduce the Labour required by Industry.
+- A growing threat may increase the ideal Security allocation.
+- A major research project may temporarily increase the ideal Scientific allocation.
+- A crisis may change the optimal allocation of several departments at once.
+
+The player therefore solves an allocation problem rather than a worker-count problem.
+
+### Workforce Efficiency
+
+A simplified model is:
+
+```text
+Available Workforce = Population × Workforce Rate × Workforce Efficiency
+```
+
+The player allocates percentages of that available workforce between departments.
+
+The system should reward finding the productive range rather than simply putting as many workers as possible into one department.
 
 ## Materials
 
@@ -302,13 +344,13 @@ The initial production loop is:
 ```text
 Population
     ↓
-Labour
+Workforce
     ↓
 Scrap Yard
     ↓
 Materials
     ↓
-Buildings
+Production Upgrades
     ↓
 More Production
 ```
@@ -391,6 +433,76 @@ Materials
 
 As the chain grows, advanced tiers introduce Energy and Research requirements.
 
+## Scrap Yard Progression Model
+
+The Scrap Yard uses a different progression model from a traditional idle-game building counter.
+
+The player does not buy 25 independent Scrap Yards just to make the number go up.
+
+Instead, the player manages a **Scrap Yard operation**.
+
+There are only two buttons:
+
+### **LEVEL UP**
+
+Leveling up improves the productivity of the existing Scrap Yard operation.
+
+Every level increases its production.
+
+At certain milestone levels, the Scrap Yard automatically expands as part of leveling up. The player does not need a separate expansion button.
+
+Example milestone structure:
+
+| Scrap Yard Level | Effect |
+|---:|---|
+| 1 | Base operation |
+| 25 | Automatic expansion → **×2 productivity** |
+| 100 | Automatic expansion → **×2 productivity** |
+| 450 | Automatic expansion → **×2 productivity** |
+| 1,000 | Automatic expansion → **×2 productivity** |
+| 2,500 | Automatic expansion → **×2 productivity** |
+
+The exact milestone levels and values will be balanced later.
+
+The important rule is that **leveling up improves the existing operation, while milestone levels automatically make that operation larger and more productive.**
+
+### **BUILD NEW**
+
+Building a new Scrap Yard adds another equivalent Scrap Yard to the operation.
+
+The player does not receive a separate upgrade tree for the new yard.
+
+If the player owns:
+
+```text
+1 Scrap Yard  = ×1 productivity
+2 Scrap Yards = ×2 productivity
+3 Scrap Yards = ×3 productivity
+4 Scrap Yards = ×4 productivity
+5 Scrap Yards = ×5 productivity
+```
+
+The multiplier is **linear and cumulative**, not compounding.
+
+The player upgrades the single shared Scrap Yard operation, while the number of Scrap Yards acts as a production multiplier.
+
+For example:
+
+```text
+Scrap Yard Level:          450
+Scrap Yards:                 4×
+Milestone Multiplier:        ×8
+Technology Multiplier:       ×3
+---------------------------------
+Final Production Multiplier: ×96
+```
+
+The player therefore gets the familiar idle-game satisfaction of continuously upgrading one operation while still seeing the civilization physically expand through additional sites.
+
+This principle should apply broadly to other production buildings where appropriate:
+
+> **Level Up makes the operation better. Build New increases the number of operations.**
+
 ---
 
 # 👷 Ministry of Labour
@@ -402,7 +514,6 @@ As the chain grows, advanced tiers introduce Energy and Research requirements.
 - Workforce allocation
 - Population growth
 - Worker efficiency
-- Education
 - Specialization
 - Automation
 - Human augmentation
@@ -422,7 +533,7 @@ Labour Administration
     ↓
 Workforce Directorate
     ↓
-Professional Academy
+Professional Institute
     ↓
 Technical Institute
     ↓
@@ -440,7 +551,6 @@ Labour
 ## Potential Technologies
 
 - Worker Training
-- Mandatory Education
 - Productivity Standards
 - Workforce Specialization
 - Mechanized Labour
@@ -616,7 +726,7 @@ Automation → Robotics → Nanotechnology
 
 ### Biological
 
-Medicine → Genetics → Augmentation → Synthetic Biology
+Genetics → Augmentation → Synthetic Biology
 
 ### Computational
 
@@ -666,7 +776,7 @@ Social Analytics Division
     ↓
 Ministry of Truth
     ↓
-Civic Education Bureau
+Civic Information Bureau
     ↓
 State News Network
     ↓
@@ -742,69 +852,23 @@ These should not simply be additional currencies.
 
 They should be **consequences of the player's civilization-building strategy**.
 
-## Example: The Labour Problem
+## Population, Labour, and Society
 
-Suppose the civilization needs more Labour.
+Population creates the potential workforce, but the player does not micromanage individual citizens.
 
-The player might:
+The important question is how much of the available workforce should be directed toward each department.
 
-### Improve Living Conditions
+This is handled through percentage sliders rather than fixed worker counts.
 
-- Build housing
-- Improve healthcare
-- Increase food production
-- Increase education
-- Improve worker efficiency
+The allocation system should make the consequences readable at a glance:
 
-**Result:**
+- **Red:** severely underallocated or overallocated
+- **Orange:** usable but inefficient
+- **Green:** current efficient range
 
-Population ↑
+The green range can move as the civilization changes.
 
-Labour availability ↑
-
-Unrest ↓
-
-Production ↑
-
-Cost ↑↑
-
-### Introduce Mandatory Labour
-
-- Increase required working hours
-- Force population into critical industries
-- Reduce worker freedom
-
-**Result:**
-
-Labour ↑↑
-
-Production ↑
-
-Unrest ↑
-
-Security demand ↑
-
-### Invest in Automation
-
-- Research robotics
-- Build automated infrastructure
-- Replace workers with machines
-
-**Result:**
-
-Labour requirement ↓
-
-Production ↑
-
-Research demand ↑
-
-Energy demand ↑
-
-Potential unemployment and social unrest ↑
-
-There is no single correct answer.
-
-The player is choosing what kind of civilization they are building.
+This creates a living optimization problem without turning the game into a spreadsheet.
 
 ---
 
@@ -817,11 +881,9 @@ It should be an emergent consequence of the player's economic, social, and gover
 Unrest can be influenced by:
 
 - Poor working conditions
-- Food shortages
-- Housing shortages
 - Unemployment
-- Excessive taxation or resource extraction
-- Forced labour
+- Excessive resource extraction
+- Forced Labour
 - Excessive surveillance
 - Inequality
 - Government propaganda
@@ -829,6 +891,8 @@ Unrest can be influenced by:
 - Population growth
 - Major crises
 - Previous government decisions
+- Low Trust
+- Low Morale
 
 High Unrest can cause:
 
@@ -841,7 +905,19 @@ High Unrest can cause:
 - Production interruptions
 - Major crises
 
-But the player can respond in different ways.
+### Unrest States
+
+| Unrest | State |
+|---:|---|
+| 0–10 | Stable |
+| 10–25 | Discontent |
+| 25–50 | Tension |
+| 50–75 | Unrest |
+| 75–100 | Crisis |
+
+The exact thresholds may change during balancing, but the principle should remain: unrest escalates through recognizable stages rather than acting as a hidden random penalty.
+
+The player can respond in different ways.
 
 ### Negotiate
 
@@ -879,6 +955,87 @@ This creates a layer of decision-making that is unusual for an idle game without
 
 ---
 
+# ⚖️ Compliance and Trust
+
+Compliance and Trust are deliberately separate systems.
+
+**Compliance:** Will people obey?
+
+**Trust:** Do people believe the government is legitimate or acting in their interests?
+
+This creates different civilization states:
+
+| Trust | Compliance | Civilization Character |
+|---|---|---|
+| High | High | Stable and cooperative |
+| High | Low | Supportive but difficult to govern |
+| Low | High | Authoritarian and controlled |
+| Low | Low | Unstable and approaching collapse |
+
+Security can increase Compliance without increasing Trust.
+
+Information control can increase Compliance while damaging Trust.
+
+Government investment can increase Trust while sometimes reducing short-term efficiency.
+
+There should be no universally optimal combination.
+
+---
+
+# 🙂 Morale and Productivity
+
+Morale is a modifier, not another resource to collect.
+
+A simplified model is:
+
+```text
+Worker Productivity =
+Base Productivity
+× Technology
+× Morale
+× Working Conditions
+```
+
+Morale can be affected by:
+
+- Unrest
+- Trust
+- Government policy
+- Workload
+- Security conditions
+- Major crises
+- Successful government decisions
+
+This lets social conditions feed directly back into the idle economy.
+
+---
+
+# ⚖️ Inequality
+
+Inequality should become more important in the mid-game rather than overwhelming the opening.
+
+Low Inequality can provide:
+
+- Higher Trust
+- Lower Unrest
+- Higher Morale
+- Greater social stability
+
+High Inequality can provide certain economic advantages, but at a social cost:
+
+- Potentially greater investment efficiency
+- Higher industrial concentration
+- Lower Trust
+- Higher Unrest
+- Higher Crime
+- Lower Morale
+
+The goal is not to create a morality meter.
+
+The goal is to create an uncomfortable optimization problem.
+
+---
+
 # 🧨 Crises
 
 The city should occasionally experience crises.
@@ -888,9 +1045,7 @@ Possible crises include:
 - Worker strikes
 - Power shortages
 - Factory fires
-- Disease outbreaks
 - Infrastructure failures
-- Food shortages
 - Riots
 - Sabotage
 - Industrial accidents
@@ -917,7 +1072,38 @@ Higher Labour consumption
 Potential Compliance / Trust penalty
 ```
 
-The goal is for crises to feel like consequences of running a civilization rather than random events pasted onto an idle game.
+Crisis risk should be visible enough that the player can understand why something is becoming dangerous.
+
+A crisis should feel like a consequence of running the civilization, not a random punishment pasted onto an idle game.
+
+---
+
+# ⚡ Energy
+
+Energy is a universal infrastructure resource.
+
+It is consumed by systems such as:
+
+- Industry
+- Security
+- Research
+- Information
+- Advanced technologies
+
+Energy shortages should not instantly destroy the civilization.
+
+Instead, the player can manage priorities and load shedding.
+
+Possible priorities include:
+
+- Industrial Priority
+- Civilian Priority
+- Security Priority
+- Scientific Priority
+
+Government policy can influence which systems receive power during shortages.
+
+This turns Energy into an infrastructure decision rather than a survival meter.
 
 ---
 
@@ -925,9 +1111,7 @@ The goal is for crises to feel like consequences of running a civilization rathe
 
 Emergency Allocation is the game's active temporary-boost system.
 
-Energy accumulates over time into an emergency reserve.
-
-The player can spend that reserve to temporarily redirect civilization resources toward a particular goal.
+The player can temporarily redirect civilization resources toward a particular goal.
 
 ## Example Orders
 
@@ -936,16 +1120,21 @@ The player can spend that reserve to temporarily redirect civilization resources
 | **Industrial Surge** | Industry production massively increased | 60 sec |
 | **Labour Mobilization** | Available Labour massively increased | 60 sec |
 | **Power Priority** | Energy generation massively increased | 60 sec |
-| **Security Lockdown** | Security massively increased; movement restricted | 60 sec |
+| **Security Lockdown** | Security massively increased | 60 sec |
 | **Scientific Emergency** | Research massively increased | 60 sec |
 
-Emergency Orders should become more powerful and more specialized as departments and technologies are unlocked.
+Emergency Orders should become more powerful and specialized as departments and technologies are unlocked.
 
 They should also have consequences.
 
-For example:
+For example, an Industrial Surge might produce an enormous amount of Materials while pulling Labour and Energy away from other departments.
 
-> **Industrial Surge** may produce an enormous amount of Materials, but pulling Labour away from Security and Research could create a future crisis.
+Repeated emergency use can also increase:
+
+- Unrest
+- Worker fatigue
+- Infrastructure wear
+- Crisis risk
 
 The player should constantly be asking:
 
@@ -957,13 +1146,13 @@ The player should constantly be asking:
 
 Directives are permanent government policies.
 
-They are purchased using a permanent government resource such as Authority.
-
 Unlike Emergency Allocation, Directives do not expire.
 
 They change how the civilization operates.
 
-## Industrial Directives
+Examples include:
+
+### Industrial
 
 - Industrial Priority
 - Five-Year Production Plan
@@ -972,25 +1161,24 @@ They change how the civilization operates.
 - National Manufacturing Act
 - Total Industrialization
 
-## Labour Directives
+### Labour
 
-- Universal Education
 - Worker Training
 - Mandatory Service
 - Productivity Standards
 - Human Optimization
 - Engineered Workforce
 
-## Information Directives
+### Information
 
 - Public Broadcasting
-- Civic Education
+- Civic Information
 - Controlled Media
 - Unified Narrative
 - Information Monopoly
 - Total Information Control
 
-## Security Directives
+### Security
 
 - Expanded Police
 - National Surveillance
@@ -999,7 +1187,7 @@ They change how the civilization operates.
 - Emergency Powers
 - Permanent Emergency
 
-## Scientific Directives
+### Scientific
 
 - National Science Fund
 - Research Priority
@@ -1010,17 +1198,36 @@ They change how the civilization operates.
 
 Directives should contain meaningful trade-offs.
 
-A stronger state should not simply be a stronger state.
+For example:
 
-For example, a policy might:
+```text
+MANDATORY LABOUR
 
-- Increase industrial output
-- Increase Energy consumption
-- Reduce population growth
-- Increase Unrest
-- Reduce Trust
-- Increase Compliance
-- Reduce another department's effectiveness
+Industrial Production     +25%
+Morale                    -10%
+Unrest Pressure           +15%
+Security Demand           +10%
+```
+
+Or:
+
+```text
+INDUSTRIAL PRIORITY
+
+Industrial Production     +50%
+Civilian Energy           -20%
+Dissatisfaction           +5%
+```
+
+Or:
+
+```text
+INFORMATION CONTROL
+
+Unrest Generation         -20%
+Compliance                +15%
+Trust                     -10%
+```
 
 The player's government should become a reflection of how they chose to solve problems.
 
@@ -1057,14 +1264,13 @@ Possible weaknesses:
 - Low Trust
 - Higher social pressure
 - Greater dependence on Security
-- Poorer population growth
+- Poorer population stability
 
 ### Technocratic Civilization
 
 Heavy investment in:
 
 - Research
-- Education
 - Automation
 - AI
 - Advanced Energy
@@ -1083,29 +1289,28 @@ Possible weaknesses:
 - Dependence on advanced infrastructure
 - Vulnerability to technological failures
 
-### Welfare Civilization
+### Social Investment Civilization
 
 Heavy investment in:
 
-- Housing
-- Healthcare
-- Food
-- Education
-- Population growth
 - Worker conditions
+- Morale
+- Trust
+- Population stability
+- Social systems
 
 Possible strengths:
 
-- Large population
 - Low Unrest
 - High Morale
-- Large potential workforce
+- High Trust
+- Stable workforce
 
 Possible weaknesses:
 
-- Huge resource consumption
-- Greater infrastructure requirements
-- Difficult late-game population management
+- Higher resource expenditure
+- Slower short-term industrial expansion
+- Greater difficulty exploiting extreme production policies
 
 These are examples, not fixed classes.
 
@@ -1127,11 +1332,11 @@ Factories require less Labour.
 
 ### Robotics
 
-Some industrial buildings can operate without workers.
+Some industrial buildings can operate with minimal human Labour.
 
 ### Artificial Intelligence
 
-Production buildings receive autonomous bonuses.
+Production buildings receive autonomous bonuses and departments can eventually allocate Labour automatically.
 
 ### Nuclear Power
 
@@ -1165,32 +1370,30 @@ Technology should increasingly change the rules rather than merely adding larger
 
 ---
 
-# 🧬 Population and Social Growth
+# 🧬 Population Growth
 
-Population growth should become increasingly complicated as civilization advances.
+Population growth should remain relatively simple compared with a survival simulator.
 
-Early population growth can be relatively simple.
+There are no separate Food, Housing, Healthcare, or Education meters in the core design.
 
-Later, it should depend on factors such as:
+Population growth can instead be influenced by broad civilization conditions:
 
 ```text
-Housing
-Food
-Energy
-Healthcare
-Security
-Employment
-Morale
-Unrest
-Government Directives
-Technology
+Base Population Growth
+× Morale
+× Security
+× Social Stability
+× Government Modifiers
+× Technology
 ```
 
-This creates an important design tension:
+Unrest, major crises, and extreme government policies can reduce or disrupt growth.
 
-> **A larger population gives you more Labour, but every new citizen also creates another set of needs the civilization must satisfy.**
+The important relationship is:
 
-Population should therefore feel powerful without becoming an automatic free upgrade.
+> **Population creates potential Labour, while civilization conditions determine how effectively that potential becomes a workforce.**
+
+A larger population is therefore powerful without requiring the player to micromanage individual citizen needs.
 
 ---
 
@@ -1216,11 +1419,26 @@ Manufacturing Complex
 
 Each tier accelerates the previous tier.
 
-Eventually, the player moves from manually managing individual buildings to managing enormous automated production networks.
+But individual building tiers should not necessarily mean the player owns dozens of separate upgrade trees.
 
-The scale should become absurd.
+The core production philosophy is:
 
-A player who once worried about whether they could afford their second Scrap Yard should eventually be worrying about whether a planetary industrial network can supply enough Materials to maintain civilization.
+> **Level Up makes an operation more productive. Build New adds another equivalent operation.**
+
+For a building such as the Scrap Yard:
+
+```text
+1 Scrap Yard = ×1
+2 Scrap Yards = ×2
+3 Scrap Yards = ×3
+4 Scrap Yards = ×4
+```
+
+This multiplier is cumulative, not compounding.
+
+Certain levels of an operation can also trigger automatic expansion milestones that provide large productivity multipliers.
+
+This preserves the familiar idle-game number growth while making the physical scale of the civilization feel meaningful.
 
 ---
 
@@ -1245,7 +1463,7 @@ But automation should create new choices rather than simply removing gameplay.
 For example:
 
 - Automation reduces Labour requirements.
-- Reduced Labour requirements create unemployment.
+- Reduced Labour requirements can create unemployment.
 - Unemployment can create Unrest.
 - AI can reduce the need for human decision-making.
 - Reduced human participation can affect Trust.
@@ -1295,11 +1513,10 @@ A rough progression might be:
 ### Early Game
 
 - Population
-- Labour
+- Workforce
 - Scrap Yards
 - Materials
-- Basic construction
-- First housing
+- Basic production
 
 ### Developing City
 
@@ -1377,6 +1594,28 @@ It should represent what survives the collapse:
 
 Legacy should make each civilization faster, stranger, and deeper without simply turning every future run into a larger collection of multipliers.
 
+Possible Legacy categories include:
+
+### Industrial Legacy
+
+Improved starting production and manufacturing knowledge.
+
+### Scientific Legacy
+
+Permanent technology discoveries and research advantages.
+
+### Institutional Legacy
+
+New government systems and permanent administrative improvements.
+
+### Cultural Legacy
+
+Improved social systems and civilization stability.
+
+### Historical Legacy
+
+New civilization paths, events, and discoveries.
+
 ---
 
 # 🎮 What Should Make The Last City Unique?
@@ -1405,6 +1644,14 @@ Problems emerge from the conditions the player creates.
 
 The player can solve problems through investment, reform, technology, manipulation, or suppression.
 
+## 4. Workforce Allocation
+
+The player governs the civilization through percentage-based workforce allocation rather than tedious worker counting.
+
+## 5. Operation Scaling
+
+Production operations become more productive through levels, automatically expand at major milestones, and can be duplicated through additional operations that act as cumulative multipliers.
+
 These systems should create situations where there is no universally optimal choice.
 
 That is the heart of the game.
@@ -1427,6 +1674,10 @@ Complexity should emerge gradually and remain readable.
 
 The core experience is still idle/incremental.
 
+### A Survival Simulator
+
+The player should not be required to manage individual citizen needs such as food, housing, healthcare, or education.
+
 ### A Resource Hoarding Simulator
 
 Resources should interact and create decisions.
@@ -1435,7 +1686,7 @@ Resources should interact and create decisions.
 
 Authoritarian policies should sometimes be effective.
 
-Democratic or welfare policies should sometimes be expensive.
+Social investment should sometimes be expensive.
 
 Technology should sometimes create new problems.
 
@@ -1451,31 +1702,378 @@ Whenever possible, existing systems should interact instead.
 
 # 🧪 Design Questions Still To Solve
 
-The following systems need proper formulas and balancing during the design/prototyping phase:
+The following questions have now been answered at the **core design level**. Exact formulas, values, and balance will still need to be tested during prototyping.
 
-- How Population generates Labour
-- Population growth rates
-- Housing requirements
-- Food and basic needs
-- Worker assignment efficiency
-- Energy consumption and shortages
-- Security calculations
-- Unrest generation and recovery
-- Compliance and Trust relationships
-- Morale and productivity
+## Population and Workforce
+
+### 1. How does Population generate Labour?
+
+Population creates potential workforce.
+
+```text
+Available Workforce
+= Population × Workforce Rate × Workforce Efficiency
+```
+
+The player allocates that workforce using department percentage sliders.
+
+The player does not assign fixed numbers of workers.
+
+### 2. How does Population grow?
+
+Population grows naturally and is modified by broad civilization conditions rather than individual survival needs.
+
+Relevant modifiers include:
+
+- Morale
+- Security
+- Social Stability
+- Government policy
+- Technology
+- Major crises
+
+There are no core Food, Housing, Healthcare, or Education requirements.
+
+### 3. How are workers assigned?
+
+Through **percentage-based allocation sliders**.
+
+If the workforce changes, the assigned worker counts automatically change while the player's percentages remain intact.
+
+Each department's slider displays an efficiency colour:
+
+**Red → Orange → Green → Orange → Red**
+
+The green zone represents the current efficient allocation range and can move as the civilization changes.
+
+### 4. How does worker efficiency work?
+
+Workers provide diminishing returns when a department is pushed beyond its efficient range.
+
+The player is encouraged to find the productive sweet spot rather than simply assigning everything to the department producing the most valuable resource.
+
+---
+
+## Production and Buildings
+
+### 5. What happens when the player buys more of a building?
+
+There are two distinct actions:
+
+**Level Up** improves the productivity of the existing operation.
+
+**Build New** adds another equivalent operation and increases the operation's cumulative multiplier.
+
+For example:
+
+```text
+1 building = ×1
+2 buildings = ×2
+3 buildings = ×3
+4 buildings = ×4
+```
+
+Additional buildings do **not** compound each other.
+
+### 6. How do building milestones work?
+
+Certain levels automatically trigger major expansion/productivity milestones.
+
+The player does not need a separate Expansion button.
+
+For example, a Scrap Yard might receive a **×2 productivity multiplier** at levels 25, 100, 450, and later milestones.
+
+The exact milestones will be balanced during prototyping.
+
+### 7. How does the Scrap Yard specifically work?
+
+The player starts with one Scrap Yard operation.
+
+The two available actions are:
+
+- **Level Up:** increase the productivity level of the existing operation.
+- **Build New:** increase the number of Scrap Yards contributing to the operation.
+
+The player only needs to upgrade one shared Scrap Yard level.
+
+Example:
+
+```text
+Level:              450
+Scrap Yards:          4×
+Milestone bonuses:   ×8
+Technology:           ×3
+```
+
+The four Scrap Yards operate at the same shared level, so the player never has to manage four separate upgrade trees.
+
+---
+
+## Energy and Security
+
+### 8. How does Energy work?
+
+Energy is a universal infrastructure resource consumed by Industry, Security, Research, Information, and advanced technology.
+
+Energy shortages should trigger load shedding and priority decisions rather than instant destruction.
+
+### 9. How does Security work?
+
+Security is evaluated against the level of Threat.
+
+Conceptually:
+
+```text
+Threat
+= Population + Unrest + Crime + Inequality + External Threats
+```
+
+versus:
+
+```text
+Security Capacity
+= Security Production × Technology × Government Policy
+```
+
+When Threat exceeds Security Capacity, crime, sabotage, and crisis risk increase.
+
+High Security is powerful but can consume Labour, Energy, and Trust.
+
+---
+
+## Social Systems
+
+### 10. How is Unrest generated and recovered?
+
+Unrest is an emergent social pressure influenced by:
+
+- Unemployment
+- Poor working conditions
 - Inequality
-- Crisis probability and severity
-- Technology costs and effects
-- Production scaling
-- Offline progress
-- Automation thresholds
-- Emergency Allocation costs
-- Directive trade-offs
-- Collapse timing
-- Legacy progression
-- What carries between civilizations
+- Forced Labour
+- Excessive surveillance
+- Low Morale
+- Low Trust
+- Government policies
+- Crises
+- Security failures
 
-These should be treated as design problems rather than implementation assumptions.
+Unrest recovers through effective governance, negotiation, stability, successful policies, and time.
+
+The player can Negotiate, Suppress, Manipulate, or Ignore problems.
+
+### 11. How do Compliance and Trust relate?
+
+They are separate.
+
+Compliance measures obedience.
+
+Trust measures legitimacy and confidence in the government.
+
+Security and Information can increase Compliance without increasing Trust.
+
+### 12. How does Morale affect productivity?
+
+Morale acts as a production modifier rather than a currency.
+
+Low Morale reduces productivity and can increase Unrest.
+
+High Morale improves productivity and stability.
+
+### 13. How does Inequality work?
+
+Inequality becomes more important in the mid-game.
+
+Higher inequality can create certain economic advantages while increasing Crime, Unrest, and loss of Trust.
+
+Lower inequality supports stability and Trust but may require greater investment.
+
+---
+
+## Crises and Technology
+
+### 14. How are crises generated?
+
+Crisis risk should be partially predictable and connected to civilization conditions.
+
+Examples:
+
+- Power failure risk
+- Worker strike risk
+- Sabotage risk
+- Infrastructure failure risk
+- Research accident risk
+- Information leak risk
+
+The player should be able to see warning signs and intervene before every crisis.
+
+### 15. What should Technology do?
+
+Technology should primarily **change rules**, not simply add percentage bonuses.
+
+Examples include:
+
+- Automation reducing Labour requirements
+- Robotics operating industrial systems
+- AI automating allocation
+- Nuclear and Fusion power changing Energy constraints
+- Synthetic Workforce replacing human Labour
+- Nanotechnology changing Materials production
+- Quantum Computing changing Research
+- Matter Manipulation changing endgame production
+
+### 16. How should production scale?
+
+Production should preserve the exponential feel of classic idle games through:
+
+- Levels
+- Milestone multipliers
+- Additional building counts
+- Production chains
+- Automation
+- Technology
+- Government modifiers
+
+The player should always have multiple layers of progression without needing to manually manage hundreds of identical buildings.
+
+---
+
+## Offline Progress and Automation
+
+### 17. How should Offline Progress work?
+
+The civilization continues while the player is away.
+
+Offline progress should account for:
+
+- Production
+- Population growth
+- Energy conditions
+- Workforce allocation
+- Automation
+- Social pressure
+- Crises
+
+On return, the player should receive a civilization report rather than simply a large resource number.
+
+Example:
+
+```text
+12 hours have passed.
+
+Materials        +4.2B
+Research         +18.4M
+Population       +42,000
+
+Two factories temporarily shut down.
+Industrial unrest increased.
+A security incident was contained.
+Civilization remains stable.
+```
+
+### 18. When should Automation unlock?
+
+Automation should progress gradually:
+
+```text
+Manual management
+        ↓
+Building automation
+        ↓
+Department automation
+        ↓
+Civilization automation
+        ↓
+AI-directed civilization
+```
+
+The player should gradually surrender control as the civilization becomes more advanced.
+
+---
+
+## Emergency Allocation and Government
+
+### 19. What should Emergency Allocation cost?
+
+Emergency actions should have a meaningful immediate cost and a civilization-level cost.
+
+Possible costs include:
+
+- Energy
+- Worker fatigue
+- Infrastructure wear
+- Unrest
+- Crisis risk
+
+Emergency Allocation should be powerful enough to be tempting but dangerous enough that it cannot simply be spammed.
+
+### 20. How should Directives work?
+
+Every Directive should answer:
+
+> **What are you willing to sacrifice for this advantage?**
+
+Directives should create meaningful trade-offs rather than being simple upgrades.
+
+### 21. How should Government types emerge?
+
+The game should not force the player to select a class at the beginning.
+
+Government identity should emerge from accumulated Directives and decisions.
+
+A player can gradually become authoritarian, technocratic, socially focused, industrialist, or something more unusual.
+
+---
+
+## Collapse and Legacy
+
+### 22. When should Collapse happen?
+
+Collapse should not simply occur when a single meter reaches 100%.
+
+It should become a strategic choice or an unavoidable consequence of pushing the civilization too far.
+
+The player may continue the current civilization or sacrifice it for a stronger Legacy run.
+
+### 23. What is Legacy?
+
+Legacy represents knowledge and institutional memory that survives the Collapse.
+
+Possible categories include:
+
+- Industrial Legacy
+- Scientific Legacy
+- Institutional Legacy
+- Cultural Legacy
+- Historical Legacy
+
+Legacy should provide new possibilities, not just permanent numerical multipliers.
+
+### 24. What carries between civilizations?
+
+Carries:
+
+- Knowledge
+- Technology discoveries
+- Legacy upgrades
+- Government unlocks
+- Historical discoveries
+- Permanent automation improvements
+- New starting options
+- New civilization paths
+
+Does not carry:
+
+- Population
+- Buildings
+- Materials
+- Energy
+- Current Workforce
+- Current Security
+- Current Unrest
+- Temporary Directives
+
+The new civilization starts over, but the player is smarter.
 
 ---
 
