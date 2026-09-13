@@ -1,8 +1,8 @@
-⚙️ THE LAST CITY
+# ⚙️ THE LAST CITY
 
-A dystopian steampunk incremental game where you rebuild civilization
-from the ruins of Earth --- one department, one worker, and one
-increasingly questionable government directive at a time.
+> **An idle civilization builder where exponential economic growth creates social and political problems that the player must solve, exploit, or suppress.**
+
+The Last City is a dystopian steampunk incremental game about rebuilding the last functioning civilization on Earth.
 
 Start with a single scrap yard.
 
@@ -12,302 +12,347 @@ Process the ruins into useful materials.
 
 Build a functioning city.
 
-Then discover that keeping millions of people alive requires energy,
-security, science, information, and increasingly authoritarian
-decisions.
+Then discover that keeping millions of people alive requires energy, security, science, information, and increasingly questionable government decisions.
 
 Eventually, civilization will collapse.
 
 The question is what survives it.
 
-🎯 CORE VISION
+---
 
-The Last City is an idle/incremental game inspired by
-production-chain systems found in games such as Underworld Idle and
-AdVenture Capitalist, but built around a single dystopian steampunk
-civilization on Earth.
+## 🎯 Current Project Status
 
-The player begins with almost nothing:
+**Design / idea phase. Nothing has been implemented yet.**
 
-A small population
+This README is the living design document for the game's vision, systems, progression, and design philosophy. Numbers, formulas, balance, UI, implementation details, and individual mechanics are expected to change as the design develops.
 
-A limited workforce
+The goal at this stage is to establish the game's identity before building it.
 
-A scrap yard
+---
 
-A ruined world full of recoverable materials
+# 🧭 The Core Idea
 
-From that tiny industrial operation, the player gradually builds a
-civilization.
+The Last City takes inspiration from idle and incremental games such as:
 
-The game should feel like watching a machine become larger and more
-complicated over time.
+- **AdVenture Capitalist** - simple production, automation, exponential growth, and prestige
+- **Underworld Idle** - interconnected production chains and layered progression
+- **Idle Research** - technology-driven progression and increasingly complex systems
+- **Unnamed Space Idle** - deep automation, optimization, and long-term system interaction
 
-At first, the player manages a few workers.
+But The Last City needs to be more than a combination of familiar idle mechanics.
 
-Later, they manage departments.
+### The unique layer is civilization.
 
-Eventually, they manage an entire civilization.
+The player is not simply optimizing numbers. They are governing a civilization while those numbers grow.
 
-The central fantasy is:
+Economic decisions create social consequences.
 
-"I started with a scrap yard. Now I control the last functioning
-civilization on Earth."
+Government decisions create economic consequences.
 
-The game should remain easy to understand while gradually introducing
-deeper systems, production chains, temporary boosts, technology, crises,
-directives, and prestige.
+Technology changes the rules of the economy.
 
-🧱 DESIGN PILLARS
+Security can suppress unrest while creating other problems.
 
-Start Simple, Become Complex
+Automation can increase production while reducing the need for workers.
+
+Population growth creates a larger workforce while also creating greater demands for food, energy, housing, security, and infrastructure.
+
+The player is constantly balancing three overlapping games:
+
+### 1. The Idle Machine
+
+Production chains, automation, multipliers, exponential growth, offline progress, upgrades, and prestige.
+
+### 2. The Civilization
+
+Population, Labour, Energy, Security, Research, Compliance, housing, infrastructure, unrest, morale, and other social pressures.
+
+### 3. The Government
+
+Directives, emergency measures, crises, political choices, and long-term consequences.
+
+The game becomes interesting when these three layers interfere with one another.
+
+---
+
+# 🧱 Design Pillars
+
+## Start Simple, Become Complex
 
 The player should understand the first production loop within minutes.
 
-New mechanics should be introduced gradually rather than presented all
-at once.
+New systems should be introduced gradually. The game should not begin with six departments, dozens of resources, and a wall of locked content.
 
-Every Department Has a Purpose
+The player should discover the civilization one system at a time.
 
-Each department should produce a distinct primary resource and introduce
-a new gameplay mechanic.
+## Build an Idle Game First
 
-Departments should not feel like six copies of the same resource
-generator.
+The underlying experience should still deliver the satisfying rhythm of a great incremental game:
 
-Production Chains Matter
+- Numbers grow
+- Production chains expand
+- Buildings automate
+- Upgrades become increasingly powerful
+- New tiers become absurdly large
+- Offline progress matters
+- Prestige creates long-term growth
+- The player constantly has another meaningful goal
 
-Buildings should produce lower-tier buildings, creating exponential
-growth and satisfying cascading production.
+The civilization systems should add depth without destroying that satisfying idle-game rhythm.
 
-Resources Interact
+## Every Department Has a Purpose
 
-Departments depend on one another.
+Each department should have a distinct identity, resource, and gameplay function.
 
-Industry needs Labour.
+Departments should not feel like six copies of the same resource generator.
 
-Labour needs Population.
+## Production Chains Matter
 
-Industry eventually needs Energy.
+Buildings produce lower-tier buildings, creating cascading production and satisfying exponential growth.
 
-Science improves Industry.
+The player should eventually look back at the original Scrap Yard and realize that it has become the foundation of a civilization-scale industrial machine.
 
-Security protects Production.
+## Resources Interact
 
-Information controls the Population.
+The civilization should function as one interconnected system.
 
-The civilization becomes one interconnected machine.
+- Industry needs Labour.
+- Labour comes from Population.
+- Industry and civilization need Energy.
+- Science changes how other systems work.
+- Security protects production and population.
+- Information influences population behaviour.
+- Government decisions deliberately distort the system.
+- Social conditions feed back into production.
 
-Temporary Power Should Feel Powerful
+## More Is Not Always Better
+
+This is one of the most important design principles.
+
+Higher Security should not simply be better.
+
+More Automation should not simply be better.
+
+Faster Population Growth should not simply be better.
+
+Higher Compliance should not simply be better.
+
+A powerful civilization should also create new problems.
+
+## Temporary Power Should Feel Powerful
 
 Emergency Allocation provides short bursts of extreme productivity.
 
-Players should make decisions about when to use it rather than simply
-clicking a permanent multiplier.
+The player should constantly face decisions such as:
 
-Progression Should Reveal the World
+> **Use it now, or save it for the next bottleneck?**
 
-Major unlocks should introduce new systems and pieces of the setting.
+## Progression Should Reveal the World
 
-The player should gradually discover what happened to Earth and why the
-civilization is structured the way it is.
+Major unlocks should reveal new systems, technology, history, and consequences.
 
-Collapse Has Meaning
+The player should gradually discover what happened to Earth and why the surviving civilization became the way it is.
+
+## Collapse Has Meaning
 
 Prestige is not a generic reset.
 
-The player deliberately causes or survives a civilization-scale collapse
-and carries knowledge, technology, and legacy into the next cycle.
+The player deliberately causes or survives a civilization-scale collapse and carries knowledge, technology, and Legacy into the next civilization.
 
-🏙️ CORE CONCEPT
+The next run should feel like the civilization learned something from the previous one.
+
+---
+
+# 🏙️ Core Concept
 
 You are the administrator of a surviving human settlement on Earth.
 
 The world outside the city is largely ruined.
 
-Your job is to keep the settlement functioning while expanding its
-industrial, social, scientific, and governmental capabilities.
+Your job is to keep the settlement functioning while expanding its industrial, social, scientific, and governmental capabilities.
 
-The player:
+The player will:
 
-Assigns workers
-
-Builds production facilities
-
-Expands population
-
-Generates materials
-
-Produces energy
-
-Maintains security
-
-Develops technology
-
-Controls public information
-
-Issues government directives
-
-Responds to emergencies
-
-Eventually initiates or survives The Collapse
-
-Carries permanent Legacy into the next civilization
+- Assign workers
+- Build production facilities
+- Expand population
+- Generate Materials
+- Produce Energy
+- Maintain Security
+- Develop technology
+- Control public information
+- Issue government Directives
+- Respond to emergencies
+- Manage social stability
+- Survive or initiate The Collapse
+- Carry permanent Legacy into the next civilization
 
 The game never needs to leave Earth.
 
-The scale expands instead:
+Instead, the scale becomes increasingly ridiculous:
 
-Scrap Yard → District → City → Region → Nation → Planetary
-Civilization
+**Scrap Yard → District → City → Region → Nation → Planetary Civilization**
 
-🧠 CORE GAMEPLAY LOOP
+The central fantasy is:
 
-Start with Population + Labour
-		↓
+> **"I started with a scrap yard. Now I control the last functioning civilization on Earth."**
+
+---
+
+# 🔄 Core Gameplay Loop
+
+```text
+Population + Labour
+        ↓
 Assign Labour to Scrap Yards
-		↓
+        ↓
 Produce Materials
-		↓
+        ↓
 Purchase Production Buildings
-		↓
+        ↓
 Buildings produce lower-tier buildings
-		↓
-Expand Housing
-		↓
+        ↓
+Expand Housing and Infrastructure
+        ↓
 Population grows
-		↓
+        ↓
 More Population → More Labour
-		↓
+        ↓
 Unlock new Departments
-		↓
+        ↓
 Create interconnected production chains
-		↓
+        ↓
 Manage Energy, Security, Research and Compliance
-		↓
+        ↓
+Manage Unrest and other social pressures
+        ↓
 Use Emergency Allocation for temporary surges
-		↓
+        ↓
 Purchase Directives and permanent upgrades
-		↓
-Reach Civilization milestones
-		↓
+        ↓
+Research technologies that change system rules
+        ↓
+Respond to civilization crises
+        ↓
+Reach major civilization milestones
+        ↓
 Initiate / endure The Collapse
-		↓
+        ↓
 Earn Legacy
-		↓
+        ↓
 Begin the next civilization with permanent advantages
-		↓
+        ↓
 Repeat at a greater scale
+```
 
-👥 FOUNDATIONAL RESOURCES
+---
 
-The game begins with three fundamental concepts.
+# 👥 Foundational Resources
 
-Resource                            Purpose
+## Population
 
-Population                      Number of people living in the city
+Population is the number of people living in the civilization.
 
-Labour                          Available workforce that can be
-assigned to buildings
+It is **not simply another currency**.
 
-Population
+Citizens provide the potential workforce of the civilization, but they also create demands.
 
-Population is not simply another currency.
+Population growth can require:
 
-Citizens provide the potential workforce of the civilization.
+- Housing
+- Food
+- Energy
+- Security
+- Healthcare
+- Infrastructure
+- Employment
+- Social stability
 
-Population growth requires appropriate infrastructure and later becomes
-affected by housing, security, energy, directives, technology and social
-conditions.
+As the civilization grows, population becomes both an enormous economic advantage and an enormous responsibility.
 
-Labour
+## Labour
 
-Labour is an allocated resource, not something that is simply spent.
+Labour is an allocated resource rather than something that is simply spent.
 
 Example:
 
-Population:       100
-Available Labour: 100
+```text
+Population:        100
+Available Labour:  100
 
-Scrap Yard:        25 workers
-Workshop:          15 workers
-Power Station:     20 workers
-Security:          10 workers
-Research:           5 workers
+Scrap Yard:         25 workers
+Workshop:           15 workers
+Power Station:      20 workers
+Security:           10 workers
+Research:            5 workers
 
-Unassigned Labour: 25
+Unassigned Labour:  25
+```
 
 Moving workers between departments changes production.
 
-This creates meaningful decisions even during the early game.
+This creates meaningful decisions even before the deeper government systems appear.
 
-Materials
+## Materials
 
 Materials are produced by the Industrial Authority.
 
 The initial production loop is:
 
+```text
 Population
-	↓
+    ↓
 Labour
-	↓
+    ↓
 Scrap Yard
-	↓
+    ↓
 Materials
-	↓
+    ↓
 Buildings
-	↓
+    ↓
 More Production
+```
 
 There is no separate Scrap currency.
 
-Scrap is the thematic source of the materials. The Scrap Yard processes
-abandoned vehicles, machinery, buildings and infrastructure directly
-into usable Materials.
+Scrap is the thematic source of Materials. Scrap Yards process abandoned vehicles, machinery, buildings, and infrastructure directly into usable Materials.
 
-🏭 DEPARTMENTS
+---
 
-The civilization eventually contains six major Departments.
+# 🏭 The Six Departments
 
-			  Order Department       Primary Resource Core Speciality
+The civilization eventually contains six major departments.
 
-				  1 **Industrial     Materials        Manufacturing
-					Authority**                       and construction
+| Department | Primary Resource | Core Specialty |
+|---|---|---|
+| **Industrial Authority** | Materials | Manufacturing and construction |
+| **Ministry of Labour** | Labour | Workforce and population |
+| **Central Government** | Energy | Power and infrastructure |
+| **Security Directorate** | Security | Order and protection |
+| **Scientific Directorate** | Research | Technology and advancement |
+| **Ministry of Information** | Compliance | Information and social control |
 
-				  2 **Ministry of    Labour           Workforce and
-					Labour**                          population
-
-				  3 **Central        Energy           Power and
-					Government**                      infrastructure
-
-				  4 **Security       Security         Order and
-					Directorate**                     protection
-
-				  5 **Scientific     Research         Technology and
-					Directorate**                     advancement
-
-				  6 **Ministry of    Compliance       Information and
-					Information**                     social control
-
-Departments are unlocked gradually.
+Departments unlock gradually.
 
 The player should never begin with all six.
 
-🏭 INDUSTRIAL AUTHORITY
+---
 
-Primary Resource: Materials
+# 🏭 Industrial Authority
 
-Theme: Reclamation, manufacturing, construction and automation.
+**Primary Resource:** Materials
+
+**Theme:** Reclamation, manufacturing, construction, and automation.
 
 The Industrial Authority is the starting production system.
 
-Production Chain
+## Production Chain
 
-Only the lowest production building directly creates the department's
-primary resource.
+Only the lowest production building directly creates the department's primary resource.
 
 Higher buildings produce the production building directly beneath them.
 
+```text
 The Foundry
     ↓
 Autonomous Industry
@@ -329,92 +374,46 @@ Reclamation Depot
 Scrap Yard
     ↓
 Materials
+```
 
-Production Buildings
+| Tier | Building | Produces |
+|---:|---|---|
+| 1 | **Scrap Yard** | Materials |
+| 2 | **Reclamation Depot** | Scrap Yards |
+| 3 | **Workshop** | Reclamation Depots |
+| 4 | **Factory** | Workshops |
+| 5 | **Industrial Plant** | Factories |
+| 6 | **Manufacturing Complex** | Industrial Plants |
+| 7 | **Automated Factory** | Manufacturing Complexes |
+| 8 | **Industrial Network** | Automated Factories |
+| 9 | **Autonomous Industry** | Industrial Networks |
+| 10 | **The Foundry** | Autonomous Industry |
 
-Tier Building                    Produces
+As the chain grows, advanced tiers introduce Energy and Research requirements.
 
-   1 **Scrap Yard**              Materials
-   2 **Reclamation Depot**       Scrap Yards
-   3 **Workshop**                Reclamation Depots
-   4 **Factory**                 Workshops
-   5 **Industrial Plant**        Factories
-   6 **Manufacturing Complex**   Industrial Plants
-   7 **Automated Factory**       Manufacturing Complexes
-   8 **Industrial Network**      Automated Factories
-   9 **Autonomous Industry**     Industrial Networks
-  10 **The Foundry**             Autonomous Industry
+---
 
-Early Example
+# 👷 Ministry of Labour
 
-Scrap Yard
+**Primary Resource:** Labour
 
-Requires:
+**Core Systems:**
 
-Labour
-
-Produces:
-
-Materials
-
-Reclamation Depot
-
-Requires:
-
-Materials
-
-Labour
-
-Existing Scrap Yards
-
-Produces:
-
-Scrap Yards
-
-Workshop
-
-Requires:
-
-Materials
-
-Labour
-
-Existing Reclamation Depots
-
-Produces:
-
-Reclamation Depots
-
-As the chain grows, advanced tiers introduce Energy and Research
-requirements.
-
-👷 MINISTRY OF LABOUR
-
-Primary Resource: Labour
-
-Core Systems:
-
-Workforce allocation
-
-Population growth
-
-Worker efficiency
-
-Education
-
-Specialization
-
-Automation
-
-Human augmentation
+- Workforce allocation
+- Population growth
+- Worker efficiency
+- Education
+- Specialization
+- Automation
+- Human augmentation
 
 Labour exists from the beginning.
 
-The Ministry of Labour is unlocked later and provides advanced control
-over the workforce rather than introducing Labour itself.
+The Ministry of Labour is unlocked later and provides advanced control over the workforce rather than introducing Labour itself.
 
-Production Chain
+## Production Chain
 
+```text
 Population Productivity Complex
     ↓
 Human Optimization Centre
@@ -436,43 +435,36 @@ Employment Office
 Worker Barracks
     ↓
 Labour
+```
 
-Potential Technologies
+## Potential Technologies
 
-Worker Training
+- Worker Training
+- Mandatory Education
+- Productivity Standards
+- Workforce Specialization
+- Mechanized Labour
+- Worker Augmentation
+- Neural Interfaces
+- Synthetic Workforce
 
-Mandatory Education
+---
 
-Productivity Standards
+# ⚡ Central Government
 
-Workforce Specialization
+**Primary Resource:** Energy
 
-Mechanized Labour
+**Core Systems:**
 
-Worker Augmentation
+- Power generation
+- Infrastructure
+- Energy distribution
+- Emergency Allocation
+- Government authority
 
-Neural Interfaces
+## Production Chain
 
-Synthetic Workforce
-
-⚡ CENTRAL GOVERNMENT
-
-Primary Resource: Energy
-
-Core Systems:
-
-Power generation
-
-National infrastructure
-
-Energy distribution
-
-Emergency Allocation
-
-Government authority
-
-Production Chain
-
+```text
 The Eternal Generator
     ↓
 Stellar Energy Collector
@@ -494,9 +486,11 @@ Power Station
 Steam Generator
     ↓
 Energy
+```
 
-Technology Progression
+## Technology Progression
 
+```text
 Steam
   ↓
 Electricity
@@ -510,29 +504,28 @@ Orbital Power
 Planetary Grid
   ↓
 Stellar Energy
+```
 
-🛡️ SECURITY DIRECTORATE
+---
 
-Primary Resource: Security
+# 🛡️ Security Directorate
 
-Core Systems:
+**Primary Resource:** Security
 
-Crime prevention
+**Core Systems:**
 
-Unrest
-
-Surveillance
-
-Crisis response
-
-Internal security
-
-Population control
+- Crime prevention
+- Unrest management
+- Surveillance
+- Crisis response
+- Internal security
+- Population control
 
 Security becomes increasingly important as the population grows.
 
-Production Chain
+## Production Chain
 
+```text
 The Protectorate
     ↓
 National Security Grid
@@ -554,48 +547,44 @@ Police Station
 Watch Post
     ↓
 Security
+```
 
 Security buildings consume Labour and Energy.
 
 High Security can reduce:
 
-Crime
+- Crime
+- Unrest
+- Sabotage
+- Production interruptions
+- Crisis severity
 
-Unrest
+But excessive security can create negative social consequences.
 
-Sabotage
+Security is therefore not a simple "more is better" stat.
 
-Production interruptions
+---
 
-Crisis severity
+# 🔬 Scientific Directorate
 
-But excessive security may have negative social consequences.
+**Primary Resource:** Research
 
-🔬 SCIENTIFIC DIRECTORATE
+**Core Systems:**
 
-Primary Resource: Research
+- Technology
+- Breakthroughs
+- Automation
+- Advanced energy
+- Biology
+- Artificial intelligence
 
-Core Systems:
+Science should differ from the other departments.
 
-Technology
+Its production chain generates Research, but its major purpose is to **change the rules of the other departments**.
 
-Breakthroughs
+## Production Chain
 
-Automation
-
-Advanced energy
-
-Biology
-
-Artificial intelligence
-
-Science should differ from other departments.
-
-Its production chain generates Research, but its major purpose is to
-change the rules of the other departments.
-
-Production Chain
-
+```text
 Continuum Project
     ↓
 Singularity Research Facility
@@ -617,52 +606,54 @@ Laboratory
 Research Office
     ↓
 Research
+```
 
-Technology Branches
+## Technology Branches
 
-Industrial
+### Industrial
 
 Automation → Robotics → Nanotechnology
 
-Biological
+### Biological
 
 Medicine → Genetics → Augmentation → Synthetic Biology
 
-Computational
+### Computational
 
 Computers → AI → Neural Networks → General Intelligence
 
-Energy
+### Energy
 
 Nuclear → Fusion → Exotic Energy
 
-Theoretical
+### Theoretical
 
 Quantum Physics → Spacetime → Matter Manipulation → Consciousness
 
-📡 MINISTRY OF INFORMATION
+---
 
-Primary Resource: Compliance
+# 📡 Ministry of Information
 
-Core Systems:
+**Primary Resource:** Compliance
 
-Public sentiment
+**Core Systems:**
 
-Propaganda
+- Public sentiment
+- Propaganda
+- Influence
+- Social control
+- Information management
+- Population behaviour
 
-Influence
+This is where the dystopian nature of the game becomes explicit.
 
-Social control
+The player should initially be encouraged to think of Compliance as a useful and positive measure.
 
-Information management
+Later, the meaning becomes increasingly uncomfortable.
 
-Population behaviour
+## Production Chain
 
-This is the department where the dystopian nature of the game becomes
-explicit.
-
-Production Chain
-
+```text
 The Narrative
     ↓
 Cognitive Management Network
@@ -684,279 +675,614 @@ Information Office
 Public Broadcast Station
     ↓
 Compliance
+```
 
-The player should initially be encouraged to think of Compliance as a
-positive measure.
+---
 
-Later, the meaning becomes increasingly uncomfortable.
+# 🔗 Cross-Department Production
 
-🔗 CROSS-DEPARTMENT PRODUCTION
+Departments should never operate as six independent idle games.
 
-Departments should not operate independently.
+The economy should become increasingly interconnected.
 
-The economy is built around dependencies.
+A simplified example:
 
-Example:
+```text
+                    INDUSTRIAL AUTHORITY
+                            │
+                         Materials
+                            │
+                            ▼
+                        Buildings
+                       /          \
+                      /            \
+                     ▼              ▼
+                 Labour         Government
+                    │                │
+                    ▼                ▼
+               Population          Energy
+                    │                │
+                    └───────┬────────┘
+                            ▼
+                         Security
+                            │
+                            ▼
+                          Science
+                            │
+                            ▼
+                       Technology
+                            │
+                            ▼
+                       Information
+                            │
+                            ▼
+                        Compliance
+```
 
-INDUSTRIAL AUTHORITY
-        │
-        │ Materials
-        ▼
-    Buildings
-        │
-        ├───────────────┐
-        │               │
-        ▼               ▼
-    Labour          Government
-        │               │
-        ▼               ▼
-   Population         Energy
-        │               │
-        └───────┬───────┘
-                ▼
-             Security
-                │
-                ▼
-             Science
-                │
-                ▼
-           Technology
-                │
-                ▼
-          Information
-                │
-                ▼
-            Compliance
+The actual dependency graph should become much more interconnected as the game progresses.
 
-The actual dependency graph should become much more interconnected as
-the game progresses.
+---
 
-⚡ EMERGENCY ALLOCATION
+# 🧠 The Civilization Layer
 
-Emergency Allocation is the game's active temporary-boost system.
+This is the primary feature that separates The Last City from a conventional idle game.
 
-Energy accumulates over time into an emergency reserve.
+The civilization should have a social state that responds to the player's choices.
 
-The player can spend it to temporarily redirect the civilization's
-resources toward a particular goal.
+Potential social pressures include:
 
-Example Orders
+- **Unrest** - dissatisfaction and willingness to resist
+- **Compliance** - willingness to follow government directives
+- **Crime** - criminal activity and instability
+- **Morale** - workforce and population wellbeing
+- **Inequality** - uneven distribution of resources and opportunity
+- **Trust** - confidence in the government and its institutions
 
-Emergency Order       Effect                                    Duration
+These should not simply be additional currencies.
 
-Industrial Surge  Industry production                         60 sec
-massively increased
+They should be **consequences of the player's civilization-building strategy**.
 
-Labour              Available Labour                            60 sec
-Mobilization        massively increased
+## Example: The Labour Problem
 
-Power Priority    Energy generation                           60 sec
-massively increased
+Suppose the civilization needs more Labour.
 
-Security Lockdown Security massively                          60 sec
-increased; movement
-restricted
+The player might:
 
-Scientific          Research massively                          60 sec
-Emergency           increased
+### Improve Living Conditions
 
-Emergency Orders should become more powerful and more specialized as
-departments and technologies are unlocked.
+- Build housing
+- Improve healthcare
+- Increase food production
+- Increase education
+- Improve worker efficiency
 
-The player should constantly face the question:
+**Result:**
 
-Use it now, or save it for the next bottleneck?
+Population ↑
 
-📜 DIRECTIVES
+Labour availability ↑
 
-Directives are permanent government policies.
+Unrest ↓
 
-They are purchased using a permanent government resource such as
-Authority.
+Production ↑
 
-Unlike Emergency Allocation, Directives do not expire.
+Cost ↑↑
 
-They change the way the civilization operates.
+### Introduce Mandatory Labour
 
-Industrial Directives
+- Increase required working hours
+- Force population into critical industries
+- Reduce worker freedom
 
-Industrial Priority
+**Result:**
 
-Five-Year Production Plan
+Labour ↑↑
 
-Mechanization Initiative
+Production ↑
 
-Automated Workforce
+Unrest ↑
 
-National Manufacturing Act
+Security demand ↑
 
-Total Industrialization
+### Invest in Automation
 
-Labour Directives
+- Research robotics
+- Build automated infrastructure
+- Replace workers with machines
 
-Universal Education
+**Result:**
 
-Worker Training
+Labour requirement ↓
 
-Mandatory Service
+Production ↑
 
-Productivity Standards
+Research demand ↑
 
-Human Optimization
+Energy demand ↑
 
-Engineered Workforce
+Potential unemployment and social unrest ↑
 
-Information Directives
+There is no single correct answer.
 
-Public Broadcasting
+The player is choosing what kind of civilization they are building.
 
-Civic Education
+---
 
-Controlled Media
+# 🔥 Unrest
 
-Unified Narrative
+**Unrest is not just another number.**
 
-Information Monopoly
+It should be an emergent consequence of the player's economic, social, and governmental decisions.
 
-Total Information Control
+Unrest can be influenced by:
 
-Security Directives
+- Poor working conditions
+- Food shortages
+- Housing shortages
+- Unemployment
+- Excessive taxation or resource extraction
+- Forced labour
+- Excessive surveillance
+- Inequality
+- Government propaganda
+- Security policy
+- Population growth
+- Major crises
+- Previous government decisions
 
-Expanded Police
+High Unrest can cause:
 
-National Surveillance
+- Strikes
+- Riots
+- Sabotage
+- Reduced productivity
+- Infrastructure damage
+- Government instability
+- Production interruptions
+- Major crises
 
-Internal Security Act
+But the player can respond in different ways.
 
-Predictive Policing
+### Negotiate
 
-Emergency Powers
+Spend resources to address the underlying problem.
 
-Permanent Emergency
+- Unrest ↓
+- Trust ↑
+- Production may temporarily ↓
 
-Scientific Directives
+### Suppress
 
-National Science Fund
+Use Security to force the problem back down.
 
-Research Priority
+- Unrest ↓ immediately
+- Security demand ↑
+- Trust ↓
+- Potential future unrest ↑
 
-Open Laboratories
+### Manipulate
 
-National AI Initiative
+Use the Ministry of Information to influence public sentiment.
 
-Human Enhancement Program
+- Compliance ↑
+- Immediate unrest may ↓
+- Trust may ↓
+- Long-term consequences may appear
 
-Accelerated Evolution
+### Ignore
 
-Directives should contain meaningful trade-offs.
+Do nothing.
 
-A stronger state should not simply be a stronger state.
+The problem can spread.
 
-Some policies should increase production while damaging population
-growth, increasing unrest, consuming more Energy, or reducing other
-departments.
+This creates a layer of decision-making that is unusual for an idle game without turning the game into a traditional strategy game.
 
-🧨 CRISES
+---
+
+# 🧨 Crises
 
 The city should occasionally experience crises.
 
 Possible crises include:
 
-Worker strikes
+- Worker strikes
+- Power shortages
+- Factory fires
+- Disease outbreaks
+- Infrastructure failures
+- Food shortages
+- Riots
+- Sabotage
+- Industrial accidents
+- Research accidents
+- Information leaks
+- Security incidents
+- Mass unrest
 
-Power shortages
-
-Factory fires
-
-Disease outbreaks
-
-Infrastructure failures
-
-Food shortages
-
-Riots
-
-Sabotage
-
-Industrial accidents
-
-Research accidents
-
-Information leaks
-
-Security incidents
-
-Mass unrest
-
-Crises should be affected by the player's previous decisions.
+Crises should be influenced by the player's previous decisions rather than being completely random interruptions.
 
 For example:
 
+```text
 Low Security
-	↓
+     ↓
 Higher chance of unrest
 
 High Security
-	↓
+     ↓
 Lower unrest
-	↓
+     ↓
 Higher Labour consumption
-	↓
-Potential Compliance penalty
+     ↓
+Potential Compliance / Trust penalty
+```
 
-This prevents every department from being a simple "more is always
-better" system.
+The goal is for crises to feel like consequences of running a civilization rather than random events pasted onto an idle game.
 
-🧬 TECHNOLOGY
+---
+
+# ⚡ Emergency Allocation
+
+Emergency Allocation is the game's active temporary-boost system.
+
+Energy accumulates over time into an emergency reserve.
+
+The player can spend that reserve to temporarily redirect civilization resources toward a particular goal.
+
+## Example Orders
+
+| Emergency Order | Effect | Example Duration |
+|---|---|---:|
+| **Industrial Surge** | Industry production massively increased | 60 sec |
+| **Labour Mobilization** | Available Labour massively increased | 60 sec |
+| **Power Priority** | Energy generation massively increased | 60 sec |
+| **Security Lockdown** | Security massively increased; movement restricted | 60 sec |
+| **Scientific Emergency** | Research massively increased | 60 sec |
+
+Emergency Orders should become more powerful and more specialized as departments and technologies are unlocked.
+
+They should also have consequences.
+
+For example:
+
+> **Industrial Surge** may produce an enormous amount of Materials, but pulling Labour away from Security and Research could create a future crisis.
+
+The player should constantly be asking:
+
+> **Use it now, or save it for the next bottleneck?**
+
+---
+
+# 📜 Government Directives
+
+Directives are permanent government policies.
+
+They are purchased using a permanent government resource such as Authority.
+
+Unlike Emergency Allocation, Directives do not expire.
+
+They change how the civilization operates.
+
+## Industrial Directives
+
+- Industrial Priority
+- Five-Year Production Plan
+- Mechanization Initiative
+- Automated Workforce
+- National Manufacturing Act
+- Total Industrialization
+
+## Labour Directives
+
+- Universal Education
+- Worker Training
+- Mandatory Service
+- Productivity Standards
+- Human Optimization
+- Engineered Workforce
+
+## Information Directives
+
+- Public Broadcasting
+- Civic Education
+- Controlled Media
+- Unified Narrative
+- Information Monopoly
+- Total Information Control
+
+## Security Directives
+
+- Expanded Police
+- National Surveillance
+- Internal Security Act
+- Predictive Policing
+- Emergency Powers
+- Permanent Emergency
+
+## Scientific Directives
+
+- National Science Fund
+- Research Priority
+- Open Laboratories
+- National AI Initiative
+- Human Enhancement Program
+- Accelerated Evolution
+
+Directives should contain meaningful trade-offs.
+
+A stronger state should not simply be a stronger state.
+
+For example, a policy might:
+
+- Increase industrial output
+- Increase Energy consumption
+- Reduce population growth
+- Increase Unrest
+- Reduce Trust
+- Increase Compliance
+- Reduce another department's effectiveness
+
+The player's government should become a reflection of how they chose to solve problems.
+
+---
+
+# 🏛️ Civilization Archetypes
+
+The game should not use traditional character classes.
+
+Instead, the player's **civilization becomes their build**.
+
+Two players can reach the same stage of the game with radically different civilizations.
+
+### Authoritarian Industrial State
+
+Heavy investment in:
+
+- Security
+- Surveillance
+- Mandatory Labour
+- Controlled media
+- Industrial production
+- Emergency powers
+
+Possible strengths:
+
+- Extremely efficient production
+- Low crime
+- High Compliance
+- Strong crisis suppression
+
+Possible weaknesses:
+
+- Low Trust
+- Higher social pressure
+- Greater dependence on Security
+- Poorer population growth
+
+### Technocratic Civilization
+
+Heavy investment in:
+
+- Research
+- Education
+- Automation
+- AI
+- Advanced Energy
+- Information systems
+
+Possible strengths:
+
+- High worker efficiency
+- Strong automation
+- Powerful Research
+- Lower Labour requirements
+
+Possible weaknesses:
+
+- Massive Energy demand
+- Dependence on advanced infrastructure
+- Vulnerability to technological failures
+
+### Welfare Civilization
+
+Heavy investment in:
+
+- Housing
+- Healthcare
+- Food
+- Education
+- Population growth
+- Worker conditions
+
+Possible strengths:
+
+- Large population
+- Low Unrest
+- High Morale
+- Large potential workforce
+
+Possible weaknesses:
+
+- Huge resource consumption
+- Greater infrastructure requirements
+- Difficult late-game population management
+
+These are examples, not fixed classes.
+
+The player should create their own civilization through accumulated choices.
+
+---
+
+# 🔬 Technology
 
 Technology is primarily unlocked through Research.
 
-Technology should occasionally provide new production tiers, but its
-more important role is changing how the civilization functions.
+Technology can occasionally provide new production tiers, but its more important role is changing how the civilization functions.
 
 Examples:
 
-Automation
+### Automation
 
 Factories require less Labour.
 
-Robotics
+### Robotics
 
 Some industrial buildings can operate without workers.
 
-Artificial Intelligence
+### Artificial Intelligence
 
-Production buildings can receive autonomous bonuses.
+Production buildings receive autonomous bonuses.
 
-Nuclear Power
+### Nuclear Power
 
 Massively increases Energy production.
 
-Fusion
+### Fusion
 
 Removes many late-game Energy constraints.
 
-Genetic Engineering
+### Genetic Engineering
 
 Increases population growth and worker efficiency.
 
-Nanotechnology
+### Nanotechnology
 
 Introduces advanced Materials.
 
-Synthetic Workforce
+### Synthetic Workforce
 
 Allows machines to replace a portion of Labour.
 
-Quantum Computing
+### Quantum Computing
 
 Massively increases Research efficiency.
 
-Matter Manipulation
+### Matter Manipulation
 
 Endgame production technology.
 
-🏛️ UNLOCK PHILOSOPHY
+Technology should increasingly change the rules rather than merely adding larger numbers.
+
+---
+
+# 🧬 Population and Social Growth
+
+Population growth should become increasingly complicated as civilization advances.
+
+Early population growth can be relatively simple.
+
+Later, it should depend on factors such as:
+
+```text
+Housing
+Food
+Energy
+Healthcare
+Security
+Employment
+Morale
+Unrest
+Government Directives
+Technology
+```
+
+This creates an important design tension:
+
+> **A larger population gives you more Labour, but every new citizen also creates another set of needs the civilization must satisfy.**
+
+Population should therefore feel powerful without becoming an automatic free upgrade.
+
+---
+
+# 🏗️ Production Philosophy
+
+The production system should retain the satisfying exponential structure of classic idle games.
+
+A simple early chain might look like:
+
+```text
+Scrap Yard
+    ↓
+Reclamation Depot
+    ↓
+Workshop
+    ↓
+Factory
+    ↓
+Industrial Plant
+    ↓
+Manufacturing Complex
+```
+
+Each tier accelerates the previous tier.
+
+Eventually, the player moves from manually managing individual buildings to managing enormous automated production networks.
+
+The scale should become absurd.
+
+A player who once worried about whether they could afford their second Scrap Yard should eventually be worrying about whether a planetary industrial network can supply enough Materials to maintain civilization.
+
+---
+
+# 🧠 Automation
+
+Automation is essential to the idle-game experience.
+
+The player should gradually move from:
+
+**Manual management**
+
+→ **Building automation**
+
+→ **Department automation**
+
+→ **Civilization automation**
+
+→ **AI-directed civilization**
+
+But automation should create new choices rather than simply removing gameplay.
+
+For example:
+
+- Automation reduces Labour requirements.
+- Reduced Labour requirements create unemployment.
+- Unemployment can create Unrest.
+- AI can reduce the need for human decision-making.
+- Reduced human participation can affect Trust.
+- Automated systems require Energy and Research.
+- Highly automated civilizations become vulnerable to infrastructure or information failures.
+
+The better the technology becomes, the stranger the civilization's problems should become.
+
+---
+
+# 🌍 Progression Scale
+
+The game should gradually move through increasingly large scales.
+
+```text
+Scrap Yard
+    ↓
+District
+    ↓
+City
+    ↓
+Region
+    ↓
+Nation
+    ↓
+Planetary Civilization
+```
+
+The player should never need to leave Earth for the game to feel enormous.
+
+The fantasy is not exploration of the galaxy.
+
+It is watching one ruined planet become completely dominated by the civilization the player built.
+
+---
+
+# 🏛️ Unlock Philosophy
 
 Departments should unlock gradually.
 
@@ -964,902 +1290,243 @@ The player should not begin with six tabs and a wall of locked content.
 
 The early game should feel like discovering the systems of the city.
 
-Example progression:
+A rough progression might be:
 
-START
-  ↓
-Population + Labour + Scrap Yard
-  ↓
-Materials production
-  ↓
-Housing
-  ↓
-Population growth
-  ↓
-Industrial expansion
-  ↓
-MINISTRY OF LABOUR
-  ↓
-Workforce management
-  ↓
-CENTRAL GOVERNMENT
-  ↓
-Energy
-  ↓
-SECURITY DIRECTORATE
-  ↓
-Unrest and crises
-  ↓
-SCIENTIFIC DIRECTORATE
-  ↓
-Technology
-  ↓
-MINISTRY OF INFORMATION
-  ↓
-Compliance and social control
-  ↓
-DIRECTIVES
-  ↓
-THE COLLAPSE
+### Early Game
 
-Exact unlock thresholds are to be tuned during development.
+- Population
+- Labour
+- Scrap Yards
+- Materials
+- Basic construction
+- First housing
 
-🕳️ THE COLLAPSE
+### Developing City
 
-The Collapse is the primary prestige system.
+- Production chains
+- Energy
+- First crises
+- Security
+- Emergency Allocation
 
-It should not feel like pressing a generic "Reset" button.
+### Industrial Civilization
 
-The civilization has reached the limits of its current cycle.
+- Research
+- Technology
+- Advanced automation
+- Population systems
+- Government Directives
 
-The player can eventually initiate a Controlled Collapse or trigger
-a catastrophic collapse through poor management.
+### Advanced Civilization
 
-A Collapse resets most current civilization progress.
+- Information control
+- Complex social pressures
+- AI
+- Advanced Energy
+- Large-scale crises
 
-Lost
+### Endgame
 
-Materials
+- Planetary infrastructure
+- Extreme automation
+- Civilization-scale government
+- Matter manipulation and other exotic technologies
+- The Collapse
+- Legacy
 
-Population
+These stages are placeholders and should be refined during design and prototyping.
 
-Buildings
+---
 
-Current production
+# ☠️ The Collapse
 
-Current department progress
+Eventually, civilization should reach a point where maintaining the current system becomes impossible, unstable, or strategically undesirable.
 
-Temporary bonuses
+The player can initiate or endure **The Collapse**.
 
-Most current resources
+Collapse is the game's major prestige/reset system, but it should feel fundamentally different from a generic prestige mechanic.
 
-Retained
+The player should feel that they are ending one civilization and learning from it.
 
-Legacy
+Possible reasons to collapse:
 
-Permanent discoveries
+- The civilization has reached a natural technological limit.
+- The player has pushed a system too far.
+- A civilization-scale crisis becomes unavoidable.
+- The player deliberately sacrifices the current civilization to gain Legacy.
+- The player wants to rebuild using a radically different strategy.
 
-Selected technology
+The Collapse should leave permanent consequences or knowledge behind.
 
-Permanent Directive effects
+---
 
-Achievements
+# 🏺 Legacy
 
-Story discoveries
+Legacy is the permanent progression carried between civilizations.
 
-🌳 LEGACY
+It should represent what survives the collapse:
 
-Legacy represents knowledge that survives civilization.
+- Knowledge
+- Technology
+- Institutional memory
+- Permanent upgrades
+- Historical discoveries
+- New starting options
+- New government policies
+- New production possibilities
 
-The next civilization begins with advantages based on the previous one.
+Legacy should make each civilization faster, stranger, and deeper without simply turning every future run into a larger collection of multipliers.
 
-Examples:
+---
 
-Industrial Legacy
+# 🎮 What Should Make The Last City Unique?
 
-Start with an improved Scrap Yard.
+The game's identity should ultimately come from the interaction between **idle growth and civilization management**.
 
-Labour Legacy
+The player should experience familiar incremental satisfaction:
 
-Population produces more Labour.
+> Build → automate → multiply → unlock → prestige → repeat.
 
-Government Legacy
+But underneath that familiar loop is another question:
 
-Emergency Energy regenerates faster.
+> **What kind of civilization did you build to get there?**
 
-Scientific Legacy
+The most important systems for achieving this are:
 
-Basic technologies begin unlocked.
+## 1. Unrest
 
-Security Legacy
+The population reacts to how the civilization is run.
 
-Early crises are less severe.
+## 2. Crises
 
-Information Legacy
+Problems emerge from the conditions the player creates.
 
-Compliance systems unlock sooner.
+## 3. Government Decisions
 
-Legacy becomes the long-term meta-progression system.
+The player can solve problems through investment, reform, technology, manipulation, or suppression.
 
-🌍 COLLAPSE PROGRESSION
+These systems should create situations where there is no universally optimal choice.
 
-Collapse itself can evolve.
+That is the heart of the game.
 
-Level Collapse                Potential Unlock
+---
 
-	I Local Collapse          Legacy
-   II National Collapse       Permanent bonuses
-  III Continental Collapse    Permanent technologies
-   IV Global Collapse         Civilization modifiers
-	V Civilization Collapse   New starting systems
-   VI Terminal Collapse       Endgame systems
+# 🚫 Things To Avoid
 
-The names and exact mechanics are placeholders.
+The project should actively avoid becoming:
 
-The important design goal is that each Collapse should feel more
-significant than the previous one.
+### Six Separate Idle Games
 
-🕵️ THE STORY
+Each department should feed the larger civilization.
 
-The story should be delivered primarily through discoveries,
-notifications, directives, research entries, events and environmental
-changes.
+### A Spreadsheet Simulator
 
-The player should gradually discover that the civilization's government
-was not merely created to survive the original disaster.
+Complexity should emerge gradually and remain readable.
 
-It was created to restart civilization after it collapsed.
+### A Traditional 4X Strategy Game
 
-Potential late-game revelation:
+The core experience is still idle/incremental.
 
-PROJECT CONTINUITY
+### A Resource Hoarding Simulator
 
-The player discovers that the current civilization is one of many
-cycles.
+Resources should interact and create decisions.
 
-Each civilization believes it is rebuilding the world for the first
-time.
+### A Simple Good/Evil System
 
-It is not.
+Authoritarian policies should sometimes be effective.
 
-Every Collapse is part of the system.
+Democratic or welfare policies should sometimes be expensive.
 
-The ultimate question becomes:
+Technology should sometimes create new problems.
 
-Is the player rebuilding civilization, or maintaining the machine
-that keeps destroying it?
+There should be trade-offs rather than obvious morality buttons.
 
-🎨 WORLD & ART DIRECTION
+### Endless Currency Bloat
 
-The visual identity should be:
+Avoid creating dozens of resources simply because another system needs a number.
 
-Dystopian Steampunk + Industrial Civilization
+Whenever possible, existing systems should interact instead.
 
-Visual language
+---
 
-Brass
+# 🧪 Design Questions Still To Solve
 
-Dark iron
+The following systems need proper formulas and balancing during the design/prototyping phase:
 
-Copper
+- How Population generates Labour
+- Population growth rates
+- Housing requirements
+- Food and basic needs
+- Worker assignment efficiency
+- Energy consumption and shortages
+- Security calculations
+- Unrest generation and recovery
+- Compliance and Trust relationships
+- Morale and productivity
+- Inequality
+- Crisis probability and severity
+- Technology costs and effects
+- Production scaling
+- Offline progress
+- Automation thresholds
+- Emergency Allocation costs
+- Directive trade-offs
+- Collapse timing
+- Legacy progression
+- What carries between civilizations
 
-Soot
+These should be treated as design problems rather than implementation assumptions.
 
-Steam
+---
 
-Large pipes
+# 🛠️ Current Development Philosophy
 
-Pressure gauges
+This project is currently about **figuring out the game before building the game**.
 
-Mechanical machinery
+The priority is:
 
-Victorian industrial architecture
+1. Establish the core fantasy.
+2. Define the systems that make the game unique.
+3. Map the relationships between those systems.
+4. Determine the player experience from the first minute through the first Collapse.
+5. Prototype the smallest possible version.
+6. Test whether the core loop is actually fun.
+7. Expand only after the foundation works.
 
-Huge smokestacks
+The first prototype does not need all six departments.
 
-Art Deco government architecture
+It needs to prove that this loop works:
 
-Cold government interiors
+```text
+Idle Production
+      ↓
+Growth
+      ↓
+New Problem
+      ↓
+Player Decision
+      ↓
+Economic Consequence
+      ↓
+Social Consequence
+      ↓
+New Growth
+```
 
-Dense urban housing
+If that loop is fun, The Last City has something worth building.
 
-Giant factories
+---
 
-Mechanical signage
+# 📌 One-Sentence Vision
 
-CRT-like information displays later in the technological progression
+> **The Last City is an idle civilization builder where exponential economic growth creates social and political problems that the player must solve, exploit, or suppress.**
 
-The world should begin dirty and improvised.
+---
 
-As the civilization progresses, it becomes increasingly organized,
-enormous and oppressive.
+# 📌 The Long-Term Fantasy
 
-The player's city should visually evolve alongside its technology.
-
-🖥️ UI DIRECTION
-
-The primary game screen should resemble a mixture of:
-
-Incremental/clicker games
-
-Industrial management interfaces
-
-Steampunk control panels
-
-Government terminals
-
-The player should always be able to see:
-
-Top Bar
-
-Materials
-
-Labour
-
-Energy
-
-Security
-
-Research
-
-Compliance
-
-Emergency Energy
-
-Main Panel
-
-Current Department and production buildings.
-
-Side Navigation
-
-Unlocked Departments.
-
-Locked Departments should generally remain hidden until their discovery.
-
-Bottom / Auxiliary Panel
-
-Emergency Allocation
-
-Directives
-
-Technology
-
-Statistics
-
-Collapse / Legacy
-
-The interface should become more complex as the civilization becomes
-more complex.
-
-⚙️ PRODUCTION MODEL
-
-The fundamental building model is inspired by faction production chains.
-
-A typical building has:
-
-Building Name
-
-Production:
-+X lower-tier buildings / second
-
-Cost:
-X Materials
-X Labour
-X Energy
-X Research
-
-Requires:
-X previous-tier buildings
-
-Modifiers:
-+X% production
-
-Example:
-
-WORKSHOP
-
-Produces:
-+1 Reclamation Depot / second
-
-Requires:
-25 Reclamation Depots
-
-Cost:
-5,000 Materials
-20 Labour
-10 Energy
-
-The exact mathematical model will be tuned during development.
-
-📈 INCREMENTAL PROGRESSION
-
-Production should grow exponentially through several layers.
-
-Layer 1
-
-Direct resource production.
-
-Layer 2
-
-Buildings produce lower-tier buildings.
-
-Layer 3
-
-Department upgrades multiply production.
-
-Layer 4
-
-Technology changes production rules.
-
-Layer 5
-
-Emergency Allocation provides temporary massive boosts.
-
-Layer 6
-
-Directives provide permanent strategic bonuses.
-
-Layer 7
-
-Collapse provides Legacy.
-
-Layer 8
-
-Legacy changes the starting conditions of future civilizations.
-
-The player should always have another meaningful layer to work toward.
-
-🧠 DESIGN PRINCIPLES
-
-Easy to understand, difficult to optimize
-
-Start with one building and gradually reveal the civilization
-
-Population and Labour should matter from the beginning
-
-No unnecessary currencies
-
-Every primary resource should have a clear purpose
-
-Buildings should form satisfying production chains
-
-Departments should depend on one another
-
-Temporary boosts should create decisions, not chores
-
-Permanent upgrades should create strategic choices
-
-Avoid pure "number goes up" progression wherever possible
-
-Every major unlock should introduce a new mechanic
-
-The dystopian setting should affect gameplay, not just visuals
-
-The player should occasionally question whether a powerful upgrade
-was actually a good idea
-
-The economy should remain understandable even when it becomes
-enormous
-
-The player should start by sorting scrap and eventually have to
-decide whether humanity is better off under permanent emergency
-powers.
-
-🧪 DEVELOPMENT PHILOSOPHY
-
-This project should be developed as a vertical slice.
-
-Do not build all six Departments before the first production loop is
-fun.
-
-The first playable version should contain only:
-
-Population
-
-Labour
-
-Materials
-
-Scrap Yard
-
-A small production chain
-
-Housing
-
-Basic population growth
-
-Basic worker allocation
-
-Saving/loading
-
-A simple steampunk UI
-
-Once that loop feels good, expand outward.
-
-🔥 DEVELOPMENT PRIORITY
-
-⬜ Core idle resource system
-
-⬜ Population system
-
-⬜ Labour allocation
-
-⬜ Scrap Yard
-
-⬜ Materials production
-
-⬜ Industrial production chain
-
-⬜ Housing and population growth
-
-⬜ Industrial upgrades
-
-⬜ Ministry of Labour
-
-⬜ Central Government
-
-⬜ Energy system
-
-⬜ Emergency Allocation
-
-⬜ Security Directorate
-
-⬜ Crisis system
-
-⬜ Scientific Directorate
-
-⬜ Technology system
-
-⬜ Ministry of Information
-
-⬜ Compliance system
-
-⬜ Directives
-
-⬜ Collapse
-
-⬜ Legacy
-
-⬜ Narrative/discovery system
-
-⬜ Balance pass
-
-⬜ Visual polish
-
-🗺️ DEVELOPMENT ROADMAP
-
-⚪ MILESTONE 1 --- The Scrap Yard
-
-Goal
-
-Create a satisfying first five minutes.
-
-Tasks
-
-⬜ Population resource
-
-⬜ Labour resource
-
-⬜ Labour assignment
-
-⬜ Scrap Yard
-
-⬜ Materials generation
-
-⬜ Basic idle ticking
-
-⬜ Manual production interaction
-
-⬜ Basic UI
-
-⬜ Save/load
-
-Success Criteria
-
-The player understands the system without a tutorial wall.
-
-Moving workers between tasks feels meaningful.
-
-Watching Materials accumulate feels satisfying.
-
-⚪ MILESTONE 2 --- Industrial Growth
-
-Goal
-
-Create the first exponential production chain.
-
-Tasks
-
-⬜ Reclamation Depot
-
-⬜ Workshop
-
-⬜ Factory
-
-⬜ Production formulas
-
-⬜ Building costs
-
-⬜ Production scaling
-
-⬜ Industrial upgrades
-
-⬜ Basic statistics
-
-Success Criteria
-
-Higher-tier buildings feel significantly different.
-
-The player wants to reach the next tier.
-
-The economy remains understandable.
-
-⚪ MILESTONE 3 --- Population
-
-Goal
-
-Make the city itself grow.
-
-Tasks
-
-⬜ Housing
-
-⬜ Population capacity
-
-⬜ Population growth
-
-⬜ Labour generation
-
-⬜ Worker allocation UI
-
-⬜ Workforce shortages
-
-⬜ Population milestones
-
-Success Criteria
-
-Population feels like an active part of the economy.
-
-Labour is never just another currency.
-
-The player makes choices about where workers should go.
-
-⚪ MILESTONE 4 --- Ministry of Labour
-
-Goal
-
-Turn basic Labour into a full workforce system.
-
-Tasks
-
-⬜ Ministry unlock
-
-⬜ Labour production chain
-
-⬜ Worker specialization
-
-⬜ Education
-
-⬜ Productivity upgrades
-
-⬜ Workforce bonuses
-
-⬜ Labour-related directives
-
-⚪ MILESTONE 5 --- Central Government
-
-Goal
-
-Introduce Energy and the first major active mechanic.
-
-Tasks
-
-⬜ Government unlock
-
-⬜ Energy resource
-
-⬜ Steam Generator
-
-⬜ Power Station
-
-⬜ Power Plant
-
-⬜ Energy consumption
-
-⬜ Emergency Energy
-
-⬜ Emergency Allocation
-
-Success Criteria
-
-Energy creates meaningful constraints.
-
-Emergency Allocation is useful without becoming mandatory every few
-seconds.
-
-⚪ MILESTONE 6 --- Security
-
-Goal
-
-Make population growth create new problems.
-
-Tasks
-
-⬜ Security unlock
-
-⬜ Security resource
-
-⬜ Unrest
-
-⬜ Crime
-
-⬜ Crises
-
-⬜ Security production chain
-
-⬜ Security upgrades
-
-⬜ First negative consequences of excessive control
-
-⚪ MILESTONE 7 --- Science
-
-Goal
-
-Introduce technology as a system that changes the economy.
-
-Tasks
-
-⬜ Research resource
-
-⬜ Science unlock
-
-⬜ Research production chain
-
-⬜ Technology tree
-
-⬜ Automation
-
-⬜ Robotics
-
-⬜ Energy technologies
-
-⬜ Advanced industrial technologies
-
-Success Criteria
-
-Research should unlock new possibilities rather than simply provide
-another multiplier.
-
-⚪ MILESTONE 8 --- Information
-
-Goal
-
-Introduce the game's full dystopian social layer.
-
-Tasks
-
-⬜ Compliance
-
-⬜ Public sentiment
-
-⬜ Influence
-
-⬜ Information production chain
-
-⬜ Propaganda
-
-⬜ Social control
-
-⬜ Information directives
-
-⬜ Population consequences
-
-⚪ MILESTONE 9 --- Directives
-
-Goal
-
-Give players long-term strategic decisions.
-
-Tasks
-
-⬜ Authority resource
-
-⬜ Directive system
-
-⬜ Industrial directives
-
-⬜ Labour directives
-
-⬜ Security directives
-
-⬜ Scientific directives
-
-⬜ Information directives
-
-⬜ Positive and negative trade-offs
-
-⚪ MILESTONE 10 --- Collapse & Legacy
-
-Goal
-
-Create the long-term incremental loop.
-
-Tasks
-
-⬜ Collapse condition
-
-⬜ Controlled Collapse
-
-⬜ Civilization reset
-
-⬜ Legacy resource
-
-⬜ Legacy upgrades
-
-⬜ New starting bonuses
-
-⬜ Collapse milestones
-
-⬜ Permanent progression
-
-Success Criteria
-
-The player should want to collapse because the next civilization is more
-interesting, not simply because the current run has become boring.
-
-⚪ MILESTONE 11 --- The World Remembers
-
-Goal
-
-Add narrative depth and make the civilization feel like part of a larger
-history.
-
-Tasks
-
-⬜ Discovery system
-
-⬜ Historical records
-
-⬜ Research discoveries
-
-⬜ Government archives
-
-⬜ Collapse records
-
-⬜ Project Continuity
-
-⬜ Late-game revelations
-
-💾 TECHNICAL DIRECTION
-
-The game should be designed for Godot and built around data-driven
-systems.
-
-Prefer:
-
-Resources = Data
-Scenes = Presentation
-Scripts = Behaviour
-Managers = Systems
-
-Production buildings, upgrades, directives, technologies, crises and
-Emergency Orders should be data-driven rather than hardcoded wherever
-practical.
-
-Adding a new production building should ideally require creating data
-rather than rewriting core game logic.
-
-📐 BALANCING PHILOSOPHY
-
-Avoid balancing purely around arbitrary large numbers.
-
-Each production tier should answer a gameplay question.
-
-Examples:
-
-"Do I increase Materials production or save for the next Factory?"
-
-"Do I move workers from Industry into Power?"
-
-"Do I use Emergency Allocation now?"
-
-"Do I spend Research on Automation or better Energy?"
-
-"Do I accept lower population growth in exchange for greater
-Security?"
-
-"Do I issue Permanent Emergency Powers?"
-
-"Is the civilization strong enough to survive another Collapse?"
-
-Numbers should support decisions.
-
-They should not replace them.
-
-🚧 CURRENT IMPLEMENTATION STATUS
-
-This README is currently a design document.
-
-No gameplay system should be considered implemented unless it is
-explicitly marked as such in this section.
-
-Current status:
-
-⬜ Core idle engine
-
-⬜ Population
-
-⬜ Labour allocation
-
-⬜ Materials
-
-⬜ Industrial Authority
-
-⬜ Ministry of Labour
-
-⬜ Central Government
-
-⬜ Energy
-
-⬜ Emergency Allocation
-
-⬜ Security Directorate
-
-⬜ Crisis system
-
-⬜ Scientific Directorate
-
-⬜ Technology
-
-⬜ Ministry of Information
-
-⬜ Compliance
-
-⬜ Directives
-
-⬜ Collapse
-
-⬜ Legacy
-
-⬜ Narrative system
-
-📌 DEVELOPMENT STRATEGY
-
-Build vertically.
-
-Prototype the economy before producing large amounts of art.
-
-Keep the first playable loop extremely small.
-
-Use placeholder graphics while mechanics are being tested.
-
-Keep production buildings data-driven.
-
-Avoid unnecessary resources.
-
-Introduce departments gradually.
-
-Test economic scaling early.
-
-Make every new system solve a gameplay problem.
-
-Do not add complexity merely because incremental games traditionally
-have many currencies.
-
-Keep the UI readable at every stage.
-
-Make Emergency Allocation powerful but limited.
-
-Make Collapse meaningful.
-
-Keep the dystopian setting present in the mechanics.
-
-Let the player build something impressive before asking them to
-destroy it.
-
-Keep this README honest: planned systems remain marked as planned
-until they actually exist.
-
-Build the machine. Feed the machine. Trust the machine.
-
-Then discover what the machine was built to do.
+> **I started with a scrap yard.**
+>
+> **Now I control the last functioning civilization on Earth.**
+>
+> **And somehow, keeping it alive is harder than building it.**
