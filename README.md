@@ -1,826 +1,1865 @@
-# 🏰 DUNGEON LORD
+⚙️ THE LAST CITY
 
-A 2D dungeon-building roguelite with incremental progression, built in Godot.
+A dystopian steampunk incremental game where you rebuild civilization
+from the ruins of Earth --- one department, one worker, and one
+increasingly questionable government directive at a time.
 
-Design deadly dungeons, draft powerful upgrades, and defend your Dungeon Lord against relentless parties of heroes attempting to clear your lair.
+Start with a single scrap yard.
 
----
+Assign workers.
 
-## 🎯 CORE VISION
+Process the ruins into useful materials.
 
-Dungeon Lord is about building an evolving machine of death.
+Build a functioning city.
 
-The player should always have interesting choices between waves.
+Then discover that keeping millions of people alive requires energy,
+security, science, information, and increasingly authoritarian
+decisions.
 
-The fun comes from discovering synergies between rooms, monsters, traps, cards, and bosses.
+Eventually, civilization will collapse.
 
-Combat is automatic.
-Strategy is everything.
+The question is what survives it.
 
-Every run should feel different.
-Every upgrade should feel impactful.
-Every biome should introduce new mechanics.
+🎯 CORE VISION
 
-## 👑 CORE CONCEPT
+The Last City is an idle/incremental game inspired by
+production-chain systems found in games such as Underworld Idle and
+AdVenture Capitalist, but built around a single dystopian steampunk
+civilization on Earth.
 
-You are not the hero.
+The player begins with almost nothing:
 
-You are the Dungeon Lord.
+A small population
 
-Heroes invade your dungeon in organized expeditions, battling through your monsters and traps in an attempt to defeat your boss.
+A limited workforce
 
-Your goal is simple:
+A scrap yard
 
-* Build your dungeon
-* Defeat every hero party
-* Strengthen your dungeon
-* Conquer new regions
+A ruined world full of recoverable materials
 
-Every run is about creating increasingly powerful synergies between rooms, monsters, traps, cards, and bosses.
+From that tiny industrial operation, the player gradually builds a
+civilization.
 
----
+The game should feel like watching a machine become larger and more
+complicated over time.
 
-## 🎮 GAME STRUCTURE
+At first, the player manages a few workers.
 
-### 🏰 Dungeon Building
+Later, they manage departments.
 
-* Build rooms using gold
-* Upgrade existing rooms
-* Expand your dungeon during a run
-* Create powerful room combinations
+Eventually, they manage an entire civilization.
 
-> **Status:** implemented, with a hard cap. `DungeonManager.max_rooms`
-> (6) limits how many rooms a dungeon can hold at once — once at cap,
-> every `RoomGapZone` locks itself (`DungeonGrid._update_gap_zone_lock_state`),
-> refusing to even show itself during a card drag, let alone accept a
-> drop. Selling a room re-opens a slot immediately.
+The central fantasy is:
 
-### ⚔️ Hero Raids
+"I started with a scrap yard. Now I control the last functioning
+civilization on Earth."
 
-* Heroes spawn in organized parties
-* Each hero has a unique class and abilities
-* Hero parties fight through your dungeon automatically
-* If they reach the boss room, a final battle begins
+The game should remain easy to understand while gradually introducing
+deeper systems, production chains, temporary boosts, technology, crises,
+directives, and prestige.
 
-### 🃏 Card Drafting
+🧱 DESIGN PILLARS
 
-After every successful wave choose one upgrade card.
+Start Simple, Become Complex
 
-Cards modify:
+The player should understand the first production loop within minutes.
 
-* Traps
-* Monsters
-* Bosses
-* Economy
-* Hero debuffs
-* Dungeon-wide effects
+New mechanics should be introduced gradually rather than presented all
+at once.
 
-Every run becomes a unique build.
+Every Department Has a Purpose
 
-> **Status:** Milestone 3 is now genuinely in progress rather than not
-> started. Rooms and traps ARE the cards — there's no separate
-> ability-modifier card type. The player holds a real **hand**
-> (`CardHandManager`, starting at 3 cards), rendered as a fanned,
-> poker/Yu-Gi-Oh-style hand of visual cards (`CardHandUI` +
-> `RoomCard.gd`) that peek up from the bottom of the screen and rise
-> fully into view on hover. Dragging a card out of the hand places its
-> room/trap — the same `RoomGapZone`/`RoomUpgradeZone` drop targets as
-> before. What's still missing from the original vision: the shop lets
-> you **buy** any/all of its offered cards rather than forcing a single
-> drafted choice, and there's no ability-modifier ("+15% trap damage",
-> "hero debuff") card type — see Post-Wave Shop System and Milestone 3
-> below for the full breakdown.
+Each department should produce a distinct primary resource and introduce
+a new gameplay mechanic.
 
-### 🌍 Biome Progression
+Departments should not feel like six copies of the same resource
+generator.
 
-Complete all waves in a biome to unlock the next region.
+Production Chains Matter
 
-Example biomes:
+Buildings should produce lower-tier buildings, creating exponential
+growth and satisfying cascading production.
 
-* Mountain Caves
-* Dwarven Mines
-* Haunted Crypts
-* Jungle Temple
-* Infernal Fortress
+Resources Interact
 
-Each biome introduces:
+Departments depend on one another.
 
-* New rooms
-* New monsters
-* New heroes
-* New boss
-* Unique mechanics
+Industry needs Labour.
 
----
+Labour needs Population.
 
-## 💰 CORE ECONOMY
+Industry eventually needs Energy.
 
-### Gold
+Science improves Industry.
 
-Primary resource used during runs.
+Security protects Production.
 
-Spend gold to:
+Information controls the Population.
 
-* Build rooms
-* Upgrade rooms
-* Expand dungeon
-* Purchase card packs
-* Improve your boss
+The civilization becomes one interconnected machine.
 
-> **Status:** implemented. Gold is earned per-hero based on how much
-> damage they took relative to their effective max health (base max
-> health plus any healing received), not from winning fights or clearing
-> rooms — killing monsters or reaching the exit alive earns nothing on
-> its own. A full party wipe (zero heroes escape) pays an additional
-> bonus scaled off the party's combined value. Both a hero's stats AND
-> their `gold_value` scale together with the current wave tier (see
-> Wave Progression below), so the gold-per-damage-point rate stays
-> constant as waves get tougher rather than degrading. A `PassiveManager`
-> gold multiplier (see Passives below) is applied on top of both, as a
-> separate multiplicative layer. See `EconomyManager.gd` and
-> `Dungeon.send_wave()`.
->
-> **Placing a card no longer costs gold at drop time** — the cost was
-> already paid when the card was acquired (a free starter card, or
-> bought in the shop). `RoomData.cost` still drives the shop's price
-> and a room's sell refund, just not charged a second time on
-> placement — see Card Hand System below.
+Temporary Power Should Feel Powerful
 
-### Dark Essence
+Emergency Allocation provides short bursts of extreme productivity.
 
-Permanent progression currency earned after each run.
+Players should make decisions about when to use it rather than simply
+clicking a permanent multiplier.
 
-Used to unlock:
+Progression Should Reveal the World
 
-* New rooms
-* New monsters
-* New cards
-* New bosses
-* New biomes
-* Starting bonuses
+Major unlocks should introduce new systems and pieces of the setting.
 
-> **Status:** not started. No `DarkEssence`-equivalent resource or
-> unlock system exists yet — this is Milestone 7.
+The player should gradually discover what happened to Earth and why the
+civilization is structured the way it is.
 
----
+Collapse Has Meaning
 
-## 🧠 CORE GAMEPLAY LOOP
+Prestige is not a generic reset.
 
-```
-Start Run
+The player deliberately causes or survives a civilization-scale collapse
+and carries knowledge, technology, and legacy into the next cycle.
 
-↓
+🏙️ CORE CONCEPT
 
-Receive Starting Hand (3 cards) + Starting Gold
+You are the administrator of a surviving human settlement on Earth.
 
-↓
+The world outside the city is largely ruined.
 
-Build Dungeon (drag cards from hand into gaps)
+Your job is to keep the settlement functioning while expanding its
+industrial, social, scientific, and governmental capabilities.
 
-↓
+The player:
 
-Hero Party Enters
+Assigns workers
 
-↓
+Builds production facilities
 
-Heroes Fight Through Dungeon
+Expands population
 
-↓
+Generates materials
 
-Victory (Full Wipe) / Retry (Escape)
+Produces energy
 
-↓
+Maintains security
 
-Earn Gold
+Develops technology
 
-↓
+Controls public information
 
-Post-Wave Shop (buy cards into your hand, buy passives, buy packs) — substitutes for a drafted Card choice for now
+Issues government directives
 
-↓
+Responds to emergencies
 
-Upgrade Dungeon
+Eventually initiates or survives The Collapse
 
-↓
+Carries permanent Legacy into the next civilization
 
-Next Wave (tier scales up only after a full wipe)
+The game never needs to leave Earth.
 
-↓
+The scale expands instead:
 
-Wave 10 Full Wipe → RUN VICTORY
+Scrap Yard → District → City → Region → Nation → Planetary
+Civilization
 
-↓
+🧠 CORE GAMEPLAY LOOP
 
-Biome Boss (not yet implemented)
+Start with Population + Labour
+		↓
+Assign Labour to Scrap Yards
+		↓
+Produce Materials
+		↓
+Purchase Production Buildings
+		↓
+Buildings produce lower-tier buildings
+		↓
+Expand Housing
+		↓
+Population grows
+		↓
+More Population → More Labour
+		↓
+Unlock new Departments
+		↓
+Create interconnected production chains
+		↓
+Manage Energy, Security, Research and Compliance
+		↓
+Use Emergency Allocation for temporary surges
+		↓
+Purchase Directives and permanent upgrades
+		↓
+Reach Civilization milestones
+		↓
+Initiate / endure The Collapse
+		↓
+Earn Legacy
+		↓
+Begin the next civilization with permanent advantages
+		↓
+Repeat at a greater scale
 
-↓
+👥 FOUNDATIONAL RESOURCES
 
-Next Biome (not yet implemented)
+The game begins with three fundamental concepts.
 
-↓
+Resource                            Purpose
 
-Spend Dark Essence (not yet implemented)
+Population                      Number of people living in the city
 
-↓
+Labour                          Available workforce that can be
+assigned to buildings
 
-Start New Run
-```
+Population
 
----
+Population is not simply another currency.
 
-## 🧱 CORE SYSTEMS
+Citizens provide the potential workforce of the civilization.
 
-### Dungeon Rooms
+Population growth requires appropriate infrastructure and later becomes
+affected by housing, security, energy, directives, technology and social
+conditions.
 
-Rooms contain either:
+Labour
 
-* Monsters
-* Traps
-* Utility effects
-* Buffs
-* Boss encounters
+Labour is an allocated resource, not something that is simply spent.
 
-Rooms work together to create powerful synergies.
+Example:
+
+Population:       100
+Available Labour: 100
+
+Scrap Yard:        25 workers
+Workshop:          15 workers
+Power Station:     20 workers
+Security:          10 workers
+Research:           5 workers
+
+Unassigned Labour: 25
+
+Moving workers between departments changes production.
+
+This creates meaningful decisions even during the early game.
+
+Materials
+
+Materials are produced by the Industrial Authority.
+
+The initial production loop is:
+
+Population
+	↓
+Labour
+	↓
+Scrap Yard
+	↓
+Materials
+	↓
+Buildings
+	↓
+More Production
+
+There is no separate Scrap currency.
+
+Scrap is the thematic source of the materials. The Scrap Yard processes
+abandoned vehicles, machinery, buildings and infrastructure directly
+into usable Materials.
+
+🏭 DEPARTMENTS
+
+The civilization eventually contains six major Departments.
+
+			  Order Department       Primary Resource Core Speciality
+
+				  1 **Industrial     Materials        Manufacturing
+					Authority**                       and construction
+
+				  2 **Ministry of    Labour           Workforce and
+					Labour**                          population
+
+				  3 **Central        Energy           Power and
+					Government**                      infrastructure
+
+				  4 **Security       Security         Order and
+					Directorate**                     protection
+
+				  5 **Scientific     Research         Technology and
+					Directorate**                     advancement
+
+				  6 **Ministry of    Compliance       Information and
+					Information**                     social control
+
+Departments are unlocked gradually.
+
+The player should never begin with all six.
+
+🏭 INDUSTRIAL AUTHORITY
+
+Primary Resource: Materials
+
+Theme: Reclamation, manufacturing, construction and automation.
+
+The Industrial Authority is the starting production system.
+
+Production Chain
+
+Only the lowest production building directly creates the department's
+primary resource.
+
+Higher buildings produce the production building directly beneath them.
+
+The Foundry
+    ↓
+Autonomous Industry
+    ↓
+Industrial Network
+    ↓
+Automated Factory
+    ↓
+Manufacturing Complex
+    ↓
+Industrial Plant
+    ↓
+Factory
+    ↓
+Workshop
+    ↓
+Reclamation Depot
+    ↓
+Scrap Yard
+    ↓
+Materials
+
+Production Buildings
+
+Tier Building                    Produces
+
+   1 **Scrap Yard**              Materials
+   2 **Reclamation Depot**       Scrap Yards
+   3 **Workshop**                Reclamation Depots
+   4 **Factory**                 Workshops
+   5 **Industrial Plant**        Factories
+   6 **Manufacturing Complex**   Industrial Plants
+   7 **Automated Factory**       Manufacturing Complexes
+   8 **Industrial Network**      Automated Factories
+   9 **Autonomous Industry**     Industrial Networks
+  10 **The Foundry**             Autonomous Industry
+
+Early Example
+
+Scrap Yard
+
+Requires:
+
+Labour
+
+Produces:
+
+Materials
+
+Reclamation Depot
+
+Requires:
+
+Materials
+
+Labour
+
+Existing Scrap Yards
+
+Produces:
+
+Scrap Yards
+
+Workshop
+
+Requires:
+
+Materials
+
+Labour
+
+Existing Reclamation Depots
+
+Produces:
+
+Reclamation Depots
+
+As the chain grows, advanced tiers introduce Energy and Research
+requirements.
+
+👷 MINISTRY OF LABOUR
+
+Primary Resource: Labour
+
+Core Systems:
+
+Workforce allocation
+
+Population growth
+
+Worker efficiency
+
+Education
+
+Specialization
+
+Automation
+
+Human augmentation
+
+Labour exists from the beginning.
+
+The Ministry of Labour is unlocked later and provides advanced control
+over the workforce rather than introducing Labour itself.
+
+Production Chain
+
+Population Productivity Complex
+    ↓
+Human Optimization Centre
+    ↓
+Labour Administration
+    ↓
+Workforce Directorate
+    ↓
+Professional Academy
+    ↓
+Technical Institute
+    ↓
+Training Centre
+    ↓
+Labour Bureau
+    ↓
+Employment Office
+    ↓
+Worker Barracks
+    ↓
+Labour
+
+Potential Technologies
+
+Worker Training
+
+Mandatory Education
+
+Productivity Standards
+
+Workforce Specialization
+
+Mechanized Labour
+
+Worker Augmentation
+
+Neural Interfaces
+
+Synthetic Workforce
+
+⚡ CENTRAL GOVERNMENT
+
+Primary Resource: Energy
+
+Core Systems:
+
+Power generation
+
+National infrastructure
+
+Energy distribution
+
+Emergency Allocation
+
+Government authority
+
+Production Chain
+
+The Eternal Generator
+    ↓
+Stellar Energy Collector
+    ↓
+Planetary Energy Grid
+    ↓
+Orbital Power Array
+    ↓
+Fusion Facility
+    ↓
+Nuclear Station
+    ↓
+National Grid
+    ↓
+Power Plant
+    ↓
+Power Station
+    ↓
+Steam Generator
+    ↓
+Energy
+
+Technology Progression
+
+Steam
+  ↓
+Electricity
+  ↓
+Nuclear
+  ↓
+Fusion
+  ↓
+Orbital Power
+  ↓
+Planetary Grid
+  ↓
+Stellar Energy
+
+🛡️ SECURITY DIRECTORATE
+
+Primary Resource: Security
+
+Core Systems:
+
+Crime prevention
+
+Unrest
+
+Surveillance
+
+Crisis response
+
+Internal security
+
+Population control
+
+Security becomes increasingly important as the population grows.
+
+Production Chain
+
+The Protectorate
+    ↓
+National Security Grid
+    ↓
+Autonomous Enforcement Centre
+    ↓
+Surveillance Command
+    ↓
+Tactical Directorate
+    ↓
+Internal Security Office
+    ↓
+Security Bureau
+    ↓
+Patrol Division
+    ↓
+Police Station
+    ↓
+Watch Post
+    ↓
+Security
+
+Security buildings consume Labour and Energy.
+
+High Security can reduce:
+
+Crime
+
+Unrest
+
+Sabotage
+
+Production interruptions
+
+Crisis severity
+
+But excessive security may have negative social consequences.
+
+🔬 SCIENTIFIC DIRECTORATE
+
+Primary Resource: Research
+
+Core Systems:
+
+Technology
+
+Breakthroughs
+
+Automation
+
+Advanced energy
+
+Biology
+
+Artificial intelligence
+
+Science should differ from other departments.
+
+Its production chain generates Research, but its major purpose is to
+change the rules of the other departments.
+
+Production Chain
+
+Continuum Project
+    ↓
+Singularity Research Facility
+    ↓
+Artificial Intelligence Institute
+    ↓
+Applied Science Directorate
+    ↓
+Advanced Research Centre
+    ↓
+National Laboratory
+    ↓
+University
+    ↓
+Research Institute
+    ↓
+Laboratory
+    ↓
+Research Office
+    ↓
+Research
+
+Technology Branches
+
+Industrial
+
+Automation → Robotics → Nanotechnology
+
+Biological
+
+Medicine → Genetics → Augmentation → Synthetic Biology
+
+Computational
+
+Computers → AI → Neural Networks → General Intelligence
+
+Energy
+
+Nuclear → Fusion → Exotic Energy
+
+Theoretical
+
+Quantum Physics → Spacetime → Matter Manipulation → Consciousness
+
+📡 MINISTRY OF INFORMATION
+
+Primary Resource: Compliance
+
+Core Systems:
+
+Public sentiment
+
+Propaganda
+
+Influence
+
+Social control
+
+Information management
+
+Population behaviour
+
+This is the department where the dystopian nature of the game becomes
+explicit.
+
+Production Chain
+
+The Narrative
+    ↓
+Cognitive Management Network
+    ↓
+Narrative Control Centre
+    ↓
+Behavioural Directorate
+    ↓
+Social Analytics Division
+    ↓
+Ministry of Truth
+    ↓
+Civic Education Bureau
+    ↓
+State News Network
+    ↓
+Information Office
+    ↓
+Public Broadcast Station
+    ↓
+Compliance
+
+The player should initially be encouraged to think of Compliance as a
+positive measure.
+
+Later, the meaning becomes increasingly uncomfortable.
+
+🔗 CROSS-DEPARTMENT PRODUCTION
+
+Departments should not operate independently.
+
+The economy is built around dependencies.
+
+Example:
+
+INDUSTRIAL AUTHORITY
+        │
+        │ Materials
+        ▼
+    Buildings
+        │
+        ├───────────────┐
+        │               │
+        ▼               ▼
+    Labour          Government
+        │               │
+        ▼               ▼
+   Population         Energy
+        │               │
+        └───────┬───────┘
+                ▼
+             Security
+                │
+                ▼
+             Science
+                │
+                ▼
+           Technology
+                │
+                ▼
+          Information
+                │
+                ▼
+            Compliance
+
+The actual dependency graph should become much more interconnected as
+the game progresses.
+
+⚡ EMERGENCY ALLOCATION
+
+Emergency Allocation is the game's active temporary-boost system.
+
+Energy accumulates over time into an emergency reserve.
+
+The player can spend it to temporarily redirect the civilization's
+resources toward a particular goal.
+
+Example Orders
+
+Emergency Order       Effect                                    Duration
+
+Industrial Surge  Industry production                         60 sec
+massively increased
+
+Labour              Available Labour                            60 sec
+Mobilization        massively increased
+
+Power Priority    Energy generation                           60 sec
+massively increased
+
+Security Lockdown Security massively                          60 sec
+increased; movement
+restricted
+
+Scientific          Research massively                          60 sec
+Emergency           increased
+
+Emergency Orders should become more powerful and more specialized as
+departments and technologies are unlocked.
+
+The player should constantly face the question:
+
+Use it now, or save it for the next bottleneck?
+
+📜 DIRECTIVES
+
+Directives are permanent government policies.
+
+They are purchased using a permanent government resource such as
+Authority.
+
+Unlike Emergency Allocation, Directives do not expire.
+
+They change the way the civilization operates.
+
+Industrial Directives
+
+Industrial Priority
+
+Five-Year Production Plan
+
+Mechanization Initiative
+
+Automated Workforce
+
+National Manufacturing Act
+
+Total Industrialization
+
+Labour Directives
+
+Universal Education
+
+Worker Training
+
+Mandatory Service
+
+Productivity Standards
+
+Human Optimization
+
+Engineered Workforce
+
+Information Directives
+
+Public Broadcasting
+
+Civic Education
+
+Controlled Media
+
+Unified Narrative
+
+Information Monopoly
+
+Total Information Control
+
+Security Directives
+
+Expanded Police
+
+National Surveillance
+
+Internal Security Act
+
+Predictive Policing
+
+Emergency Powers
+
+Permanent Emergency
+
+Scientific Directives
+
+National Science Fund
+
+Research Priority
+
+Open Laboratories
+
+National AI Initiative
+
+Human Enhancement Program
+
+Accelerated Evolution
+
+Directives should contain meaningful trade-offs.
+
+A stronger state should not simply be a stronger state.
+
+Some policies should increase production while damaging population
+growth, increasing unrest, consuming more Energy, or reducing other
+departments.
+
+🧨 CRISES
+
+The city should occasionally experience crises.
+
+Possible crises include:
+
+Worker strikes
+
+Power shortages
+
+Factory fires
+
+Disease outbreaks
+
+Infrastructure failures
+
+Food shortages
+
+Riots
+
+Sabotage
+
+Industrial accidents
+
+Research accidents
+
+Information leaks
+
+Security incidents
+
+Mass unrest
+
+Crises should be affected by the player's previous decisions.
+
+For example:
+
+Low Security
+	↓
+Higher chance of unrest
+
+High Security
+	↓
+Lower unrest
+	↓
+Higher Labour consumption
+	↓
+Potential Compliance penalty
+
+This prevents every department from being a simple "more is always
+better" system.
+
+🧬 TECHNOLOGY
+
+Technology is primarily unlocked through Research.
+
+Technology should occasionally provide new production tiers, but its
+more important role is changing how the civilization functions.
 
 Examples:
 
-* Skeleton Barracks
-* Spider Nest
-* Poison Chamber
-* Spike Corridor
-* Arrow Gallery
-* Treasure Vault
-* Boss Chamber
+Automation
 
-> **Status (Utility rooms):** implemented. `RoomData.room_type` includes
-> `"Utility"` alongside a `heal_party_on_entry` flag and
-> `gold_multiplier` / `trap_damage_multiplier` fields, applied once when
-> the party arrives (`Dungeon._apply_utility_room`). Multiple utility
-> rooms in one run stack multiplicatively. Effects only apply from that
-> point in the path onward — nothing retroactive. See
-> `resources/rooms/sanctuary_room.tres` (full heal + 1.5x gold) for a
-> working example; a "poison resistance, but weaker elsewhere" room is
-> the same fields with different numbers and hasn't been authored yet.
+Factories require less Labour.
 
-> **Status (room cap):** implemented. `DungeonManager.max_rooms = 6` is
-> a hard ceiling — `DungeonGrid` locks every gap zone once at cap so no
-> drop is even accepted, and unlocks them again the moment a room is
-> sold.
+Robotics
 
-> **Status (card-facing fields):** `RoomData` now carries a
-> `description` field (`@export_multiline`) for card flavor text, and
-> `rarity` has been converted from a free-standing string enum to a
-> real `GameEnums.Rarity` value — the first of the "still independent
-> string enum" fields flagged in Data-Driven Architecture below to get
-> centralized. Rarity now actually drives something in gameplay: a
-> card's border color in `RoomCard.gd` (Common/Rare/Epic/Legendary each
-> get a distinct tint).
+Some industrial buildings can operate without workers.
 
----
+Artificial Intelligence
 
-### Monsters
+Production buildings can receive autonomous bonuses.
 
-Each monster belongs to a room.
+Nuclear Power
 
-Examples:
+Massively increases Energy production.
 
-* Skeletons
-* Goblins
-* Slimes
-* Orcs
-* Ghosts
-* Spiders
+Fusion
 
-Monsters have:
+Removes many late-game Energy constraints.
 
-* Health
-* Damage
-* Armor
-* Attack Speed
-* Special Abilities
+Genetic Engineering
 
----
+Increases population growth and worker efficiency.
 
-### Traps
+Nanotechnology
 
-Examples:
+Introduces advanced Materials.
 
-* Spikes
-* Poison Gas
-* Arrow Turrets
-* Fire Jets
-* Ice Traps
-* Boulder Traps
+Synthetic Workforce
 
-Traps become stronger through upgrades and card synergies.
+Allows machines to replace a portion of Labour.
 
-> **Status:** implemented, with two distinct trap behaviors sharing one
-> `TrapData` resource (`trap_type` picks which): **INSTANT** traps (e.g.
-> Spike Corridor) resolve as a single probabilistic damage instance the
-> moment the party arrives — no counter-attack, no spawned entity, no
-> `CombatManager` involvement. **PROJECTILE** traps (e.g. Poison Arrow
-> Corridor) spawn a `PoisonArrowTrapController` at wave start that fires
-> pooled `TrapArrow` visuals continuously for the WHOLE wave, entirely
-> independent of where the party currently is — arriving at the room
-> doesn't trigger anything, since it's already been firing the whole
-> time. Each trap can run `max_concurrent_arrows` independent firing
-> "slots" at once. An arrow that connects deals an initial hit plus a
-> damage-over-tick DoT (`tick_damage` × `tick_count`, spaced
-> `tick_interval` apart); an arrow that reaches the far wall (or a
-> hero) is recycled, not freed. The party also moves at a reduced speed
-> while approaching any room with a monster or a trap
-> (`Dungeon.room_danger_speed_multiplier`), which is what gives a
-> projectile trap more exposure time to land a hit. A room can have a
-> trap, a monster, or both. See `resources/traps/spike_trap.tres` /
-> `resources/rooms/spike_corridor.tres` (instant) and
-> `resources/traps/poison_arrow_trap.tres` /
-> `resources/rooms/poison_arrow_corridor.tres` (projectile) for working
-> examples.
+Quantum Computing
 
----
+Massively increases Research efficiency.
 
-### Hero Parties
+Matter Manipulation
 
-Heroes invade in groups rather than individually.
+Endgame production technology.
 
-Typical party:
+🏛️ UNLOCK PHILOSOPHY
 
-* Tank
-* Healer
-* Ranger
-* Mage
+Departments should unlock gradually.
 
-Each class requires different strategies to defeat.
+The player should not begin with six tabs and a wall of locked content.
 
-Elite raids may contain:
+The early game should feel like discovering the systems of the city.
 
-* Champions
-* Paladins
-* Assassins
-* Clerics
-* Legendary Heroes
+Example progression:
 
-> **Status:** implemented as a real group. Parties of 3-4 (Tank, Healer,
-> a random Mage/Ranger DPS, plus a random 4th class) move and fight
-> together via `Dungeon.gd`, positioned in a class-based formation and
-> resolved as one shared encounter per room via
-> `CombatManager.begin_group_combat()` rather than each hero soloing the
-> dungeon independently. All five classes have real kits — Tank
-> (Shield Wall + Taunt), Healer (Heal + Chain Heal), Mage (Fireball +
-> Chain Lightning + Ice Spike), Ranger (Poison Arrow + Explosive Arrow),
-> Rogue (Poison Strike + Backstab) — with melee/ranged distinction,
-> per-monster threat/aggro tables, a Tank taunt hard-override, and an
-> opening beat where support abilities (heals/buffs/taunt) fire once
-> before the tick loop begins. Heroes still pick a random living enemy
-> to attack rather than any priority-based targeting — see Milestone 4.
+START
+  ↓
+Population + Labour + Scrap Yard
+  ↓
+Materials production
+  ↓
+Housing
+  ↓
+Population growth
+  ↓
+Industrial expansion
+  ↓
+MINISTRY OF LABOUR
+  ↓
+Workforce management
+  ↓
+CENTRAL GOVERNMENT
+  ↓
+Energy
+  ↓
+SECURITY DIRECTORATE
+  ↓
+Unrest and crises
+  ↓
+SCIENTIFIC DIRECTORATE
+  ↓
+Technology
+  ↓
+MINISTRY OF INFORMATION
+  ↓
+Compliance and social control
+  ↓
+DIRECTIVES
+  ↓
+THE COLLAPSE
 
----
+Exact unlock thresholds are to be tuned during development.
 
-### Wave Progression
+🕳️ THE COLLAPSE
 
-> **Status:** implemented, outcome-driven rather than a manual counter.
-> `WaveManager` tracks a difficulty **tier** that only advances when the
-> Dungeon Lord fully wipes an incoming party — if any hero escapes, the
-> next wave sent is the exact same strength again, so "the wave restarts
-> until the player can defeat it" is a direct mechanical consequence
-> rather than separately implemented. The stat multiplier increases
-> **linearly** per tier survived (1.0x, 1.1x, 1.2x, 1.3x, ...), applied
-> to a spawned hero's max health, damage, armor, attack speed, *and*
-> gold value all at once — `HeroData` resources themselves are never
-> mutated, since they're shared assets (see `Dungeon.send_wave()`).
-> Monsters and traps are **not** scaled by wave tier — only heroes get
-> stronger as the Dungeon Lord holds the line.
->
-> **Victory condition:** `WaveManager.max_wave` (10) is a real win
-> condition, not just "tier 11." Fully wiping the party at tier 10
-> triggers `GameManager.start_victory()` — the run ends in VICTORY
-> rather than looping to another shop/wave, and all building/wave
-> controls lock permanently until a full reset.
+The Collapse is the primary prestige system.
 
----
+It should not feel like pressing a generic "Reset" button.
 
-### Card Hand System
+The civilization has reached the limits of its current cycle.
 
-The player's build cards live in a real hand rather than an
-always-available, unlimited-use palette.
+The player can eventually initiate a Controlled Collapse or trigger
+a catastrophic collapse through poor management.
 
-* **`CardHandManager`** (autoload) is the single source of truth for
-  which `RoomData` cards the player currently holds
-  (`CardHandManager.hand`). A "card" is just a `RoomData` resource —
-  the same resource that already describes a room/trap — so there's no
-  separate card data type for build cards.
-* **Starting hand:** 3 cards, configured via `TestHarness.starting_hand_cards`
-  and dealt out at run reset.
-* **Acquiring more cards:** the *only* way to gain cards after the
-  starting hand is buying a room in the post-wave shop
-  (`ShopManager.buy_room`) or winning one from a card pack
-  (`ShopManager.buy_pack`) — both add straight to the hand via
-  `CardHandManager.add_card` rather than granting a "free placement
-  credit" like the old shop-only flow did.
-* **Placing a card:** dragging a card out of the hand onto a
-  `RoomGapZone` calls `DungeonGrid.request_insert`, which now consumes
-  the matching card from the hand (`CardHandManager.remove_card`)
-  instead of charging gold directly — placement is free, since the
-  gold was already spent acquiring the card. A failed insert refunds
-  the card back to the hand.
-* **Upgrade cards are NOT part of the hand system.** The two upgrade
-  palette entries remain fixed, always-available, gold-delta-charged
-  slots exactly as before — only *base-tier* room/trap acquisition
-  moved to the hand.
-* **Visual presentation (`CardHandUI` + `RoomCard.gd`):** cards are
-  real visual cards, not buttons — rarity-tinted border
-  (Common/Rare/Epic/Legendary), a gold-cost badge, room icon/art, and a
-  description (falling back to a short auto-generated blurb if
-  `RoomData.description` hasn't been authored yet). The hand fans out
-  poker/Yu-Gi-Oh-style and is deliberately clipped so only the top
-  sliver of each resting card peeks above the bottom of the screen;
-  hovering a card reparents it into an unclipped overlay layer so it
-  can rise fully into view without being cut off, then settles back
-  into the fan on unhover (or once a drag actually finishes).
+A Collapse resets most current civilization progress.
 
-See `CardHandManager.gd`, `CardHandUI.gd`, `RoomCard.gd`.
+Lost
 
----
+Materials
 
-### Post-Wave Shop System
+Population
 
-The shop opens automatically after every full-wipe wave clear (an
-escape sends the player straight back to Building to retry the same
-wave — no shop, since nothing was actually won).
+Buildings
 
-* **Room offers:** 3 random base-tier rooms per visit. Buying one adds
-  it directly to the player's hand (see Card Hand System above) rather
-  than granting a placement credit. Buying (or pack-winning) the same
-  room type twice adds another copy of that card to the hand.
-* **Passive offers:** 3 random permanent passives per visit (see
-  Passives below). Passives that have hit their stack cap are filtered
-  out of the offer pool entirely.
-* **Per-slot purchase limit:** each of the 6 offer slots (3 room + 3
-  passive) can only be bought once per visit — buying one room offer
-  does not block buying a different room or any passive. This is
-  deliberately **not** a forced single choice — the original vision's
-  "choose one card" draft still doesn't exist; see Milestone 3.
-* **Reroll:** limited to once per visit. Reshuffles every slot except
-  whichever one currently holds the discount, and resets every slot's
-  bought status back to available.
-* **Discount:** one random slot (room or passive) each visit is
-  discounted (`discount_ratio`, currently 50%) and survives a reroll
-  unchanged.
-* **Card packs:** unlimited purchases at a flat cost, unaffected by
-  reroll or the per-slot limit. Each pack randomly rewards gold, a
-  room card added to the hand, or a passive; a roll that can't be
-  granted (empty pool, or a maxed-out passive) refunds the pack's cost
-  instead of wasting it.
+Current production
 
-See `ShopManager.gd`.
+Current department progress
 
----
+Temporary bonuses
 
-### Passives
+Most current resources
 
-Permanently-owned upgrades purchased in the shop, tracked for the
-whole run (reset only on a full reset, not between waves). Stacking is
-**additive**, not compounding — two +15% passives of the same effect
-type give +30%, not +32.25%. Some passives cap how many times they can
-ever be owned (`PassiveData.max_stacks`, 0 = unlimited).
+Retained
 
-Currently authored (`resources/passives/`):
+Legacy
 
-* **Golden Touch** — gold multiplier
-* **Reinforced Minions** — monster health multiplier
-* **Sharpened Claws** — monster damage multiplier
-* **Venomous Traps** — trap damage multiplier
-* **Haggler** — flat reroll-cost discount (capped at 2 stacks)
+Permanent discoveries
 
-See `PassiveManager.gd` / `PassiveData.gd`.
+Selected technology
 
----
+Permanent Directive effects
 
-### Bosses
+Achievements
 
-Each dungeon ends with a boss encounter.
+Story discoveries
 
-Bosses can gain upgrades throughout the run.
+🌳 LEGACY
 
-Possible upgrades:
+Legacy represents knowledge that survives civilization.
 
-* More Health
-* More Damage
-* New Abilities
-* Additional Phases
-* Summons
-* Enrage Mechanics
-
-Every biome features a unique boss.
+The next civilization begins with advantages based on the previous one.
 
 Examples:
 
-* Cave Troll
-* Ancient Dragon
-* Lich King
-* Hydra
-* Demon Lord
-
-> **Status:** `BossData` exists as a data resource, but there is no boss
-> room encounter logic, phase handling, or summon spawning yet.
-
----
-
-## 🧠 DATA-DRIVEN ARCHITECTURE
-
-**Resources = Data**
-
-**Scenes = Visual Representation**
-
-**Scripts = Behavior**
-
-Everything should be data-driven using Godot Resources.
-
-> **Status:** implemented. The `Resource` classes below all drive
-> gameplay, and content is now authored as real `.tres` files under
-> `resources/` — a 3-tier room upgrade chain, trap rooms, a utility
-> room, five passives, and a full hero roster (Tank/Healer/Ranger/Mage/
-> Rogue) — rather than constructed in code. `TestHarness.gd` just wires
-> those files in via `@export` fields — adding a new monster, room,
-> trap, ability, hero, or passive no longer requires touching any
-> script. Enum-like fields (`AbilityData.ability_type`/`target_rule`,
-> `TrapData.trap_type`, `PassiveData.effect_type`, and now
-> `RoomData.rarity`) are centralized as real enums on `GameEnums`
-> rather than each resource declaring its own `@export_enum` string —
-> `RoomData.room_type`, `HeroData.class_type`, and `CardData.rarity`
-> are still their own independent string enums and haven't been
-> converted yet.
-
----
-
-## 🛡️ STABILITY: HERO LIFECYCLE SAFETY
-
-A recurring class of crash (`Invalid type in function — previously
-freed object`) was traced to `queue_free()` deferring deletion to
-end-of-frame — `is_instance_valid()` alone stays `true` within the same
-frame a hero is queued for deletion, so code reading a "dead" hero back
-out of `Dungeon._party` later in that frame could still crash passing
-it into a `CombatEntity`-typed slot.
-
-**Fix:** a combined `_is_alive()` helper (`is_instance_valid()` +
-`not is_queued_for_deletion()`) now guards every read of a
-possibly-freed hero/monster reference across call boundaries —
-`Dungeon.gd`'s movement, trap resolution, death/escape handling, and
-`CombatManager`'s taunt tracking and living-group checks all route
-through it (or the untyped-Variant equivalent) rather than checking
-`is_instance_valid()` alone. `HeroManager.remove_hero()` only updates
-tracking and never calls `queue_free()` itself, so it's safe to call
-even on an already-freed entry.
-
----
-
-## 🧭 CURRENT IMPLEMENTATION STATUS
-
-What's actually playable today, via `scenes/test/TestHarness.tscn`:
-
-* ✅ Linear dungeon path (entrance → rooms → exit) rendered by `DungeonGrid`, capped at 6 rooms with gap-zone locking at the cap
-* ✅ **Card hand system:** the player starts with 3 cards (`CardHandManager`); dragging a card from a fanned, poker/Yu-Gi-Oh-style hand (`CardHandUI`) into a `RoomGapZone` places its room/trap for free — the gold cost was already paid when the card was acquired
-* ✅ **Visual cards:** `RoomCard.gd` renders each card with a rarity-tinted border (`GameEnums.Rarity`), gold-cost badge, room icon/art, and description (auto-generated fallback if not authored) — the same view backs both hand cards and the two fixed upgrade-only palette entries
-* ✅ **Hand presentation:** cards peek up from the bottom of the screen and rise fully into view on hover via an unclipped overlay layer, settling back into the fan on unhover or once a drag finishes
-* ✅ Drag a matching upgrade card onto a room's upgrade prompt to upgrade it (spends the cost delta, NOT part of the hand system); upgrade chains of 3+ tiers work correctly, matched by exact resource rather than by room name
-* ✅ Click a room to select it and reveal a Sell button (refunds half cost)
-* ✅ Rooms visually display their occupying monster's name, not just the room name
-* ✅ Trap rooms: INSTANT traps resolve as a single probabilistic damage instance (no counter-attack, no `CombatManager`); PROJECTILE traps fire pooled `TrapArrow` visuals continuously for the whole wave regardless of party position, dealing an initial hit plus a multi-tick DoT, with configurable concurrent arrow count
-* ✅ Utility rooms (`RoomData.room_type == "Utility"`): one-time party heal on entry, plus stacking gold/trap-damage multipliers for the rest of the wave
-* ✅ Party moves at a reduced speed approaching any room with a monster or trap (`Dungeon.room_danger_speed_multiplier`), giving projectile traps more exposure time to land hits
-* ✅ Multi-hero parties (Tank/Healer/Ranger/Mage, plus a random 4th class) move and fight together as a real group via `Dungeon.send_wave()` + `CombatManager.begin_group_combat()` — not solo runs anymore
-* ✅ Heroes spawn at the entrance one at a time with a small random stagger, rather than all appearing at once
-* ✅ Class-based formation (Tank front, Ranger/Mage mid, Healer back, Rogue flanking past the monster line) with a melee-charge visual beat at combat start
-* ✅ Monsters spawn visibly in their room up front (not lazily on arrival) and stay put until fought or the wave ends
-* ✅ Tick-based group combat with per-monster threat/aggro tables, ability cooldowns, a Tank taunt hard-override, and an opening beat where support abilities (heal/buff/taunt) fire once before the tick loop starts
-* ✅ Full class kits for all five hero classes, including melee/ranged distinction and projectile visuals
-* ✅ Outcome-driven wave tiers: only a full wipe advances the tier (linear stat + gold scaling per tier survived); an escape retries the same-strength wave
-* ✅ **10-wave victory condition:** fully wiping tier 10 triggers a real run-level VICTORY state (`GameManager.start_victory()`), locking all controls — not just an infinite tier counter
-* ✅ **Post-wave shop:** opens on every full-wipe clear — 3 room + 3 passive offers (each slot buyable once per visit), a once-per-visit reroll, unlimited card packs, and a per-visit discounted slot; purchased rooms are added straight to the card hand rather than granting a placement credit
-* ✅ **Passives:** 5 authored passives (gold/monster-damage/monster-health/trap-damage multipliers, reroll discount), additive stacking, with per-passive stack caps enforced at purchase time
-* ✅ **Hero lifecycle safety:** the freed-object crash class is resolved via `_is_alive()` guards at every call boundary that reads a hero/monster reference after `begin_combat`/movement/trap resolution — see Stability section above
-* ✅ Gold economy, wave counter, and a scrolling event log
-* ✅ Pan (WASD/arrows or middle-mouse drag) and zoom (mouse wheel) camera
-* ✅ `GameManager` gates building actions by phase (insert/upgrade/sell only succeed during BUILDING, enforced in `DungeonGrid`); "Send Wave" transitions to COMBAT, a full wipe transitions to REWARD (opening the shop) or VICTORY at tier 10, an escape returns to BUILDING to retry
-* ✅ `HeroManager.spawn_hero`/`remove_hero`/`active_heroes` backs `Dungeon.gd`'s hero tracking directly — no more private hero counter
-* ✅ Room/monster/trap/ability/hero/passive content authored as real `.tres` resources under `resources/`, wired into `TestHarness` via `@export` fields
-* ✅ Gold is earned per-hero based on damage taken vs. effective max health, plus a full-wipe bonus and a passive gold multiplier layered on top — not from winning fights or clearing rooms (see `EconomyManager.gd`)
-* ✅ Enum-like data (`AbilityData.ability_type`/`target_rule`, `TrapData.trap_type`, `PassiveData.effect_type`, `RoomData.rarity`) centralized on `GameEnums` rather than duplicated as independent `@export_enum` strings per resource
-
-Notably **not yet wired up**, despite the underlying scripts existing:
-
-* ⬜ No forced single-choice draft — the shop lets the player buy any/all of its offered cards rather than picking exactly one, and there's no ability-modifier ("+15% trap damage", hero debuff) card type; `CardData` (the original standalone card resource) is unused — rooms/traps ARE the cards instead
-* ⬜ `BossData` has no room encounter, phase, or summon logic
-* ⬜ `RoomData.room_type`, `HeroData.class_type`, and `CardData.rarity` are still independent `@export_enum` strings, not yet centralized on `GameEnums` — `RoomData.rarity` WAS just converted and is no longer on this list
-* ⬜ No hero-side targeting AI — heroes (and their abilities) still pick a random living enemy rather than anything priority-based
-* ⬜ No economy/gold-cost tuning pass yet — numbers are functional placeholders, not balanced
-* ⬜ Hand size is uncapped — buying cards without placing any just keeps growing the fanned hand sideways/overlapping, with no overflow handling yet
+Industrial Legacy
 
-> **Architecture note:** the original plan called this a "Dungeon Grid,"
-> but what's implemented is a **linear ordered path** (`DungeonManager`
-> stores a flat, always-contiguous `Array[RoomData]`), not a 2D grid.
-> This has been a deliberate simplification so far — worth flagging in
-> case a true grid layout is still the long-term intent.
+Start with an improved Scrap Yard.
 
----
+Labour Legacy
 
-## 🎲 DESIGN PRINCIPLES
+Population produces more Labour.
 
-* Easy to understand
-* Difficult to master
-* High replayability
-* Strong build variety
-* Meaningful progression
-* Small decisions every wave
-* Powerful synergies over raw stat increases
+Government Legacy
 
-Players should constantly think:
+Emergency Energy regenerates faster.
 
-> "One more upgrade will make this build incredible."
+Scientific Legacy
 
----
+Basic technologies begin unlocked.
 
-# 🔥 DEVELOPMENT PRIORITY
+Security Legacy
 
-1. ✅ Dungeon Grid *(implemented as a linear path, capped at 6 rooms)*
-2. ✅ Placeable Rooms
-3. ✅ Hero Movement
-4. ✅ Basic Combat
-5. ✅ Gold Economy
-6. ✅ Room Upgrades
-7. ✅ Wave System *(outcome-driven tier: only advances on a full wipe; linear stat + gold scaling per tier; 10-wave victory condition — see Wave Progression)*
-8. 🟡 Card Drafting *(rooms/traps are now real cards held in an actual hand, drawn via the shop and dragged out to place — see Card Hand System; still missing a forced single-choice draft and any ability-modifier card type)*
-9. 🟡 Hero Parties *(parties move and fight together with class formation, aggro/taunt, melee-vs-ranged, and all five class kits implemented; still no hero-side targeting AI — see Milestone 4)*
-10. ⬜ Boss Room
-11. ⬜ Biomes
-12. ⬜ Meta Progression
+Early crises are less severe.
 
----
+Information Legacy
 
-# 🗺️ DEVELOPMENT ROADMAP
+Compliance systems unlock sooner.
 
-The project follows a **vertical slice approach**, completing one fully playable layer before expanding.
+Legacy becomes the long-term meta-progression system.
 
----
+🌍 COLLAPSE PROGRESSION
 
-## ✅ MILESTONE 1 — Playable Dungeon Prototype (COMPLETE)
+Collapse itself can evolve.
 
-### Goal
+Level Collapse                Potential Unlock
 
-Create a complete playable dungeon loop.
+	I Local Collapse          Legacy
+   II National Collapse       Permanent bonuses
+  III Continental Collapse    Permanent technologies
+   IV Global Collapse         Civilization modifiers
+	V Civilization Collapse   New starting systems
+   VI Terminal Collapse       Endgame systems
 
-### Tasks
+The names and exact mechanics are placeholders.
 
-* ✅ Dungeon grid (linear path)
-* ✅ Placeable rooms
-* ✅ Skeleton room
-* ✅ Hero movement
-* ✅ Basic combat
-* ✅ Hero death
-* ✅ Victory/Defeat *(escape vs. death per wave, plus a real run-level VICTORY at wave 10)*
-* ✅ Gold rewards
+The important design goal is that each Collapse should feel more
+significant than the previous one.
 
-### Success Criteria
+🕵️ THE STORY
 
-* ✅ A hero can enter the dungeon
-* ✅ Combat resolves automatically
-* ✅ Gold is earned
-* ✅ New rooms can be purchased
+The story should be delivered primarily through discoveries,
+notifications, directives, research entries, events and environmental
+changes.
 
----
+The player should gradually discover that the civilization's government
+was not merely created to survive the original disaster.
 
-## ✅ MILESTONE 2 — Dungeon Progression (COMPLETE)
+It was created to restart civilization after it collapsed.
 
-### Goal
+Potential late-game revelation:
 
-Expand the player's choices.
+PROJECT CONTINUITY
 
-### Tasks
+The player discovers that the current civilization is one of many
+cycles.
 
-* ✅ Multiple room types *(Trap rooms — both INSTANT and PROJECTILE/DoT variants — and Utility rooms are all implemented; see `TrapData`/`spike_corridor.tres`/`poison_arrow_corridor.tres` and `sanctuary_room.tres`)*
-* ✅ Room upgrades *(multi-tier chains work end-to-end — validated with a 3-tier Skeleton Den; `RoomUpgradeZone` now matches the exact upgrade resource rather than by room name, fixing a bug that would've misfired once a room had 2+ upgrade tiers)*
-* 🟡 Economy balancing *(all five classes have real kits, a post-wave shop, a real card hand, and 5 passives now exist, giving the economy real levers to pull — but the actual gold/cost number-tuning pass itself still hasn't happened; carrying forward rather than blocking the milestone on it)*
-* ✅ Dungeon expansion (insert/remove rooms mid-run, capped at 6 rooms)
-* ✅ Multiple waves *(outcome-driven tier progression with linear stat/gold scaling, plus a 10-wave victory condition — see Wave Progression; no per-wave CONTENT variation yet, e.g. new room/monster pools unlocking at higher tiers)*
+Each civilization believes it is rebuilding the world for the first
+time.
 
-### Success Criteria
+It is not.
 
-* 🟡 Every wave offers meaningful spending decisions
-* 🟡 Different room combinations become viable
+Every Collapse is part of the system.
 
-*(Called complete per project decision — there's now genuine room/trap/utility variety, full class kits with distinct melee/ranged behavior, outcome-driven difficulty scaling, and a post-wave shop with passives, which together clear the original bar for this milestone. Both success criteria are marked 🟡 rather than ✅ in the spirit of staying honest: there are a handful of room types, not yet the deep build variety the vision calls for, and the economy still hasn't had a real tuning pass. That deeper variety is explicitly Milestone 3 (cards) and further room content territory.)*
+The ultimate question becomes:
 
----
+Is the player rebuilding civilization, or maintaining the machine
+that keeps destroying it?
 
-## 🟠 MILESTONE 3 — Card System (IN PROGRESS)
+🎨 WORLD & ART DIRECTION
 
-### Goal
+The visual identity should be:
 
-Introduce build variety.
+Dystopian Steampunk + Industrial Civilization
 
-### Tasks
+Visual language
 
-* ✅ Card rewards *(buying a room in the shop, or winning one from a card pack, adds a real card to the player's hand — see Card Hand System)*
-* ⬜ Draft system *(no forced single-choice pick yet — the shop lets the player buy any/all of its 3 room + 3 passive offers, which is closer to a shop than a draft)*
-* ✅ Card rarities *(`RoomData.rarity` is now a real `GameEnums.Rarity` enum and actually drives gameplay-visible border color/tier on `RoomCard` — the first real use beyond an unused field)*
-* ⬜ Synergies
-* 🟡 Card packs *(a shop "card pack" exists as a gold/room-card/passive lucky-dip — see Post-Wave Shop System — functional, but not the originally-envisioned drafted-card pack)*
+Brass
 
-### Success Criteria
+Dark iron
 
-* ⬜ Every run feels different
-* ⬜ Cards significantly influence strategy
+Copper
 
----
+Soot
 
-## 🟡 MILESTONE 4 — Hero Parties (IN PROGRESS)
+Steam
 
-### Goal
+Large pipes
 
-Increase tactical depth.
+Pressure gauges
 
-### Tasks
+Mechanical machinery
 
-* ✅ Multiple hero classes *(`class_type` drives formation position AND melee/ranged behavior; all five classes have real kits)*
-* 🟡 Party AI *(aggro/threat table + Tank taunt hard-override implemented in `CombatManager`; no hero-side targeting AI yet - heroes still pick a random enemy)*
-* ✅ Hero abilities *(`AbilityData` + cooldown system implemented for all five classes - Tank: Shield Wall + Taunt, Healer: Heal + Chain Heal, Mage: Fireball + Chain Lightning + Ice Spike, Ranger: Poison Arrow + Explosive Arrow, Rogue: Poison Strike + Backstab)*
-* ⬜ Elite heroes
-* ⬜ Party compositions
+Victorian industrial architecture
 
-### Success Criteria
+Huge smokestacks
 
-* ⬜ Different parties require different dungeon builds
+Art Deco government architecture
 
----
+Cold government interiors
 
-## 🟢 MILESTONE 5 — Boss Encounters (NOT STARTED)
+Dense urban housing
 
-### Goal
+Giant factories
 
-Create memorable finales.
+Mechanical signage
 
-### Tasks
+CRT-like information displays later in the technological progression
 
-* ⬜ Boss room
-* ⬜ Boss AI
-* ⬜ Multiple boss phases
-* ⬜ Boss upgrades
-* ⬜ Raid mechanics
+The world should begin dirty and improvised.
 
-### Success Criteria
+As the civilization progresses, it becomes increasingly organized,
+enormous and oppressive.
 
-* ⬜ Boss fights become the climax of each biome
+The player's city should visually evolve alongside its technology.
 
----
+🖥️ UI DIRECTION
 
-## 🔵 MILESTONE 6 — Biomes (NOT STARTED)
+The primary game screen should resemble a mixture of:
 
-### Goal
+Incremental/clicker games
 
-Create complete runs.
+Industrial management interfaces
 
-### Tasks
+Steampunk control panels
 
-* ⬜ Mountain biome
-* ⬜ Dwarven Mine
-* ⬜ Haunted Crypt
-* ⬜ Additional bosses
-* ⬜ Unique mechanics
+Government terminals
 
-### Success Criteria
+The player should always be able to see:
 
-* ⬜ Players progress through multiple distinct regions
+Top Bar
 
----
+Materials
 
-## 🟣 MILESTONE 7 — Meta Progression (NOT STARTED)
+Labour
 
-### Goal
+Energy
 
-Long-term replayability.
+Security
 
-### Tasks
+Research
 
-* ⬜ Dark Essence
-* ⬜ Unlock system
-* ⬜ New rooms
-* ⬜ New heroes
-* ⬜ New monsters
-* ⬜ New cards
+Compliance
 
-### Success Criteria
+Emergency Energy
 
-* ⬜ Every run contributes to future progress
+Main Panel
 
----
+Current Department and production buildings.
 
-# 📌 DEVELOPMENT STRATEGY
+Side Navigation
 
-* Build vertically
-* Use placeholder art until systems are fun
-* Everything should be data-driven
-* Avoid hardcoding content
-* Test constantly
-* Prioritize gameplay feel over visuals
+Unlocked Departments.
 
-> **If defending your dungeon isn't fun with simple colored squares, adding beautiful art won't fix it.**
+Locked Departments should generally remain hidden until their discovery.
+
+Bottom / Auxiliary Panel
+
+Emergency Allocation
+
+Directives
+
+Technology
+
+Statistics
+
+Collapse / Legacy
+
+The interface should become more complex as the civilization becomes
+more complex.
+
+⚙️ PRODUCTION MODEL
+
+The fundamental building model is inspired by faction production chains.
+
+A typical building has:
+
+Building Name
+
+Production:
++X lower-tier buildings / second
+
+Cost:
+X Materials
+X Labour
+X Energy
+X Research
+
+Requires:
+X previous-tier buildings
+
+Modifiers:
++X% production
+
+Example:
+
+WORKSHOP
+
+Produces:
++1 Reclamation Depot / second
+
+Requires:
+25 Reclamation Depots
+
+Cost:
+5,000 Materials
+20 Labour
+10 Energy
+
+The exact mathematical model will be tuned during development.
+
+📈 INCREMENTAL PROGRESSION
+
+Production should grow exponentially through several layers.
+
+Layer 1
+
+Direct resource production.
+
+Layer 2
+
+Buildings produce lower-tier buildings.
+
+Layer 3
+
+Department upgrades multiply production.
+
+Layer 4
+
+Technology changes production rules.
+
+Layer 5
+
+Emergency Allocation provides temporary massive boosts.
+
+Layer 6
+
+Directives provide permanent strategic bonuses.
+
+Layer 7
+
+Collapse provides Legacy.
+
+Layer 8
+
+Legacy changes the starting conditions of future civilizations.
+
+The player should always have another meaningful layer to work toward.
+
+🧠 DESIGN PRINCIPLES
+
+Easy to understand, difficult to optimize
+
+Start with one building and gradually reveal the civilization
+
+Population and Labour should matter from the beginning
+
+No unnecessary currencies
+
+Every primary resource should have a clear purpose
+
+Buildings should form satisfying production chains
+
+Departments should depend on one another
+
+Temporary boosts should create decisions, not chores
+
+Permanent upgrades should create strategic choices
+
+Avoid pure "number goes up" progression wherever possible
+
+Every major unlock should introduce a new mechanic
+
+The dystopian setting should affect gameplay, not just visuals
+
+The player should occasionally question whether a powerful upgrade
+was actually a good idea
+
+The economy should remain understandable even when it becomes
+enormous
+
+The player should start by sorting scrap and eventually have to
+decide whether humanity is better off under permanent emergency
+powers.
+
+🧪 DEVELOPMENT PHILOSOPHY
+
+This project should be developed as a vertical slice.
+
+Do not build all six Departments before the first production loop is
+fun.
+
+The first playable version should contain only:
+
+Population
+
+Labour
+
+Materials
+
+Scrap Yard
+
+A small production chain
+
+Housing
+
+Basic population growth
+
+Basic worker allocation
+
+Saving/loading
+
+A simple steampunk UI
+
+Once that loop feels good, expand outward.
+
+🔥 DEVELOPMENT PRIORITY
+
+⬜ Core idle resource system
+
+⬜ Population system
+
+⬜ Labour allocation
+
+⬜ Scrap Yard
+
+⬜ Materials production
+
+⬜ Industrial production chain
+
+⬜ Housing and population growth
+
+⬜ Industrial upgrades
+
+⬜ Ministry of Labour
+
+⬜ Central Government
+
+⬜ Energy system
+
+⬜ Emergency Allocation
+
+⬜ Security Directorate
+
+⬜ Crisis system
+
+⬜ Scientific Directorate
+
+⬜ Technology system
+
+⬜ Ministry of Information
+
+⬜ Compliance system
+
+⬜ Directives
+
+⬜ Collapse
+
+⬜ Legacy
+
+⬜ Narrative/discovery system
+
+⬜ Balance pass
+
+⬜ Visual polish
+
+🗺️ DEVELOPMENT ROADMAP
+
+⚪ MILESTONE 1 --- The Scrap Yard
+
+Goal
+
+Create a satisfying first five minutes.
+
+Tasks
+
+⬜ Population resource
+
+⬜ Labour resource
+
+⬜ Labour assignment
+
+⬜ Scrap Yard
+
+⬜ Materials generation
+
+⬜ Basic idle ticking
+
+⬜ Manual production interaction
+
+⬜ Basic UI
+
+⬜ Save/load
+
+Success Criteria
+
+The player understands the system without a tutorial wall.
+
+Moving workers between tasks feels meaningful.
+
+Watching Materials accumulate feels satisfying.
+
+⚪ MILESTONE 2 --- Industrial Growth
+
+Goal
+
+Create the first exponential production chain.
+
+Tasks
+
+⬜ Reclamation Depot
+
+⬜ Workshop
+
+⬜ Factory
+
+⬜ Production formulas
+
+⬜ Building costs
+
+⬜ Production scaling
+
+⬜ Industrial upgrades
+
+⬜ Basic statistics
+
+Success Criteria
+
+Higher-tier buildings feel significantly different.
+
+The player wants to reach the next tier.
+
+The economy remains understandable.
+
+⚪ MILESTONE 3 --- Population
+
+Goal
+
+Make the city itself grow.
+
+Tasks
+
+⬜ Housing
+
+⬜ Population capacity
+
+⬜ Population growth
+
+⬜ Labour generation
+
+⬜ Worker allocation UI
+
+⬜ Workforce shortages
+
+⬜ Population milestones
+
+Success Criteria
+
+Population feels like an active part of the economy.
+
+Labour is never just another currency.
+
+The player makes choices about where workers should go.
+
+⚪ MILESTONE 4 --- Ministry of Labour
+
+Goal
+
+Turn basic Labour into a full workforce system.
+
+Tasks
+
+⬜ Ministry unlock
+
+⬜ Labour production chain
+
+⬜ Worker specialization
+
+⬜ Education
+
+⬜ Productivity upgrades
+
+⬜ Workforce bonuses
+
+⬜ Labour-related directives
+
+⚪ MILESTONE 5 --- Central Government
+
+Goal
+
+Introduce Energy and the first major active mechanic.
+
+Tasks
+
+⬜ Government unlock
+
+⬜ Energy resource
+
+⬜ Steam Generator
+
+⬜ Power Station
+
+⬜ Power Plant
+
+⬜ Energy consumption
+
+⬜ Emergency Energy
+
+⬜ Emergency Allocation
+
+Success Criteria
+
+Energy creates meaningful constraints.
+
+Emergency Allocation is useful without becoming mandatory every few
+seconds.
+
+⚪ MILESTONE 6 --- Security
+
+Goal
+
+Make population growth create new problems.
+
+Tasks
+
+⬜ Security unlock
+
+⬜ Security resource
+
+⬜ Unrest
+
+⬜ Crime
+
+⬜ Crises
+
+⬜ Security production chain
+
+⬜ Security upgrades
+
+⬜ First negative consequences of excessive control
+
+⚪ MILESTONE 7 --- Science
+
+Goal
+
+Introduce technology as a system that changes the economy.
+
+Tasks
+
+⬜ Research resource
+
+⬜ Science unlock
+
+⬜ Research production chain
+
+⬜ Technology tree
+
+⬜ Automation
+
+⬜ Robotics
+
+⬜ Energy technologies
+
+⬜ Advanced industrial technologies
+
+Success Criteria
+
+Research should unlock new possibilities rather than simply provide
+another multiplier.
+
+⚪ MILESTONE 8 --- Information
+
+Goal
+
+Introduce the game's full dystopian social layer.
+
+Tasks
+
+⬜ Compliance
+
+⬜ Public sentiment
+
+⬜ Influence
+
+⬜ Information production chain
+
+⬜ Propaganda
+
+⬜ Social control
+
+⬜ Information directives
+
+⬜ Population consequences
+
+⚪ MILESTONE 9 --- Directives
+
+Goal
+
+Give players long-term strategic decisions.
+
+Tasks
+
+⬜ Authority resource
+
+⬜ Directive system
+
+⬜ Industrial directives
+
+⬜ Labour directives
+
+⬜ Security directives
+
+⬜ Scientific directives
+
+⬜ Information directives
+
+⬜ Positive and negative trade-offs
+
+⚪ MILESTONE 10 --- Collapse & Legacy
+
+Goal
+
+Create the long-term incremental loop.
+
+Tasks
+
+⬜ Collapse condition
+
+⬜ Controlled Collapse
+
+⬜ Civilization reset
+
+⬜ Legacy resource
+
+⬜ Legacy upgrades
+
+⬜ New starting bonuses
+
+⬜ Collapse milestones
+
+⬜ Permanent progression
+
+Success Criteria
+
+The player should want to collapse because the next civilization is more
+interesting, not simply because the current run has become boring.
+
+⚪ MILESTONE 11 --- The World Remembers
+
+Goal
+
+Add narrative depth and make the civilization feel like part of a larger
+history.
+
+Tasks
+
+⬜ Discovery system
+
+⬜ Historical records
+
+⬜ Research discoveries
+
+⬜ Government archives
+
+⬜ Collapse records
+
+⬜ Project Continuity
+
+⬜ Late-game revelations
+
+💾 TECHNICAL DIRECTION
+
+The game should be designed for Godot and built around data-driven
+systems.
+
+Prefer:
+
+Resources = Data
+Scenes = Presentation
+Scripts = Behaviour
+Managers = Systems
+
+Production buildings, upgrades, directives, technologies, crises and
+Emergency Orders should be data-driven rather than hardcoded wherever
+practical.
+
+Adding a new production building should ideally require creating data
+rather than rewriting core game logic.
+
+📐 BALANCING PHILOSOPHY
+
+Avoid balancing purely around arbitrary large numbers.
+
+Each production tier should answer a gameplay question.
+
+Examples:
+
+"Do I increase Materials production or save for the next Factory?"
+
+"Do I move workers from Industry into Power?"
+
+"Do I use Emergency Allocation now?"
+
+"Do I spend Research on Automation or better Energy?"
+
+"Do I accept lower population growth in exchange for greater
+Security?"
+
+"Do I issue Permanent Emergency Powers?"
+
+"Is the civilization strong enough to survive another Collapse?"
+
+Numbers should support decisions.
+
+They should not replace them.
+
+🚧 CURRENT IMPLEMENTATION STATUS
+
+This README is currently a design document.
+
+No gameplay system should be considered implemented unless it is
+explicitly marked as such in this section.
+
+Current status:
+
+⬜ Core idle engine
+
+⬜ Population
+
+⬜ Labour allocation
+
+⬜ Materials
+
+⬜ Industrial Authority
+
+⬜ Ministry of Labour
+
+⬜ Central Government
+
+⬜ Energy
+
+⬜ Emergency Allocation
+
+⬜ Security Directorate
+
+⬜ Crisis system
+
+⬜ Scientific Directorate
+
+⬜ Technology
+
+⬜ Ministry of Information
+
+⬜ Compliance
+
+⬜ Directives
+
+⬜ Collapse
+
+⬜ Legacy
+
+⬜ Narrative system
+
+📌 DEVELOPMENT STRATEGY
+
+Build vertically.
+
+Prototype the economy before producing large amounts of art.
+
+Keep the first playable loop extremely small.
+
+Use placeholder graphics while mechanics are being tested.
+
+Keep production buildings data-driven.
+
+Avoid unnecessary resources.
+
+Introduce departments gradually.
+
+Test economic scaling early.
+
+Make every new system solve a gameplay problem.
+
+Do not add complexity merely because incremental games traditionally
+have many currencies.
+
+Keep the UI readable at every stage.
+
+Make Emergency Allocation powerful but limited.
+
+Make Collapse meaningful.
+
+Keep the dystopian setting present in the mechanics.
+
+Let the player build something impressive before asking them to
+destroy it.
+
+Keep this README honest: planned systems remain marked as planned
+until they actually exist.
+
+Build the machine. Feed the machine. Trust the machine.
+
+Then discover what the machine was built to do.
