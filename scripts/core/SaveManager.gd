@@ -14,7 +14,6 @@ static func save_game() -> bool:
 		"security_allocation_percent": GameState.data.security_allocation_percent,
 		"scientific_allocation_percent": GameState.data.scientific_allocation_percent,
 		"energy": GameState.data.energy,
-		"souls": GameState.data.souls,
 		"energy_priority": GameState.data.energy_priority,
 		"reclamation_depot": GameState.data.reclamation_depot.save_data(),
 		"workshop": GameState.data.workshop.save_data(),
@@ -72,7 +71,6 @@ static func load_game() -> bool:
 	GameState.data.security_allocation_percent = clamp(float(save_data.get("security_allocation_percent", GameData.DEFAULT_SECURITY_ALLOCATION)), 0.0, 100.0)
 	GameState.data.scientific_allocation_percent = clamp(float(save_data.get("scientific_allocation_percent", GameData.DEFAULT_SCIENTIFIC_ALLOCATION)), 0.0, 100.0)
 	GameState.data.energy = max(0.0, float(save_data.get("energy", GameData.STARTING_ENERGY)))
-	GameState.data.souls = max(0.0, float(save_data.get("souls", 0.0)))
 	GameState.data.energy_priority = str(save_data.get("energy_priority", "Industrial"))
 	GameState.data.reclamation_depot.load_save_data(save_data.get("reclamation_depot", {}))
 	GameState.data.workshop.load_save_data(save_data.get("workshop", {}))
