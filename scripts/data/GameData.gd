@@ -3,6 +3,7 @@ extends Resource
 
 const LEVEL_UP_BASE_COST: float = 10.0
 const LEVEL_UP_COST_GROWTH: float = 1.2
+const MIN_SCRAP_YARD_LEVEL: int = 1
 
 const SCRAP_YARD_BUILD_COST: float = 1_000_000_000_000.0
 const SCRAP_YARD_BUILD_ENERGY_COST: float = 100_000.0
@@ -57,6 +58,7 @@ func _init() -> void:
 	scrap_yard.level_up_energy_cost = SCRAP_YARD_LEVEL_UP_ENERGY_COST
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
+	scrap_yard.level = MIN_SCRAP_YARD_LEVEL
 
 	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, RECLAMATION_DEPOT_LEVEL_UP_COST, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST, 1.0)
 	reclamation_depot.level_up_energy_cost = RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST
@@ -67,7 +69,11 @@ func _init() -> void:
 	factory = ProductionOperation.new("Factory", FACTORY_UNLOCK_COST, FACTORY_LEVEL_UP_COST, FACTORY_BUILD_COST, FACTORY_BUILD_ENERGY_COST)
 	factory.level_up_energy_cost = FACTORY_LEVEL_UP_ENERGY_COST
 
+func ensure_scrap_yard_minimum() -> void:
+	scrap_yard.level = max(MIN_SCRAP_YARD_LEVEL, scrap_yard.level)
+
 func scrap_yard_production_per_second() -> BigNumber:
+	ensure_scrap_yard_minimum()
 	return scrap_yard.total_effectiveness().multiply_float(SCRAP_YARD_MATERIAL_PER_EFFECTIVE_UNIT)
 
 func reclamation_depot_scrap_yard_rate() -> float:
@@ -80,15 +86,19 @@ func factory_workshop_rate() -> float:
 	return factory.total_effectiveness().to_float() * FACTORY_WORKSHOPS_PER_SECOND
 
 func can_unlock_reclamation_depot() -> bool:
+	ensure_scrap_yard_minimum()
 	return not reclamation_depot.unlocked and materials.is_greater_or_equal(reclamation_depot.unlock_cost())
 
 func can_unlock_workshop() -> bool:
+	ensure_scrap_yard_minimum()
 	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.milestones_triggered >= 1 and materials.is_greater_or_equal(workshop.unlock_cost())
 
 func can_unlock_factory() -> bool:
+	ensure_scrap_yard_minimum()
 	return not factory.unlocked and workshop.unlocked and workshop.milestones_triggered >= 1 and materials.is_greater_or_equal(factory.unlock_cost())
 
 func unlock_operation(operation: ProductionOperation) -> bool:
+	ensure_scrap_yard_minimum()
 	if operation == reclamation_depot and not can_unlock_reclamation_depot():
 		return false
 	if operation == workshop and not can_unlock_workshop():
@@ -98,9 +108,11 @@ func unlock_operation(operation: ProductionOperation) -> bool:
 	if operation == scrap_yard or operation.unlocked:
 		return false
 	materials = operation.unlock(materials)
+	ensure_scrap_yard_minimum()
 	return true
 
 func level_up_operation(operation: ProductionOperation) -> bool:
+	ensure_scrap_yard_minimum()
 	if not operation.unlocked:
 		return false
 	var level_up_cost: BigNumber = operation.level_up_cost()
@@ -108,15 +120,18 @@ func level_up_operation(operation: ProductionOperation) -> bool:
 		return false
 	materials = operation.level_up(materials)
 	energy -= operation.level_up_energy_cost
+	ensure_scrap_yard_minimum()
 	return true
 
 func can_level_up_reclamation_depot() -> bool:
+	ensure_scrap_yard_minimum()
 	return reclamation_depot.unlocked and materials.is_greater_or_equal(reclamation_depot.level_up_cost()) and energy >= reclamation_depot.level_up_energy_cost
 
 func level_up_reclamation_depot() -> bool:
 	return level_up_operation(reclamation_depot)
 
 func build_new_operation(operation: ProductionOperation) -> bool:
+	ensure_scrap_yard_minimum()
 	if not operation.unlocked:
 		return false
 	var result: Dictionary = operation.build_new(materials, energy)
@@ -124,15 +139,18 @@ func build_new_operation(operation: ProductionOperation) -> bool:
 		return false
 	materials = result["materials"]
 	energy = float(result["energy"])
+	ensure_scrap_yard_minimum()
 	return true
 
 func trigger_operation_milestone(operation: ProductionOperation) -> bool:
+	ensure_scrap_yard_minimum()
 	if not operation.unlocked:
 		return false
 	var result: Dictionary = operation.trigger_milestone(energy)
 	if not bool(result.get("success", false)):
 		return false
 	energy = float(result.get("energy", energy))
+	ensure_scrap_yard_minimum()
 	return true
 
 func scrap_yard_level_up_cost() -> BigNumber:
@@ -142,18 +160,21 @@ func scrap_yard_build_new_cost() -> BigNumber:
 	return scrap_yard.build_new_cost()
 
 func can_level_up_scrap_yard() -> bool:
+	ensure_scrap_yard_minimum()
 	return materials.is_greater_or_equal(scrap_yard.level_up_cost()) and energy >= scrap_yard.level_up_energy_cost
 
 func level_up_scrap_yard() -> bool:
 	return level_up_operation(scrap_yard)
 
 func can_build_new_scrap_yard() -> bool:
+	ensure_scrap_yard_minimum()
 	return scrap_yard.can_build_new(materials, energy)
 
 func build_new_scrap_yard() -> bool:
 	return build_new_operation(scrap_yard)
 
 func can_trigger_scrap_yard_milestone() -> bool:
+	ensure_scrap_yard_minimum()
 	return scrap_yard.can_trigger_milestone(energy)
 
 func trigger_scrap_yard_milestone() -> bool:
@@ -169,6 +190,7 @@ func scrap_yard_next_milestone_energy_cost() -> float:
 	return scrap_yard.next_milestone_energy_cost()
 
 func process_production(delta: float) -> void:
+	ensure_scrap_yard_minimum()
 	produce_materials(scrap_yard_production_per_second().multiply_float(delta))
 
 	if reclamation_depot.unlocked:
@@ -192,6 +214,8 @@ func process_production(delta: float) -> void:
 			workshop.count += workshops_to_add
 			factory_production_progress -= float(workshops_to_add)
 
+	ensure_scrap_yard_minimum()
+
 func produce_materials(amount: BigNumber) -> void:
 	materials = materials.add(amount)
 	total_materials_produced = total_materials_produced.add(amount)
@@ -209,6 +233,7 @@ func process_energy(delta: float) -> void:
 	energy += energy_balance_per_second() * delta
 
 func process(delta: float) -> void:
+	ensure_scrap_yard_minimum()
 	game_time += delta
 	total_ticks += 1
 	process_energy(delta)
