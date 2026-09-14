@@ -41,7 +41,7 @@ var production_feedback_tween: Tween
 
 func _ready() -> void:
 	$Layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	$Layout/VBox/Body.set_size_flags(Control.SIZE_EXPAND_FILL, Control.SIZE_EXPAND_FILL)
+	$Layout/VBox/Body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_create_scrap_yard_milestone_button()
 	game_clock.tick.connect(_on_game_tick)
 	save_button.pressed.connect(_on_save_pressed)
