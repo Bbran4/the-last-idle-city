@@ -146,10 +146,9 @@ func trigger_operation_milestone(operation: ProductionOperation) -> bool:
 	ensure_scrap_yard_minimum()
 	if not operation.unlocked:
 		return false
-	var result: Dictionary = operation.trigger_milestone(energy)
+	var result: Dictionary = operation.trigger_milestone()
 	if not bool(result.get("success", false)):
 		return false
-	energy = float(result.get("energy", energy))
 	ensure_scrap_yard_minimum()
 	return true
 
@@ -175,7 +174,7 @@ func build_new_scrap_yard() -> bool:
 
 func can_trigger_scrap_yard_milestone() -> bool:
 	ensure_scrap_yard_minimum()
-	return scrap_yard.can_trigger_milestone(energy)
+	return scrap_yard.can_trigger_milestone()
 
 func trigger_scrap_yard_milestone() -> bool:
 	return trigger_operation_milestone(scrap_yard)
@@ -185,9 +184,6 @@ func scrap_yard_milestone_multiplier() -> BigNumber:
 
 func scrap_yard_next_milestone_level() -> int:
 	return scrap_yard.next_milestone_level()
-
-func scrap_yard_next_milestone_energy_cost() -> float:
-	return scrap_yard.next_milestone_energy_cost()
 
 func process_production(delta: float) -> void:
 	ensure_scrap_yard_minimum()
