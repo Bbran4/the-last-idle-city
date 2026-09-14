@@ -88,7 +88,7 @@ func _update_ui() -> void:
 	allocation_slider.set_value_no_signal(data.industrial_allocation_percent)
 	_update_allocation_feedback()
 	chain_status_label.text = "Automation: Factory +%s Workshop Levels/sec → Workshop +%s Depot Levels/sec → Reclamation +%s Scrap Yard Levels/sec" % [NumberFormatter.format_rate(data.factory_workshop_level_rate()), NumberFormatter.format_rate(data.workshop_reclamation_depot_level_rate()), NumberFormatter.format_rate(data.reclamation_depot_scrap_yard_level_rate())]
-	production_stats_label.text = "Lifetime Materials produced: %s | Energy: %.1f" % [NumberFormatter.format_number(data.total_materials_produced), data.energy]
+	production_stats_label.text = "Lifetime Materials produced: %s | Energy: %.1f (+%.1f/sec)" % [NumberFormatter.format_number(data.total_materials_produced), data.energy, data.energy_production_per_second()]
 	scrap_yard_level_label.text = "Scrap Yard level: %d" % data.scrap_yard.level
 	scrap_yard_count_label.text = "Scrap Yards: %d" % data.scrap_yard.count
 	milestone_label.text = "Milestone productivity: ×%s | Next: level %d + %.1f Energy" % [NumberFormatter.format_number(data.scrap_yard_milestone_multiplier()), data.scrap_yard_next_milestone_level(), data.scrap_yard_next_milestone_energy_cost()]
@@ -98,7 +98,7 @@ func _update_ui() -> void:
 	build_new_button.disabled = not data.can_build_new_scrap_yard()
 	_update_scrap_yard_milestone_ui()
 	manual_production_button.text = "PROCESS SCRAP (+%s Materials)" % NumberFormatter.format_number(data.scrap_yard_manual_production())
-	_update_operation_ui(data.reclamation_depot, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, "Requires %s Materials" % NumberFormatter.format_number(GameData.RECLAMATION_DEPOT_UNLOCK_COST), data.can_unlock_reclamation_depot())
+	_update_reclamation_depot_ui(data)
 	_update_operation_ui(data.workshop, workshop_label, workshop_unlock_button, workshop_level_up_button, workshop_build_new_button, "Requires Reclamation Depot level %d and %s Materials" % [ProductionOperation.FIRST_MILESTONE_LEVEL, NumberFormatter.format_number(GameData.WORKSHOP_UNLOCK_COST)], data.can_unlock_workshop())
 	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, "Requires Workshop level %d and %s Materials" % [ProductionOperation.FIRST_MILESTONE_LEVEL, NumberFormatter.format_number(GameData.FACTORY_UNLOCK_COST)], data.can_unlock_factory())
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [data.game_time, data.total_ticks]
@@ -109,6 +109,13 @@ func _update_scrap_yard_milestone_ui() -> void:
 	var data: GameData = GameState.data
 	milestone_button.text = "MILESTONE (%d + %.1f Energy)" % [data.scrap_yard_next_milestone_level(), data.scrap_yard_next_milestone_energy_cost()]
 	milestone_button.disabled = not data.can_trigger_scrap_yard_milestone()
+
+func _update_reclamation_depot_ui(data: GameData) -> void:
+	_update_operation_ui(data.reclamation_depot, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, "Requires %s Materials" % NumberFormatter.format_number(GameData.RECLAMATION_DEPOT_UNLOCK_COST), data.can_unlock_reclamation_depot())
+	if not data.reclamation_depot.unlocked:
+		return
+	reclamation_depot_level_up_button.text = "LEVEL UP (%d Scrap Yard Levels + %.1f Energy)" % [GameData.RECLAMATION_DEPOT_SCRAP_YARD_LEVEL_COST, GameData.RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST]
+	reclamation_depot_level_up_button.disabled = not data.can_level_up_reclamation_depot()
 
 func _on_save_pressed() -> void:
 	SaveManager.save_game()
@@ -138,7 +145,7 @@ func _on_reclamation_depot_unlock_pressed() -> void:
 		_update_ui()
 
 func _on_reclamation_depot_level_up_pressed() -> void:
-	if GameState.data.level_up_operation(GameState.data.reclamation_depot):
+	if GameState.data.level_up_reclamation_depot():
 		_update_ui()
 
 func _on_reclamation_depot_build_new_pressed() -> void:
