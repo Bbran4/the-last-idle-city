@@ -13,14 +13,18 @@ grow_vertical = 2
 script = ExtResource("1_nha0i")
 
 [node name="UI" type="Control" parent="." unique_id=1365639847]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="UI" unique_id=984240607]
+[node name="MarginContainer" type="ScrollContainer" parent="UI" unique_id=984240607]
 layout_mode = 0
-offset_right = 360.0
-offset_bottom = 560.0
+offset_right = 1152.0
+offset_bottom = 650.0
+vertical_scroll_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer" unique_id=1127794919]
 layout_mode = 2
@@ -58,6 +62,66 @@ value = 50.0
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.9, 0.45, 1)
 text = "GREEN allocation efficiency: 100% | Efficient range: 40%–60% | Scrap Yard: ×1.00"
+
+[node name="ChainStatusLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=1825300241]
+layout_mode = 2
+text = "Automated chain: Factory ×1.00 → Workshop ×1.00 → Reclamation ×1.00 → Scrap Yard"
+autowrap_mode = 2
+
+[node name="ProductionStatsLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=116537571]
+layout_mode = 2
+text = "Lifetime Materials produced: 0"
+
+[node name="ReclamationDepotLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=281645456]
+layout_mode = 2
+text = "Reclamation Depot — LOCKED (Requires 250 Materials)"
+autowrap_mode = 2
+
+[node name="ReclamationDepotUnlockButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=1315342453]
+layout_mode = 2
+text = "UNLOCK RECLAMATION DEPOT (250 Materials)"
+
+[node name="ReclamationDepotLevelUpButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=173318841]
+layout_mode = 2
+text = "LEVEL UP (50 Materials)"
+
+[node name="ReclamationDepotBuildNewButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=984218546]
+layout_mode = 2
+text = "BUILD NEW (300 Materials)"
+
+[node name="WorkshopLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=1657196779]
+layout_mode = 2
+text = "Workshop — LOCKED (Requires Reclamation Depot level 10 and 1.50K Materials)"
+autowrap_mode = 2
+
+[node name="WorkshopUnlockButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=741198976]
+layout_mode = 2
+text = "UNLOCK WORKSHOP (1.50K Materials)"
+
+[node name="WorkshopLevelUpButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=876374806]
+layout_mode = 2
+text = "LEVEL UP (300 Materials)"
+
+[node name="WorkshopBuildNewButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=1479207116]
+layout_mode = 2
+text = "BUILD NEW (1.80K Materials)"
+
+[node name="FactoryLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=706231307]
+layout_mode = 2
+text = "Factory — LOCKED (Requires Workshop level 10 and 10K Materials)"
+autowrap_mode = 2
+
+[node name="FactoryUnlockButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=2033851756]
+layout_mode = 2
+text = "UNLOCK FACTORY (10K Materials)"
+
+[node name="FactoryLevelUpButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=1395736026]
+layout_mode = 2
+text = "LEVEL UP (2K Materials)"
+
+[node name="FactoryBuildNewButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=185870815]
+layout_mode = 2
+text = "BUILD NEW (12K Materials)"
 
 [node name="ScrapYardLevelLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=1568693843]
 layout_mode = 2

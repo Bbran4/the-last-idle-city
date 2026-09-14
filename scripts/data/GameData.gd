@@ -11,18 +11,90 @@ const POPULATION_GROWTH_PER_SECOND := 1.0
 const WORKFORCE_RATE := 0.5
 const DEFAULT_INDUSTRIAL_ALLOCATION := 50.0
 const EFFICIENT_RANGE_HALF_WIDTH := 10.0
+const RECLAMATION_DEPOT_UNLOCK_COST := 250.0
+const WORKSHOP_UNLOCK_COST := 1_500.0
+const FACTORY_UNLOCK_COST := 10_000.0
 
 @export var materials: float = 0.0
 @export var scrap_yard_level: int = 1
 @export var scrap_yard_count: int = 1
 @export var population: float = STARTING_POPULATION
 @export var industrial_allocation_percent: float = DEFAULT_INDUSTRIAL_ALLOCATION
+@export var reclamation_depot: ProductionOperation
+@export var workshop: ProductionOperation
+@export var factory: ProductionOperation
+@export var total_materials_produced := 0.0
 @export var game_time: float = 0.0
 @export var total_ticks: int = 0
 
 
+func _init() -> void:
+	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, 50.0, 300.0)
+	workshop = ProductionOperation.new("Workshop", WORKSHOP_UNLOCK_COST, 300.0, 1_800.0)
+	factory = ProductionOperation.new("Factory", FACTORY_UNLOCK_COST, 2_000.0, 12_000.0)
+
+
 func scrap_yard_production_per_second() -> float:
-	return scrap_yard_level_production_per_second() * scrap_yard_count * scrap_yard_milestone_multiplier() * industrial_productivity_multiplier()
+	return scrap_yard_level_production_per_second() * scrap_yard_count * scrap_yard_milestone_multiplier() * industrial_productivity_multiplier() * reclamation_depot_multiplier()
+
+
+func reclamation_depot_multiplier() -> float:
+	# Reclamation directly accelerates Scrap Yard output. Workshop boosts this link.
+	return 1.0 + reclamation_depot.total_effectiveness() * 0.10 * workshop_multiplier()
+
+
+func workshop_multiplier() -> float:
+	# Workshop accelerates the Reclamation Depot. Factory boosts this link.
+	return 1.0 + workshop.total_effectiveness() * 0.10 * factory_multiplier()
+
+
+func factory_multiplier() -> float:
+	# Factory is the top of this first automated production chain.
+	return 1.0 + factory.total_effectiveness() * 0.10
+
+
+func can_unlock_reclamation_depot() -> bool:
+	return not reclamation_depot.unlocked and materials >= reclamation_depot.unlock_cost
+
+
+func can_unlock_workshop() -> bool:
+	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.level >= ProductionOperation.MILESTONE_INTERVAL and materials >= workshop.unlock_cost
+
+
+func can_unlock_factory() -> bool:
+	return not factory.unlocked and workshop.unlocked and workshop.level >= ProductionOperation.MILESTONE_INTERVAL and materials >= factory.unlock_cost
+
+
+func unlock_operation(operation: ProductionOperation) -> bool:
+	var can_unlock := false
+	if operation == reclamation_depot:
+		can_unlock = can_unlock_reclamation_depot()
+	elif operation == workshop:
+		can_unlock = can_unlock_workshop()
+	elif operation == factory:
+		can_unlock = can_unlock_factory()
+
+	if not can_unlock:
+		return false
+
+	materials = operation.unlock(materials)
+	return true
+
+
+func level_up_operation(operation: ProductionOperation) -> bool:
+	if not operation.unlocked or materials < operation.level_up_cost():
+		return false
+
+	materials = operation.level_up(materials)
+	return true
+
+
+func build_new_operation(operation: ProductionOperation) -> bool:
+	if not operation.unlocked or materials < operation.build_new_cost():
+		return false
+
+	materials = operation.build_new(materials)
+	return true
 
 
 func scrap_yard_level_production_per_second() -> float:
@@ -130,3 +202,4 @@ func build_new_scrap_yard() -> bool:
 
 func produce_materials(amount: float) -> void:
 	materials += amount
+	total_materials_produced += amount

@@ -126,16 +126,16 @@ No Food, Housing, Healthcare, or Education survival meters.
 
 **Goal:** Capture the layered idle-game progression of the inspiration games.
 
-- [ ] Add Reclamation Depot
-- [ ] Add Workshop
-- [ ] Add Factory
-- [ ] Create the first production chain
-- [ ] Make higher-tier operations accelerate lower-tier production
-- [ ] Apply the Level Up / Build New model to production operations where appropriate
-- [ ] Add production automation rules
-- [ ] Add increasingly large number scaling
-- [ ] Add simple production statistics
-- [ ] Add unlock requirements between tiers
+- [x] Add Reclamation Depot
+- [x] Add Workshop
+- [x] Add Factory
+- [x] Create the first production chain
+- [x] Make higher-tier operations accelerate lower-tier production
+- [x] Apply the Level Up / Build New model to production operations where appropriate
+- [x] Add production automation rules
+- [x] Add increasingly large number scaling
+- [x] Add simple production statistics
+- [x] Add unlock requirements between tiers
 
 Initial chain:
 
