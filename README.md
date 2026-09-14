@@ -408,21 +408,21 @@ The correct order is:
 
 ```text
 Fun Core Loop
-      ↓
+	  ↓
 Reliable Systems
-      ↓
+	  ↓
 Production Scaling
-      ↓
+	  ↓
 Workforce
-      ↓
+	  ↓
 Civilization Problems
-      ↓
+	  ↓
 Government Decisions
-      ↓
+	  ↓
 Technology
-      ↓
+	  ↓
 Collapse / Legacy
-      ↓
+	  ↓
 More Content
 ```
 
