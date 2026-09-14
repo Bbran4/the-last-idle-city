@@ -6,7 +6,8 @@ const SAVE_PATH := "user://savegame.json"
 
 static func save_game() -> bool:
 	var save_data := {
-		"gold": GameState.data.gold,
+		"materials": GameState.data.materials,
+		"scrap_yard_level": GameState.data.scrap_yard_level,
 		"game_time": GameState.data.game_time,
 		"total_ticks": GameState.data.total_ticks
 	}
@@ -48,7 +49,9 @@ static func load_game() -> bool:
 		push_error("Save data is not a Dictionary.")
 		return false
 
-	GameState.data.gold = float(save_data.get("gold", 0.0))
+	# Preserve progress from the Milestone 0 placeholder resource.
+	GameState.data.materials = float(save_data.get("materials", save_data.get("gold", 0.0)))
+	GameState.data.scrap_yard_level = max(1, int(save_data.get("scrap_yard_level", 1)))
 	GameState.data.game_time = float(save_data.get("game_time", 0.0))
 	GameState.data.total_ticks = int(save_data.get("total_ticks", 0))
 

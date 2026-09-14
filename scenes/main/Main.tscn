@@ -29,15 +29,25 @@ layout_mode = 2
 layout_mode = 2
 text = "The Last Idle City"
 
-[node name="GoldLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=393096091]
+[node name="MaterialsLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=393096091]
 layout_mode = 2
-text = "Gold
-0"
+text = "Materials: 0"
+
+[node name="ProductionLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Materials per second: 1"
+
+[node name="ScrapYardLevelLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Scrap Yard level: 1"
+
+[node name="LevelUpButton" type="Button" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "LEVEL UP (10 Materials)"
 
 [node name="TickLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=396919086]
 layout_mode = 2
-text = "Game Time
-0s"
+text = "Game Time: 0s"
 
 [node name="SaveLoadContainer" type="BoxContainer" parent="UI/MarginContainer/VBoxContainer" unique_id=1211471615]
 layout_mode = 2

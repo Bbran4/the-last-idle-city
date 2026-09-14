@@ -39,15 +39,15 @@ This section intentionally lives near the top of the README so it can be used as
 
 **Goal:** A clean Godot project with the architecture needed to build the game without creating technical debt immediately.
 
-- [ ] Establish the main scene and application structure
-- [ ] Create a basic 2D UI layout
-- [ ] Establish a reusable resource/data model
-- [ ] Create a central game state/autoload
-- [ ] Create a basic game clock/tick system
-- [ ] Add save/load support
-- [ ] Add basic number formatting for large idle-game values
-- [ ] Establish a simple folder/script naming convention
-- [ ] Confirm the project runs cleanly in a fresh Godot session
+- [x] Establish the main scene and application structure
+- [x] Create a basic 2D UI layout
+- [x] Establish a reusable resource/data model
+- [x] Create a central game state/autoload
+- [x] Create a basic game clock/tick system
+- [x] Add save/load support
+- [x] Add basic number formatting for large idle-game values
+- [x] Establish a simple folder/script naming convention
+- [x] Confirm the project runs cleanly in a fresh Godot session
 
 **Milestone complete when:** The project can start, maintain game state, tick reliably, save, load, and display a basic UI.
 
@@ -57,11 +57,11 @@ This section intentionally lives near the top of the README so it can be used as
 
 **Goal:** Prove that the basic idle loop is fun.
 
-- [ ] Create the Scrap Yard production model
-- [ ] Add Materials as the first resource
-- [ ] Add Scrap Yard production per second
-- [ ] Add **Level Up** button
-- [ ] Make Level Up increase Scrap Yard productivity
+- [x] Create the Scrap Yard production model
+- [x] Add Materials as the first resource
+- [x] Add Scrap Yard production per second
+- [x] Add **Level Up** button
+- [x] Make Level Up increase Scrap Yard productivity
 - [ ] Add production cost scaling
 - [ ] Add a manual production/click action
 - [ ] Make clicking contribute to Scrap Yard productivity
