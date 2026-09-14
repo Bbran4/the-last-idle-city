@@ -93,14 +93,15 @@ func build_new(materials: BigNumber, current_energy: float) -> Dictionary:
 	}
 
 func can_trigger_milestone(current_energy: float) -> bool:
-	return unlocked and level >= next_milestone_level() and current_energy >= next_milestone_energy_cost()
+	var required_level: int = next_milestone_level()
+	return unlocked and level > required_level and current_energy >= next_milestone_energy_cost()
 
 func trigger_milestone(current_energy: float) -> Dictionary:
 	if not can_trigger_milestone(current_energy):
 		return {"success": false, "energy": current_energy}
 	var required_level: int = next_milestone_level()
 	var energy_cost: float = next_milestone_energy_cost()
-	level -= required_level
+	level = max(1, level - required_level)
 	milestones_triggered += 1
 	return {"success": true, "energy": current_energy - energy_cost}
 
@@ -109,13 +110,14 @@ func unlock(materials: BigNumber) -> BigNumber:
 		return materials
 	unlocked = true
 	count = 1
+	level = max(1, level)
 	return materials.subtract(unlock_cost())
 
 func level_up(materials: BigNumber) -> BigNumber:
 	if not unlocked or materials.is_less_than(level_up_cost()):
 		return materials
 	var cost: BigNumber = level_up_cost()
-	level += 1
+	level = max(1, level + 1)
 	return materials.subtract(cost)
 
 func save_data() -> Dictionary:
