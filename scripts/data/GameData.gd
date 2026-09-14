@@ -25,7 +25,6 @@ const SCRAP_YARD_ENERGY_PER_EFFECTIVE_OPERATION := 0.10
 const RECLAMATION_DEPOT_ENERGY_PER_EFFECTIVE_OPERATION := 0.25
 const WORKSHOP_ENERGY_PER_EFFECTIVE_OPERATION := 0.50
 const FACTORY_ENERGY_PER_EFFECTIVE_OPERATION := 1.00
-const SOULS_PER_SECOND := 1.0
 
 const DEFAULT_CIVILIAN_ALLOCATION := 30.0
 const DEFAULT_SECURITY_ALLOCATION := 10.0
@@ -42,7 +41,6 @@ var total_materials_produced: BigNumber
 @export var security_allocation_percent: float = DEFAULT_SECURITY_ALLOCATION
 @export var scientific_allocation_percent: float = DEFAULT_SCIENTIFIC_ALLOCATION
 @export var energy: float = STARTING_ENERGY
-@export var souls: float = 0.0
 @export var energy_priority: String = "Industrial"
 @export var reclamation_depot: ProductionOperation
 @export var workshop: ProductionOperation
@@ -69,18 +67,15 @@ func _init() -> void:
 	production_unit_a = ProductionUnit.new()
 	production_unit_a.display_name = "Production Unit A"
 	production_unit_a.purchase_base_cost = 10.0
-	production_unit_a.soul_cost_per_unit = 1.0
 
 	production_unit_b = ProductionUnit.new()
 	production_unit_b.display_name = "Production Unit B"
 	production_unit_b.purchase_base_cost = 100.0
-	production_unit_b.soul_cost_per_unit = 2.0
 	production_unit_b.requires_secondary_unit_count = 100
 
 	production_unit_c = ProductionUnit.new()
 	production_unit_c.display_name = "Production Unit C"
 	production_unit_c.purchase_base_cost = 1_000.0
-	production_unit_c.soul_cost_per_unit = 3.0
 	production_unit_c.requires_secondary_unit_count = 100
 
 
@@ -303,10 +298,6 @@ func _normalize_department_allocations() -> void:
 
 func grow_population(delta: float) -> void:
 	population += POPULATION_GROWTH_PER_SECOND * delta
-
-
-func generate_souls(delta: float) -> void:
-	souls += SOULS_PER_SECOND * delta
 
 
 func energy_production_per_second() -> float:
