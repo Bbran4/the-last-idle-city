@@ -14,9 +14,10 @@ const FIRST_MILESTONE_LEVEL: int = 10
 @export var count: int = 0
 @export var unlock_cost_base: float = 0.0
 @export var level_up_base_cost: float = 0.0
+@export var level_up_energy_cost: float = 0.0
 @export var build_new_base_cost: float = 0.0
 @export var build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
-@export var build_new_energy_cost: float = 1.0
+@export var build_new_energy_cost: float = 0.0
 @export var milestones_triggered: int = 0
 
 func _init(
@@ -24,7 +25,7 @@ func _init(
 	operation_unlock_cost: float = 0.0,
 	operation_level_up_base_cost: float = 0.0,
 	operation_build_new_base_cost: float = 0.0,
-	operation_build_new_energy_cost: float = 1.0,
+	operation_build_new_energy_cost: float = 0.0,
 	operation_build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
 ) -> void:
 	display_name = operation_name
