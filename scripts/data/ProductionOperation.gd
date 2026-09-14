@@ -82,12 +82,13 @@ func can_build_new(materials: BigNumber, current_energy: float) -> bool:
 	return unlocked and materials.is_greater_or_equal(build_new_cost()) and current_energy >= build_new_energy_cost
 
 func build_new(materials: BigNumber, current_energy: float) -> Dictionary:
-	if not can_build_new(materials, current_energy):
+	var cost: BigNumber = build_new_cost()
+	if not unlocked or materials.is_less_than(cost) or current_energy < build_new_energy_cost:
 		return {"success": false, "materials": materials, "energy": current_energy}
 	count += 1
 	return {
 		"success": true,
-		"materials": materials.subtract(build_new_cost()),
+		"materials": materials.subtract(cost),
 		"energy": current_energy - build_new_energy_cost
 	}
 
