@@ -13,7 +13,7 @@ const SCRAP_YARD_MATERIAL_PER_EFFECTIVE_UNIT: float = 1.0
 const RECLAMATION_DEPOT_UNLOCK_COST: float = 250.0
 const RECLAMATION_DEPOT_LEVEL_UP_COST: float = 100.0
 const RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST: float = 10.0
-const RECLAMATION_DEPOT_BUILD_COST: float = 300.0
+const RECLAMATION_DEPOT_BUILD_COST: float = 10_000_000_000_000_000_000.0
 const RECLAMATION_DEPOT_BUILD_ENERGY_COST: float = 5.0
 const RECLAMATION_DEPOT_SCRAP_YARDS_PER_SECOND: float = 0.10
 
@@ -31,7 +31,7 @@ const FACTORY_BUILD_COST: float = 12_000.0
 const FACTORY_BUILD_ENERGY_COST: float = 20.0
 const FACTORY_WORKSHOPS_PER_SECOND: float = 0.025
 
-const STARTING_ENERGY: float = 20.0
+const STARTING_ENERGY: float = 0.0
 const BASE_ENERGY_PRODUCTION_PER_SECOND: float = 1.0
 
 var materials: BigNumber
@@ -173,10 +173,10 @@ func process_production(delta: float) -> void:
 
 	if reclamation_depot.unlocked:
 		reclamation_depot_production_progress += reclamation_depot_scrap_yard_rate() * delta
-		var scrap_yards_to_add: int = int(floor(reclamation_depot_production_progress))
-		if scrap_yards_to_add > 0:
-			scrap_yard.count += scrap_yards_to_add
-			reclamation_depot_production_progress -= float(scrap_yards_to_add)
+		var scrap_yard_levels_to_add: int = int(floor(reclamation_depot_production_progress))
+		if scrap_yard_levels_to_add > 0:
+			scrap_yard.level += scrap_yard_levels_to_add
+			reclamation_depot_production_progress -= float(scrap_yard_levels_to_add)
 
 	if workshop.unlocked:
 		workshop_production_progress += workshop_reclamation_depot_rate() * delta
