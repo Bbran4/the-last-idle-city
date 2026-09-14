@@ -12,8 +12,9 @@ const EFFICIENT_RANGE_HALF_WIDTH: float = 10.0
 
 const LEVEL_UP_BASE_COST: float = 10.0
 const LEVEL_UP_COST_GROWTH: float = 1.2
-const SCRAP_YARD_BUILD_COST: float = 10.0
-const SCRAP_YARD_BUILD_ENERGY_COST: float = 1.0
+const SCRAP_YARD_BUILD_COST: float = 1_000_000_000_000.0
+const SCRAP_YARD_BUILD_ENERGY_COST: float = 0.0
+const SCRAP_YARD_LEVEL_UP_ENERGY_COST: float = 1.0
 
 const RECLAMATION_DEPOT_UNLOCK_COST: float = 250.0
 const RECLAMATION_DEPOT_LEVEL_UP_COST: float = 50.0
@@ -66,6 +67,7 @@ func _init() -> void:
 	materials = BigNumber.zero()
 	total_materials_produced = BigNumber.zero()
 	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, LEVEL_UP_BASE_COST, SCRAP_YARD_BUILD_COST, SCRAP_YARD_BUILD_ENERGY_COST, 1.0)
+	scrap_yard.level_up_energy_cost = SCRAP_YARD_LEVEL_UP_ENERGY_COST
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
 	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, RECLAMATION_DEPOT_LEVEL_UP_COST, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST)
@@ -139,9 +141,13 @@ func unlock_operation(operation: ProductionOperation) -> bool:
 	return true
 
 func level_up_operation(operation: ProductionOperation) -> bool:
-	if not operation.unlocked or materials.is_less_than(operation.level_up_cost()):
+	if not operation.unlocked:
+		return false
+	var level_up_cost: BigNumber = operation.level_up_cost()
+	if materials.is_less_than(level_up_cost) or energy < operation.level_up_energy_cost:
 		return false
 	materials = operation.level_up(materials)
+	energy -= operation.level_up_energy_cost
 	return true
 
 func build_new_operation(operation: ProductionOperation) -> bool:
@@ -170,7 +176,7 @@ func scrap_yard_build_new_cost() -> BigNumber:
 	return scrap_yard.build_new_cost()
 
 func can_level_up_scrap_yard() -> bool:
-	return materials.is_greater_or_equal(scrap_yard.level_up_cost())
+	return materials.is_greater_or_equal(scrap_yard.level_up_cost()) and energy >= scrap_yard.level_up_energy_cost
 
 func level_up_scrap_yard() -> bool:
 	return level_up_operation(scrap_yard)
