@@ -63,7 +63,8 @@ func next_milestone_energy_cost() -> float:
 func total_effectiveness() -> BigNumber:
 	if not unlocked:
 		return BigNumber.zero()
-	return BigNumber.from_float(float(count)).multiply(milestone_multiplier())
+	var base_effectiveness: BigNumber = BigNumber.from_float(float(level) * float(count))
+	return base_effectiveness.multiply(milestone_multiplier())
 
 func unlock_cost() -> BigNumber:
 	return BigNumber.from_float(unlock_cost_base)
