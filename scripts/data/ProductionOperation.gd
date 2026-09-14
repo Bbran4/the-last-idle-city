@@ -1,9 +1,23 @@
 class_name ProductionOperation
 extends Resource
 
-const MILESTONE_INTERVAL := 10
-const LEVEL_COST_GROWTH := 1.25   # was 1.15
-const BUILD_COST_GROWTH := 15.0   # was 1.6	
+const LEVEL_COST_GROWTH := 1.25
+const BUILD_COST_GROWTH := 15.0
+
+## Explicit milestone levels, in order. Each one crossed doubles the
+## operation's productivity multiplier (see milestone_multiplier_for_level).
+const MILESTONE_LEVELS: Array[int] = [10, 25, 50, 100, 200, 500, 1000, 10000, 50000]
+
+## Past the last explicit entry above, milestones keep generating by
+## multiplying the previous one by this much. Currently set to match
+## the ratio between the last two explicit entries (10,000 -> 50,000 = x5).
+## ASSUMPTION — confirm this is the intended long-term pattern.
+const MILESTONE_GENERATED_GROWTH := 5.0
+
+## Matches MILESTONE_LEVELS[0]. Kept as its own constant because it's
+## referenced as a plain int for tier-unlock requirements (e.g. Workshop
+## requires Reclamation Depot to have crossed the first milestone).
+const FIRST_MILESTONE_LEVEL := 10
 
 @export var display_name := "Operation"
 @export var unlocked := false
@@ -26,18 +40,48 @@ func _init(
 	build_new_base_cost = operation_build_new_base_cost
 
 
-func unlock_cost() -> BigNumber:
-	return BigNumber.from_float(unlock_cost_base)
+## Returns the level threshold for the Nth milestone (0-indexed).
+## Reads from MILESTONE_LEVELS while defined, then generates further
+## thresholds indefinitely using MILESTONE_GENERATED_GROWTH.
+static func milestone_level_at(index: int) -> int:
+	if index < MILESTONE_LEVELS.size():
+		return MILESTONE_LEVELS[index]
+
+	var generated_steps := index - (MILESTONE_LEVELS.size() - 1)
+	var last_defined := MILESTONE_LEVELS[MILESTONE_LEVELS.size() - 1]
+	return int(round(last_defined * pow(MILESTONE_GENERATED_GROWTH, generated_steps)))
+
+
+## How many milestones a given level has crossed.
+static func milestone_count_for_level(level: int) -> int:
+	var count := 0
+	while level >= milestone_level_at(count):
+		count += 1
+	return count
+
+
+## The productivity multiplier from milestones crossed so far: ×2 per milestone.
+static func milestone_multiplier_for_level(level: int) -> BigNumber:
+	return BigNumber.from_float(2.0).pow_int(milestone_count_for_level(level))
+
+
+## The level at which the *next* milestone will be reached.
+static func next_milestone_level(level: int) -> int:
+	return milestone_level_at(milestone_count_for_level(level))
 
 
 func milestone_multiplier() -> BigNumber:
-	return BigNumber.from_float(2.0).pow_int(int(level / MILESTONE_INTERVAL))
+	return milestone_multiplier_for_level(level)
 
 
 func total_effectiveness() -> BigNumber:
 	if not unlocked:
 		return BigNumber.zero()
 	return milestone_multiplier().multiply_float(float(level) * float(count))
+
+
+func unlock_cost() -> BigNumber:
+	return BigNumber.from_float(unlock_cost_base)
 
 
 func level_up_cost() -> BigNumber:

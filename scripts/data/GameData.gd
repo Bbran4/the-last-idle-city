@@ -1,7 +1,6 @@
 class_name GameData
 extends Resource
 
-const SCRAP_YARD_MILESTONE_INTERVAL := 10
 const LEVEL_UP_BASE_COST := 10.0     # was 25.0 — first level-up costs exactly 1 Material
 const LEVEL_UP_COST_GROWTH := 1.2   # was 1.28
 const BUILD_NEW_BASE_COST := 1_000_000_000_000.0   # 1e12 = 1 trillion (cost to build the 2nd yard)
@@ -116,12 +115,11 @@ func can_unlock_reclamation_depot() -> bool:
 
 
 func can_unlock_workshop() -> bool:
-	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.level >= ProductionOperation.MILESTONE_INTERVAL and materials.is_greater_or_equal(workshop.unlock_cost())
+	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.level >= ProductionOperation.FIRST_MILESTONE_LEVEL and materials.is_greater_or_equal(workshop.unlock_cost())
 
 
 func can_unlock_factory() -> bool:
-	return not factory.unlocked and workshop.unlocked and workshop.level >= ProductionOperation.MILESTONE_INTERVAL and materials.is_greater_or_equal(factory.unlock_cost())
-
+	return not factory.unlocked and workshop.unlocked and workshop.level >= ProductionOperation.FIRST_MILESTONE_LEVEL and materials.is_greater_or_equal(factory.unlock_cost())
 
 func unlock_operation(operation: ProductionOperation) -> bool:
 	var can_unlock := false
@@ -160,14 +158,13 @@ func scrap_yard_level_production_per_second() -> float:
 
 
 func scrap_yard_milestone_multiplier() -> BigNumber:
-	# Each completed 10-level milestone doubles productivity only. It never adds a building.
-	var milestone_tier := int(scrap_yard_level / SCRAP_YARD_MILESTONE_INTERVAL)
-	return BigNumber.from_float(2.0).pow_int(milestone_tier)
+	# Uses the shared milestone table (ProductionOperation.MILESTONE_LEVELS)
+	# so Scrap Yard and every other operation cross milestones at the same levels.
+	return ProductionOperation.milestone_multiplier_for_level(scrap_yard_level)
 
 
 func scrap_yard_next_milestone_level() -> int:
-	return (int(scrap_yard_level / SCRAP_YARD_MILESTONE_INTERVAL) + 1) * SCRAP_YARD_MILESTONE_INTERVAL
-
+	return ProductionOperation.next_milestone_level(scrap_yard_level)
 
 func scrap_yard_manual_production() -> BigNumber:
 	# Manual processing benefits from the same upgrades as idle production.

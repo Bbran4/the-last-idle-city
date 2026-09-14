@@ -110,7 +110,7 @@ func _update_ui() -> void:
 		workshop_unlock_button,
 		workshop_level_up_button,
 		workshop_build_new_button,
-		"Requires Reclamation Depot level %d and %s Materials" % [ProductionOperation.MILESTONE_INTERVAL, NumberFormatter.format_number(GameData.WORKSHOP_UNLOCK_COST)],
+		"Requires Reclamation Depot level %d and %s Materials" % [ProductionOperation.FIRST_MILESTONE_LEVEL, NumberFormatter.format_number(GameData.WORKSHOP_UNLOCK_COST)],
 		GameState.data.can_unlock_workshop()
 	)
 	_update_operation_ui(
@@ -119,7 +119,7 @@ func _update_ui() -> void:
 		factory_unlock_button,
 		factory_level_up_button,
 		factory_build_new_button,
-		"Requires Workshop level %d and %s Materials" % [ProductionOperation.MILESTONE_INTERVAL, NumberFormatter.format_number(GameData.FACTORY_UNLOCK_COST)],
+		"Requires Workshop level %d and %s Materials" % [ProductionOperation.FIRST_MILESTONE_LEVEL, NumberFormatter.format_number(GameData.FACTORY_UNLOCK_COST)],
 		GameState.data.can_unlock_factory()
 	)
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [
