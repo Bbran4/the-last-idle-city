@@ -9,10 +9,13 @@ static func save_game() -> bool:
 		"materials": data.materials.to_dict(),
 		"total_materials_produced": data.total_materials_produced.to_dict(),
 		"energy": data.energy,
+		"population": data.population,
+		"industrial_authority_allocation": data.industrial_authority_allocation,
 		"scrap_yard": data.scrap_yard.save_data(),
 		"reclamation_depot": data.reclamation_depot.save_data(),
 		"workshop": data.workshop.save_data(),
 		"factory": data.factory.save_data(),
+		"generator": data.generator.save_data(),
 		"reclamation_depot_production_progress": data.reclamation_depot_production_progress,
 		"workshop_production_progress": data.workshop_production_progress,
 		"factory_production_progress": data.factory_production_progress,
@@ -56,6 +59,8 @@ static func load_game() -> bool:
 	data.materials = _load_big_number(save_data.get("materials", 0.0), BigNumber.zero())
 	data.total_materials_produced = _load_big_number(save_data.get("total_materials_produced", null), data.materials)
 	data.energy = max(0.0, float(save_data.get("energy", GameData.STARTING_ENERGY)))
+	data.population = max(0.0, float(save_data.get("population", GameData.STARTING_POPULATION)))
+	data.set_industrial_authority_allocation(float(save_data.get("industrial_authority_allocation", 50.0)))
 
 	if save_data.has("scrap_yard"):
 		data.scrap_yard.load_save_data(save_data.get("scrap_yard", {}))
@@ -65,6 +70,10 @@ static func load_game() -> bool:
 		data.workshop.load_save_data(save_data.get("workshop", {}))
 	if save_data.has("factory"):
 		data.factory.load_save_data(save_data.get("factory", {}))
+	if save_data.has("generator"):
+		data.generator.load_save_data(save_data.get("generator", {}))
+		data.generator.level = max(GameData.MIN_GENERATOR_LEVEL, data.generator.level)
+		data.generator.count = max(1, data.generator.count)
 
 	data.reclamation_depot_production_progress = max(0.0, float(save_data.get("reclamation_depot_production_progress", 0.0)))
 	data.workshop_production_progress = max(0.0, float(save_data.get("workshop_production_progress", 0.0)))
