@@ -60,10 +60,15 @@ func next_milestone_level() -> int:
 func next_milestone_energy_cost() -> float:
 	return milestone_energy_cost_at(milestones_triggered)
 
+func production_per_building() -> BigNumber:
+	if not unlocked or count <= 0:
+		return BigNumber.zero()
+	return BigNumber.from_float(float(level)).multiply(milestone_multiplier())
+
 func total_effectiveness() -> BigNumber:
 	if not unlocked:
 		return BigNumber.zero()
-	return BigNumber.from_float(float(level) * float(count)).multiply(milestone_multiplier())
+	return production_per_building().multiply_float(float(count))
 
 func unlock_cost() -> BigNumber:
 	return BigNumber.from_float(unlock_cost_base)
