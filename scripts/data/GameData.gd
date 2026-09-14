@@ -4,8 +4,9 @@ extends Resource
 const LEVEL_UP_BASE_COST: float = 10.0
 const LEVEL_UP_COST_GROWTH: float = 1.2
 
-const SCRAP_YARD_BUILD_COST: float = 10.0
-const SCRAP_YARD_BUILD_ENERGY_COST: float = 1.0
+const SCRAP_YARD_BUILD_COST: float = 1_000_000_000_000.0
+const SCRAP_YARD_BUILD_ENERGY_COST: float = 100_000.0
+const SCRAP_YARD_LEVEL_UP_COST: float = 10.0
 const SCRAP_YARD_LEVEL_UP_ENERGY_COST: float = 1.0
 const SCRAP_YARD_MATERIAL_PER_EFFECTIVE_UNIT: float = 1.0
 
@@ -52,7 +53,7 @@ func _init() -> void:
 	materials = BigNumber.zero()
 	total_materials_produced = BigNumber.zero()
 
-	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, LEVEL_UP_BASE_COST, SCRAP_YARD_BUILD_COST, SCRAP_YARD_BUILD_ENERGY_COST, 1.0, LEVEL_UP_COST_GROWTH)
+	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, SCRAP_YARD_LEVEL_UP_COST, SCRAP_YARD_BUILD_COST, SCRAP_YARD_BUILD_ENERGY_COST, 1.0, 1.0)
 	scrap_yard.level_up_energy_cost = SCRAP_YARD_LEVEL_UP_ENERGY_COST
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
