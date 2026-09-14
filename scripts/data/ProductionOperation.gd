@@ -3,8 +3,6 @@ extends Resource
 
 const LEVEL_COST_GROWTH: float = 1.25
 const DEFAULT_BUILD_COST_GROWTH: float = 15.0
-const MILESTONE_ENERGY_BASE_COST: float = 1.0
-const MILESTONE_ENERGY_GROWTH: float = 2.0
 const MILESTONE_LEVELS: Array[int] = [10, 25, 100, 500, 1_000, 10_000, 50_000]
 const FIRST_MILESTONE_LEVEL: int = 10
 
@@ -45,9 +43,6 @@ static func milestone_level_at(index: int) -> int:
 	var last_defined: int = MILESTONE_LEVELS[MILESTONE_LEVELS.size() - 1]
 	return int(round(float(last_defined) * pow(5.0, generated_steps)))
 
-static func milestone_energy_cost_at(index: int) -> float:
-	return MILESTONE_ENERGY_BASE_COST * pow(MILESTONE_ENERGY_GROWTH, index)
-
 static func milestone_multiplier_for_count(count_value: int) -> BigNumber:
 	return BigNumber.from_float(2.0).pow_int(count_value)
 
@@ -56,9 +51,6 @@ func milestone_multiplier() -> BigNumber:
 
 func next_milestone_level() -> int:
 	return milestone_level_at(milestones_triggered)
-
-func next_milestone_energy_cost() -> float:
-	return milestone_energy_cost_at(milestones_triggered)
 
 func production_per_building() -> BigNumber:
 	if not unlocked or count <= 0:
@@ -97,18 +89,17 @@ func build_new(materials: BigNumber, current_energy: float) -> Dictionary:
 		"energy": current_energy - build_new_energy_cost
 	}
 
-func can_trigger_milestone(current_energy: float) -> bool:
+func can_trigger_milestone() -> bool:
 	var required_level: int = next_milestone_level()
-	return unlocked and level > required_level and current_energy >= next_milestone_energy_cost()
+	return unlocked and level > required_level
 
-func trigger_milestone(current_energy: float) -> Dictionary:
-	if not can_trigger_milestone(current_energy):
-		return {"success": false, "energy": current_energy}
+func trigger_milestone() -> Dictionary:
+	if not can_trigger_milestone():
+		return {"success": false}
 	var required_level: int = next_milestone_level()
-	var energy_cost: float = next_milestone_energy_cost()
 	level = max(1, level - required_level)
 	milestones_triggered += 1
-	return {"success": true, "energy": current_energy - energy_cost}
+	return {"success": true}
 
 func unlock(materials: BigNumber) -> BigNumber:
 	if unlocked or materials.is_less_than(unlock_cost()):
