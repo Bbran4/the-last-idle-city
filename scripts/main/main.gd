@@ -66,8 +66,10 @@ func _create_scrap_yard_milestone_button() -> void:
 	milestone_button = Button.new()
 	milestone_button.name = "ScrapYardMilestoneButton"
 	milestone_button.text = "MILESTONE"
-	milestone_button.theme_override_styles.normal = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton.get_theme_stylebox("normal")
-	milestone_button.theme_override_styles.disabled = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton.get_theme_stylebox("disabled")
+	var level_up_normal: StyleBox = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton.get_theme_stylebox("normal")
+	var level_up_disabled: StyleBox = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton.get_theme_stylebox("disabled")
+	milestone_button.add_theme_stylebox_override("normal", level_up_normal)
+	milestone_button.add_theme_stylebox_override("disabled", level_up_disabled)
 	milestone_button.pressed.connect(_on_scrap_yard_milestone_pressed)
 	scrap_card_vbox.add_child(milestone_button)
 	scrap_card_vbox.move_child(milestone_button, scrap_card_vbox.get_child_count() - 2)
