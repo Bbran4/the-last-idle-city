@@ -17,17 +17,18 @@ const SCRAP_YARD_BUILD_ENERGY_COST: float = 0.0
 const SCRAP_YARD_LEVEL_UP_ENERGY_COST: float = 1.0
 
 const RECLAMATION_DEPOT_UNLOCK_COST: float = 250.0
-const RECLAMATION_DEPOT_LEVEL_UP_COST: float = 50.0
+const RECLAMATION_DEPOT_SCRAP_YARD_LEVEL_COST: int = 100
+const RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST: float = 10.0
 const RECLAMATION_DEPOT_BUILD_COST: float = 300.0
 const RECLAMATION_DEPOT_BUILD_ENERGY_COST: float = 5.0
-const WORKSHOP_UNLOCK_COST: float = 1_500.0
 const WORKSHOP_LEVEL_UP_COST: float = 300.0
 const WORKSHOP_BUILD_COST: float = 1_800.0
 const WORKSHOP_BUILD_ENERGY_COST: float = 10.0
-const FACTORY_UNLOCK_COST: float = 10_000.0
+const WORKSHOP_UNLOCK_COST: float = 1_500.0
 const FACTORY_LEVEL_UP_COST: float = 2_000.0
 const FACTORY_BUILD_COST: float = 12_000.0
 const FACTORY_BUILD_ENERGY_COST: float = 20.0
+const FACTORY_UNLOCK_COST: float = 10_000.0
 
 const RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND: float = 0.10
 const WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND: float = 0.05
@@ -35,13 +36,13 @@ const FACTORY_WORKSHOP_LEVELS_PER_SECOND: float = 0.025
 const AUTOMATION_COMPLETION_EPSILON: float = 0.000001
 
 const STARTING_ENERGY: float = 20.0
-const BASE_ENERGY_PRODUCTION_PER_SECOND: float = 10.0
-const INDUSTRIAL_ENERGY_PRODUCTION_PER_WORKER: float = 0.05
-const BASE_CIVILIAN_ENERGY_CONSUMPTION_PER_SECOND: float = 2.0
-const SCRAP_YARD_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.10
-const RECLAMATION_DEPOT_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.25
-const WORKSHOP_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.50
-const FACTORY_ENERGY_PER_EFFECTIVE_OPERATION: float = 1.00
+const BASE_ENERGY_PRODUCTION_PER_SECOND: float = 1.0
+const INDUSTRIAL_ENERGY_PRODUCTION_PER_WORKER: float = 0.0
+const BASE_CIVILIAN_ENERGY_CONSUMPTION_PER_SECOND: float = 0.0
+const SCRAP_YARD_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.0
+const RECLAMATION_DEPOT_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.0
+const WORKSHOP_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.0
+const FACTORY_ENERGY_PER_EFFECTIVE_OPERATION: float = 0.0
 
 var materials: BigNumber
 var total_materials_produced: BigNumber
@@ -70,7 +71,8 @@ func _init() -> void:
 	scrap_yard.level_up_energy_cost = SCRAP_YARD_LEVEL_UP_ENERGY_COST
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
-	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, RECLAMATION_DEPOT_LEVEL_UP_COST, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST)
+	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, 0.0, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST)
+	reclamation_depot.level_up_energy_cost = RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST
 	workshop = ProductionOperation.new("Workshop", WORKSHOP_UNLOCK_COST, WORKSHOP_LEVEL_UP_COST, WORKSHOP_BUILD_COST, WORKSHOP_BUILD_ENERGY_COST)
 	factory = ProductionOperation.new("Factory", FACTORY_UNLOCK_COST, FACTORY_LEVEL_UP_COST, FACTORY_BUILD_COST, FACTORY_BUILD_ENERGY_COST)
 
@@ -91,13 +93,13 @@ func factory_multiplier() -> float:
 	return 1.0 + factory.total_effectiveness().to_float() * 0.10
 
 func reclamation_depot_scrap_yard_level_rate() -> float:
-	return reclamation_depot.total_effectiveness().to_float() * RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND * energy_production_multiplier()
+	return reclamation_depot.total_effectiveness().to_float() * RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND
 
 func workshop_reclamation_depot_level_rate() -> float:
-	return workshop.total_effectiveness().to_float() * WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND * energy_production_multiplier()
+	return workshop.total_effectiveness().to_float() * WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND
 
 func factory_workshop_level_rate() -> float:
-	return factory.total_effectiveness().to_float() * FACTORY_WORKSHOP_LEVELS_PER_SECOND * energy_production_multiplier()
+	return factory.total_effectiveness().to_float() * FACTORY_WORKSHOP_LEVELS_PER_SECOND
 
 func process_chain_automation(delta: float) -> void:
 	workshop_level_automation_progress += factory_workshop_level_rate() * delta
@@ -141,6 +143,8 @@ func unlock_operation(operation: ProductionOperation) -> bool:
 	return true
 
 func level_up_operation(operation: ProductionOperation) -> bool:
+	if operation == reclamation_depot:
+		return level_up_reclamation_depot()
 	if not operation.unlocked:
 		return false
 	var level_up_cost: BigNumber = operation.level_up_cost()
@@ -148,6 +152,17 @@ func level_up_operation(operation: ProductionOperation) -> bool:
 		return false
 	materials = operation.level_up(materials)
 	energy -= operation.level_up_energy_cost
+	return true
+
+func can_level_up_reclamation_depot() -> bool:
+	return reclamation_depot.unlocked and scrap_yard.level >= RECLAMATION_DEPOT_SCRAP_YARD_LEVEL_COST and energy >= RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST
+
+func level_up_reclamation_depot() -> bool:
+	if not can_level_up_reclamation_depot():
+		return false
+	scrap_yard.level -= RECLAMATION_DEPOT_SCRAP_YARD_LEVEL_COST
+	reclamation_depot.level += 1
+	energy -= RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST
 	return true
 
 func build_new_operation(operation: ProductionOperation) -> bool:
@@ -290,50 +305,22 @@ func grow_population(delta: float) -> void:
 	population += POPULATION_GROWTH_PER_SECOND * delta
 
 func energy_production_per_second() -> float:
-	return BASE_ENERGY_PRODUCTION_PER_SECOND + industrial_workforce_count() * INDUSTRIAL_ENERGY_PRODUCTION_PER_WORKER
+	return BASE_ENERGY_PRODUCTION_PER_SECOND
 
 func energy_consumption_per_second() -> float:
-	var scrap_effective: float = scrap_yard.total_effectiveness().to_float()
-	var depot_effective: float = reclamation_depot.total_effectiveness().to_float()
-	var workshop_effective: float = workshop.total_effectiveness().to_float()
-	var factory_effective: float = factory.total_effectiveness().to_float()
-	return BASE_CIVILIAN_ENERGY_CONSUMPTION_PER_SECOND \
-		+ scrap_effective * SCRAP_YARD_ENERGY_PER_EFFECTIVE_OPERATION \
-		+ depot_effective * RECLAMATION_DEPOT_ENERGY_PER_EFFECTIVE_OPERATION \
-		+ workshop_effective * WORKSHOP_ENERGY_PER_EFFECTIVE_OPERATION \
-		+ factory_effective * FACTORY_ENERGY_PER_EFFECTIVE_OPERATION
+	return 0.0
 
 func energy_balance_per_second() -> float:
-	return energy_production_per_second() - energy_consumption_per_second()
+	return energy_production_per_second()
 
 func energy_production_multiplier() -> float:
-	var production: float = energy_production_per_second()
-	var consumption: float = energy_consumption_per_second()
-	if consumption <= 0.0 or production >= consumption:
-		return 1.0
-	var shortage_ratio: float = production / consumption
-	match energy_priority:
-		"Industrial": return clamp(shortage_ratio + 0.10, 0.0, 1.0)
-		"Civilian": return clamp(shortage_ratio, 0.0, 1.0)
-		"Security": return clamp(shortage_ratio + 0.05, 0.0, 1.0)
-		"Scientific": return clamp(shortage_ratio + 0.05, 0.0, 1.0)
-	return clamp(shortage_ratio, 0.0, 1.0)
+	return 1.0
 
 func process_energy(delta: float) -> void:
 	energy += energy_balance_per_second() * delta
-	energy = max(0.0, energy)
 
 func energy_shortage_state() -> String:
-	var production: float = energy_production_per_second()
-	var consumption: float = energy_consumption_per_second()
-	if production >= consumption:
-		return "STABLE"
-	var ratio: float = production / max(consumption, 0.001)
-	if ratio >= 0.8:
-		return "WARNING"
-	if ratio >= 0.5:
-		return "SHORTAGE"
-	return "CRITICAL"
+	return "STABLE"
 
 func set_energy_priority(priority: String) -> void:
 	if priority in ["Industrial", "Civilian", "Security", "Scientific"]:
