@@ -36,9 +36,13 @@ extends Control
 @onready var top_materials_label: Label = $Layout/VBox/TopBar/HBox/TopMaterialsLabel
 @onready var top_production_label: Label = $Layout/VBox/TopBar/HBox/TopProductionLabel
 
+var milestone_button: Button
 var production_feedback_tween: Tween
 
 func _ready() -> void:
+	$Layout.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	$Layout/VBox/Body.set_size_flags(Control.SIZE_EXPAND_FILL, Control.SIZE_EXPAND_FILL)
+	_create_scrap_yard_milestone_button()
 	game_clock.tick.connect(_on_game_tick)
 	save_button.pressed.connect(_on_save_pressed)
 	load_button.pressed.connect(_on_load_pressed)
@@ -56,6 +60,19 @@ func _ready() -> void:
 	factory_level_up_button.pressed.connect(_on_factory_level_up_pressed)
 	factory_build_new_button.pressed.connect(_on_factory_build_new_pressed)
 	_update_ui()
+
+func _create_scrap_yard_milestone_button() -> void:
+	var scrap_card_vbox: VBoxContainer = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox
+	milestone_button = Button.new()
+	milestone_button.name = "ScrapYardMilestoneButton"
+	milestone_button.text = "MILESTONE"
+	var level_up_normal: StyleBox = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton.get_theme_stylebox("normal")
+	var level_up_disabled: StyleBox = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton.get_theme_stylebox("disabled")
+	milestone_button.add_theme_stylebox_override("normal", level_up_normal)
+	milestone_button.add_theme_stylebox_override("disabled", level_up_disabled)
+	milestone_button.pressed.connect(_on_scrap_yard_milestone_pressed)
+	scrap_card_vbox.add_child(milestone_button)
+	scrap_card_vbox.move_child(milestone_button, scrap_card_vbox.get_child_count() - 2)
 
 func _on_game_tick(delta: float) -> void:
 	_update_ui()
@@ -79,11 +96,19 @@ func _update_ui() -> void:
 	level_up_button.disabled = not data.can_level_up_scrap_yard()
 	build_new_button.text = "BUILD SCRAP YARD (%s Materials)" % NumberFormatter.format_number(data.scrap_yard_build_new_cost())
 	build_new_button.disabled = not data.can_build_new_scrap_yard()
+	_update_scrap_yard_milestone_ui()
 	manual_production_button.text = "PROCESS SCRAP (+%s Materials)" % NumberFormatter.format_number(data.scrap_yard_manual_production())
 	_update_operation_ui(data.reclamation_depot, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, "Requires %s Materials" % NumberFormatter.format_number(GameData.RECLAMATION_DEPOT_UNLOCK_COST), data.can_unlock_reclamation_depot())
 	_update_operation_ui(data.workshop, workshop_label, workshop_unlock_button, workshop_level_up_button, workshop_build_new_button, "Requires Reclamation Depot level %d and %s Materials" % [ProductionOperation.FIRST_MILESTONE_LEVEL, NumberFormatter.format_number(GameData.WORKSHOP_UNLOCK_COST)], data.can_unlock_workshop())
 	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, "Requires Workshop level %d and %s Materials" % [ProductionOperation.FIRST_MILESTONE_LEVEL, NumberFormatter.format_number(GameData.FACTORY_UNLOCK_COST)], data.can_unlock_factory())
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [data.game_time, data.total_ticks]
+
+func _update_scrap_yard_milestone_ui() -> void:
+	if milestone_button == null:
+		return
+	var data: GameData = GameState.data
+	milestone_button.text = "MILESTONE (%d + %.1f Energy)" % [data.scrap_yard_next_milestone_level(), data.scrap_yard_next_milestone_energy_cost()]
+	milestone_button.disabled = not data.can_trigger_scrap_yard_milestone()
 
 func _on_save_pressed() -> void:
 	SaveManager.save_game()
@@ -98,6 +123,10 @@ func _on_level_up_pressed() -> void:
 
 func _on_build_new_pressed() -> void:
 	if GameState.data.build_new_scrap_yard():
+		_update_ui()
+
+func _on_scrap_yard_milestone_pressed() -> void:
+	if GameState.data.trigger_scrap_yard_milestone():
 		_update_ui()
 
 func _on_industrial_allocation_changed(value: float) -> void:

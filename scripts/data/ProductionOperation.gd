@@ -14,6 +14,7 @@ const FIRST_MILESTONE_LEVEL: int = 10
 @export var count: int = 0
 @export var unlock_cost_base: float = 0.0
 @export var level_up_base_cost: float = 0.0
+@export var level_up_cost_growth: float = LEVEL_COST_GROWTH
 @export var level_up_energy_cost: float = 0.0
 @export var build_new_base_cost: float = 0.0
 @export var build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
@@ -26,7 +27,8 @@ func _init(
 	operation_level_up_base_cost: float = 0.0,
 	operation_build_new_base_cost: float = 0.0,
 	operation_build_new_energy_cost: float = 0.0,
-	operation_build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
+	operation_build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH,
+	operation_level_up_cost_growth: float = LEVEL_COST_GROWTH
 ) -> void:
 	display_name = operation_name
 	unlock_cost_base = operation_unlock_cost
@@ -34,6 +36,7 @@ func _init(
 	build_new_base_cost = operation_build_new_base_cost
 	build_new_energy_cost = operation_build_new_energy_cost
 	build_cost_growth = operation_build_cost_growth
+	level_up_cost_growth = operation_level_up_cost_growth
 
 static func milestone_level_at(index: int) -> int:
 	if index < MILESTONE_LEVELS.size():
@@ -67,7 +70,7 @@ func unlock_cost() -> BigNumber:
 
 func level_up_cost() -> BigNumber:
 	return BigNumber.from_float(level_up_base_cost).multiply(
-		BigNumber.from_float(LEVEL_COST_GROWTH).pow_int(max(0, level))
+		BigNumber.from_float(level_up_cost_growth).pow_int(max(0, level))
 	)
 
 func build_new_cost() -> BigNumber:

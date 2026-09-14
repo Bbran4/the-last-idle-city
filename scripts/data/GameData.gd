@@ -66,7 +66,7 @@ var total_materials_produced: BigNumber
 func _init() -> void:
 	materials = BigNumber.zero()
 	total_materials_produced = BigNumber.zero()
-	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, LEVEL_UP_BASE_COST, SCRAP_YARD_BUILD_COST, SCRAP_YARD_BUILD_ENERGY_COST, 1.0)
+	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, LEVEL_UP_BASE_COST, SCRAP_YARD_BUILD_COST, SCRAP_YARD_BUILD_ENERGY_COST, 1.0, 1.0)
 	scrap_yard.level_up_energy_cost = SCRAP_YARD_LEVEL_UP_ENERGY_COST
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
@@ -326,19 +326,28 @@ func process_energy(delta: float) -> void:
 func energy_shortage_state() -> String:
 	var production: float = energy_production_per_second()
 	var consumption: float = energy_consumption_per_second()
-	if consumption <= production:
+	if production >= consumption:
 		return "STABLE"
-	var ratio: float = production / consumption
-	if ratio >= 0.75:
-		return "STRAINED"
-	if ratio >= 0.50:
+	var ratio: float = production / max(consumption, 0.001)
+	if ratio >= 0.8:
+		return "WARNING"
+	if ratio >= 0.5:
 		return "SHORTAGE"
 	return "CRITICAL"
 
 func set_energy_priority(priority: String) -> void:
-	if ["Industrial", "Civilian", "Security", "Scientific"].has(priority):
+	if priority in ["Industrial", "Civilian", "Security", "Scientific"]:
 		energy_priority = priority
 
 func produce_materials(amount: BigNumber) -> void:
 	materials = materials.add(amount)
 	total_materials_produced = total_materials_produced.add(amount)
+
+func process(delta: float) -> void:
+	game_time += delta
+	total_ticks += 1
+	grow_population(delta)
+	process_energy(delta)
+	process_chain_automation(delta)
+	var production: BigNumber = scrap_yard_production_per_second().multiply_float(delta)
+	produce_materials(production)

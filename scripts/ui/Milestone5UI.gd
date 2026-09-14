@@ -73,7 +73,7 @@ func _try_initialize() -> void:
 	milestone_header.text = "PRODUCTION MILESTONES"
 	panel.add_child(milestone_header)
 
-	for operation_name: String in ["Scrap Yard", "Reclamation Depot", "Workshop", "Factory"]:
+	for operation_name: String in ["Reclamation Depot", "Workshop", "Factory"]:
 		var row: HBoxContainer = HBoxContainer.new()
 		panel.add_child(row)
 		var label: Label = Label.new()
@@ -128,7 +128,6 @@ func _update_ui() -> void:
 		if label != null:
 			label.text = "%s: %.0f%%" % [department, data.get_department_allocation(department)]
 
-	_update_milestone_row("ScrapYard", data.scrap_yard)
 	_update_milestone_row("ReclamationDepot", data.reclamation_depot)
 	_update_milestone_row("Workshop", data.workshop)
 	_update_milestone_row("Factory", data.factory)
