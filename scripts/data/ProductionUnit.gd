@@ -14,7 +14,6 @@ const MILESTONE_GENERATED_GROWTH := 10.6667
 @export var milestones_triggered: int = 0
 @export var purchase_base_cost: float = 10.0
 @export var purchase_cost_growth: float = 1.07
-@export var soul_cost_per_unit: float = 1.0
 @export var base_production_per_unit: float = 1.0
 @export var requires_secondary_unit_count: int = 0
 
@@ -57,12 +56,8 @@ func purchase_cost() -> BigNumber:
 	)
 
 
-func purchase_soul_cost() -> BigNumber:
-	return BigNumber.from_float(soul_cost_per_unit)
-
-
-func can_purchase(materials: BigNumber, souls: BigNumber, secondary_unit: ProductionUnit) -> bool:
-	if materials.is_less_than(purchase_cost()) or souls.is_less_than(purchase_soul_cost()):
+func can_purchase(materials: BigNumber, secondary_unit: ProductionUnit) -> bool:
+	if materials.is_less_than(purchase_cost()):
 		return false
 	if requires_secondary_unit_count > 0:
 		if secondary_unit == null or secondary_unit.count < requires_secondary_unit_count:
@@ -70,19 +65,17 @@ func can_purchase(materials: BigNumber, souls: BigNumber, secondary_unit: Produc
 	return true
 
 
-func purchase(materials: BigNumber, souls: BigNumber, secondary_unit: ProductionUnit) -> Dictionary:
-	if not can_purchase(materials, souls, secondary_unit):
-		return {"materials": materials, "souls": souls, "success": false}
+func purchase(materials: BigNumber, secondary_unit: ProductionUnit) -> Dictionary:
+	if not can_purchase(materials, secondary_unit):
+		return {"materials": materials, "success": false}
 
 	var cost := purchase_cost()
-	var soul_cost := purchase_soul_cost()
 	count += 1
 	if requires_secondary_unit_count > 0 and secondary_unit != null:
 		secondary_unit.count -= requires_secondary_unit_count
 
 	return {
 		"materials": materials.subtract(cost),
-		"souls": souls.subtract(soul_cost),
 		"success": true
 	}
 
