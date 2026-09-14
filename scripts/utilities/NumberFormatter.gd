@@ -32,6 +32,9 @@ static func format_number(value: float) -> String:
 		scaled /= 1_000.0
 		tier += 1
 
+	if tier == suffixes.size() and scaled >= 1_000.0:
+		return "%.2e" % value
+
 	if tier == 0:
 		return "%.0f" % value
 

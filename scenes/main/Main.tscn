@@ -20,7 +20,7 @@ offset_bottom = 40.0
 [node name="MarginContainer" type="MarginContainer" parent="UI" unique_id=984240607]
 layout_mode = 0
 offset_right = 360.0
-offset_bottom = 300.0
+offset_bottom = 380.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UI/MarginContainer" unique_id=1127794919]
 layout_mode = 2
@@ -35,15 +35,27 @@ text = "Materials: 0"
 
 [node name="ProductionLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Materials per second: 1"
+text = "Total production: 1 Materials/sec"
 
 [node name="ScrapYardLevelLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "Scrap Yard level: 1"
 
+[node name="ScrapYardCountLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Scrap Yards: 1 (×1)"
+
+[node name="MilestoneLabel" type="Label" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Milestone multiplier: ×1 | Next expansion: level 10"
+
 [node name="LevelUpButton" type="Button" parent="UI/MarginContainer/VBoxContainer"]
 layout_mode = 2
 text = "LEVEL UP (10 Materials)"
+
+[node name="BuildNewButton" type="Button" parent="UI/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "BUILD NEW (100 Materials)"
 
 [node name="ManualProductionButton" type="Button" parent="UI/MarginContainer/VBoxContainer"]
 layout_mode = 2

@@ -77,17 +77,17 @@ This section intentionally lives near the top of the README so it can be used as
 
 **Goal:** Establish the game's distinctive idle-building model.
 
-- [ ] Implement Scrap Yard levels
-- [ ] Implement automatic milestone expansions
-- [ ] Add milestone multipliers at selected levels
-- [ ] Add **Build New** button
-- [ ] Make Scrap Yard count a cumulative multiplier
-- [ ] Confirm 1 Scrap Yard = ×1, 2 = ×2, 3 = ×3, etc.
-- [ ] Ensure new Scrap Yards share the same level
-- [ ] Ensure there is only one Scrap Yard upgrade tree
-- [ ] Implement exponential/idle-style cost scaling
-- [ ] Display Level, Scrap Yard count, milestone multiplier, and total production clearly
-- [ ] Test large numbers and high levels
+- [x] Implement Scrap Yard levels
+- [x] Implement automatic milestone expansions
+- [x] Add milestone multipliers at selected levels
+- [x] Add **Build New** button
+- [x] Make Scrap Yard count a cumulative multiplier
+- [x] Confirm 1 Scrap Yard = ×1, 2 = ×2, 3 = ×3, etc.
+- [x] Ensure new Scrap Yards share the same level
+- [x] Ensure there is only one Scrap Yard upgrade tree
+- [x] Implement exponential/idle-style cost scaling
+- [x] Display Level, Scrap Yard count, milestone multiplier, and total production clearly
+- [x] Test large numbers and high levels
 
 **Core rule:**
 

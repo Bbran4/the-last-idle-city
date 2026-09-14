@@ -3,8 +3,11 @@ extends Control
 @onready var materials_label: Label = $UI/MarginContainer/VBoxContainer/MaterialsLabel
 @onready var production_label: Label = $UI/MarginContainer/VBoxContainer/ProductionLabel
 @onready var scrap_yard_level_label: Label = $UI/MarginContainer/VBoxContainer/ScrapYardLevelLabel
+@onready var scrap_yard_count_label: Label = $UI/MarginContainer/VBoxContainer/ScrapYardCountLabel
+@onready var milestone_label: Label = $UI/MarginContainer/VBoxContainer/MilestoneLabel
 @onready var tick_label: Label = $UI/MarginContainer/VBoxContainer/TickLabel
 @onready var level_up_button: Button = $UI/MarginContainer/VBoxContainer/LevelUpButton
+@onready var build_new_button: Button = $UI/MarginContainer/VBoxContainer/BuildNewButton
 @onready var manual_production_button: Button = $UI/MarginContainer/VBoxContainer/ManualProductionButton
 @onready var production_feedback_label: Label = $UI/MarginContainer/VBoxContainer/ProductionFeedbackLabel
 @onready var game_clock: GameClock = $GameClock
@@ -19,6 +22,7 @@ func _ready() -> void:
 	save_button.pressed.connect(_on_save_pressed)
 	load_button.pressed.connect(_on_load_pressed)
 	level_up_button.pressed.connect(_on_level_up_pressed)
+	build_new_button.pressed.connect(_on_build_new_pressed)
 	manual_production_button.pressed.connect(_on_manual_production_pressed)
 
 	_update_ui()
@@ -31,10 +35,17 @@ func _on_game_tick(delta: float) -> void:
 
 func _update_ui() -> void:
 	materials_label.text = "Materials: %s" % NumberFormatter.format_number(GameState.data.materials)
-	production_label.text = "Materials per second: %s" % NumberFormatter.format_number(GameState.data.scrap_yard_production_per_second())
+	production_label.text = "Total production: %s Materials/sec" % NumberFormatter.format_number(GameState.data.scrap_yard_production_per_second())
 	scrap_yard_level_label.text = "Scrap Yard level: %d" % GameState.data.scrap_yard_level
+	scrap_yard_count_label.text = "Scrap Yards: %d (×%d)" % [GameState.data.scrap_yard_count, GameState.data.scrap_yard_count]
+	milestone_label.text = "Milestone multiplier: ×%s | Next expansion: level %d" % [
+		NumberFormatter.format_number(GameState.data.scrap_yard_milestone_multiplier()),
+		GameState.data.scrap_yard_next_milestone_level()
+	]
 	level_up_button.text = "LEVEL UP (%s Materials)" % NumberFormatter.format_number(GameState.data.scrap_yard_level_up_cost())
 	level_up_button.disabled = not GameState.data.can_level_up_scrap_yard()
+	build_new_button.text = "BUILD NEW (%s Materials)" % NumberFormatter.format_number(GameState.data.scrap_yard_build_new_cost())
+	build_new_button.disabled = not GameState.data.can_build_new_scrap_yard()
 	manual_production_button.text = "PROCESS SCRAP (+%s Materials)" % NumberFormatter.format_number(GameState.data.scrap_yard_manual_production())
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [
 		GameState.data.game_time,
@@ -52,6 +63,11 @@ func _on_load_pressed() -> void:
 
 func _on_level_up_pressed() -> void:
 	if GameState.data.level_up_scrap_yard():
+		_update_ui()
+
+
+func _on_build_new_pressed() -> void:
+	if GameState.data.build_new_scrap_yard():
 		_update_ui()
 
 
