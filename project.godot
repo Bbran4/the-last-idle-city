@@ -18,7 +18,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameState="*uid://bipf4ncjs0byq"
-Milestone5UI="*res://scripts/ui/Milestone5UI.gd"
 
 [display]
 
