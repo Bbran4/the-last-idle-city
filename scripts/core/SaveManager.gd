@@ -13,9 +13,9 @@ static func save_game() -> bool:
 		"reclamation_depot": data.reclamation_depot.save_data(),
 		"workshop": data.workshop.save_data(),
 		"factory": data.factory.save_data(),
-		"scrap_yard_production_progress": data.scrap_yard_production_progress,
 		"reclamation_depot_production_progress": data.reclamation_depot_production_progress,
 		"workshop_production_progress": data.workshop_production_progress,
+		"factory_production_progress": data.factory_production_progress,
 		"game_time": data.game_time,
 		"total_ticks": data.total_ticks
 	}
@@ -66,9 +66,9 @@ static func load_game() -> bool:
 	if save_data.has("factory"):
 		data.factory.load_save_data(save_data.get("factory", {}))
 
-	data.scrap_yard_production_progress = max(0.0, float(save_data.get("scrap_yard_production_progress", 0.0)))
 	data.reclamation_depot_production_progress = max(0.0, float(save_data.get("reclamation_depot_production_progress", 0.0)))
 	data.workshop_production_progress = max(0.0, float(save_data.get("workshop_production_progress", 0.0)))
+	data.factory_production_progress = max(0.0, float(save_data.get("factory_production_progress", 0.0)))
 	data.game_time = float(save_data.get("game_time", 0.0))
 	data.total_ticks = int(save_data.get("total_ticks", 0))
 	return true
