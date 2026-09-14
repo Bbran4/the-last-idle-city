@@ -5,14 +5,17 @@ extends Control
 @onready var workforce_label: Label = $Layout/VBox/Body/RightRail/VBox/WorkforceLabel
 @onready var chain_status_label: Label = $Layout/VBox/Body/RightRail/VBox/ChainStatusLabel
 @onready var production_stats_label: Label = $Layout/VBox/Body/RightRail/VBox/ProductionStatsLabel
+@onready var reclamation_depot_card: Control = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard
 @onready var reclamation_depot_label: Label = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox/ReclamationDepotLabel
 @onready var reclamation_depot_unlock_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox/ReclamationDepotUnlockButton
 @onready var reclamation_depot_level_up_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox/ReclamationDepotLevelUpButton
 @onready var reclamation_depot_build_new_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox/ReclamationDepotBuildNewButton
+@onready var workshop_card: Control = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard
 @onready var workshop_label: Label = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox/WorkshopLabel
 @onready var workshop_unlock_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox/WorkshopUnlockButton
 @onready var workshop_level_up_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox/WorkshopLevelUpButton
 @onready var workshop_build_new_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox/WorkshopBuildNewButton
+@onready var factory_card: Control = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/FactoryCard
 @onready var factory_label: Label = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/FactoryCard/VBox/FactoryLabel
 @onready var factory_unlock_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/FactoryCard/VBox/FactoryUnlockButton
 @onready var factory_level_up_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/FactoryCard/VBox/FactoryLevelUpButton
@@ -43,6 +46,9 @@ func _ready() -> void:
 	$Layout/VBox/Body/Center/WorkforcePanel.visible = false
 	workforce_label.visible = false
 	manual_production_button.visible = false
+	reclamation_depot_card.visible = false
+	workshop_card.visible = false
+	factory_card.visible = false
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox, "ScrapYardMilestoneButton", func(): return GameState.data.scrap_yard)
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox, "ReclamationDepotMilestoneButton", func(): return GameState.data.reclamation_depot)
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox, "WorkshopMilestoneButton", func(): return GameState.data.workshop)
@@ -93,28 +99,44 @@ func _update_ui() -> void:
 
 	scrap_yard_level_label.text = "Scrap Yard level: %d" % data.scrap_yard.level
 	scrap_yard_count_label.text = "Scrap Yards: %d" % data.scrap_yard.count
-	milestone_label.text = "Milestone ×%s | Next: level %d + %.1f Energy" % [NumberFormatter.format_number(data.scrap_yard_milestone_multiplier()), data.scrap_yard_next_milestone_level(), data.scrap_yard_next_milestone_energy_cost()]
 	level_up_button.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_level_up_cost()), data.scrap_yard.level_up_energy_cost]
 	level_up_button.disabled = not data.can_level_up_scrap_yard()
 	build_new_button.text = "BUILD SCRAP YARD (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_build_new_cost()), data.scrap_yard.build_new_energy_cost]
-	build_new_button.disabled = not data.can_build_new_scrap_yard()
-	_update_milestone_button(data.scrap_yard, scrap_yard_milestone_button)
+	build_new_button.visible = data.can_build_new_scrap_yard()
+	_update_scrap_yard_milestone_ui(data)
 
-	_update_operation_ui(data.reclamation_depot, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, "Requires %s Materials" % NumberFormatter.format_number(GameData.RECLAMATION_DEPOT_UNLOCK_COST), data.can_unlock_reclamation_depot(), reclamation_depot_milestone_button)
-	_update_operation_ui(data.workshop, workshop_label, workshop_unlock_button, workshop_level_up_button, workshop_build_new_button, "Requires Reclamation Depot milestone 1 and %s Materials" % NumberFormatter.format_number(GameData.WORKSHOP_UNLOCK_COST), data.can_unlock_workshop(), workshop_milestone_button)
-	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, "Requires Workshop milestone 1 and %s Materials" % NumberFormatter.format_number(GameData.FACTORY_UNLOCK_COST), data.can_unlock_factory(), factory_milestone_button)
+	_update_operation_ui(data.reclamation_depot, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, data.can_unlock_reclamation_depot(), reclamation_depot_milestone_button)
+	_update_operation_ui(data.workshop, workshop_label, workshop_unlock_button, workshop_level_up_button, workshop_build_new_button, data.can_unlock_workshop(), workshop_milestone_button)
+	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, data.can_unlock_factory(), factory_milestone_button)
+
+func _update_scrap_yard_milestone_ui(data: GameData) -> void:
+	var can_trigger: bool = data.can_trigger_scrap_yard_milestone()
+	var next_level: int = data.scrap_yard_next_milestone_level()
+	var next_energy: float = data.scrap_yard_next_milestone_energy_cost()
+
+	if can_trigger:
+		milestone_label.visible = false
+		scrap_yard_milestone_button.visible = true
+		scrap_yard_milestone_button.text = "MILESTONE (Level %d + %.1f Energy)" % [next_level, next_energy]
+		scrap_yard_milestone_button.disabled = false
+		return
+
+	scrap_yard_milestone_button.visible = false
+	if data.scrap_yard.milestones_triggered > 0:
+		milestone_label.visible = true
+		milestone_label.text = "Next milestone: level %d" % next_level
+	else:
+		milestone_label.visible = false
 
 func _update_milestone_button(operation: ProductionOperation, button: Button) -> void:
 	button.text = "MILESTONE (Level %d + %.1f Energy)" % [operation.next_milestone_level(), operation.next_milestone_energy_cost()]
 	button.disabled = not operation.can_trigger_milestone(GameState.data.energy)
 	button.visible = operation.unlocked
 
-func _update_operation_ui(operation: ProductionOperation, status_label: Label, unlock_button: Button, level_up_button_ref: Button, build_new_button_ref: Button, unlock_requirement: String, can_unlock: bool, milestone_button: Button) -> void:
+func _update_operation_ui(operation: ProductionOperation, status_label: Label, unlock_button: Button, level_up_button_ref: Button, build_new_button_ref: Button, can_unlock: bool, milestone_button: Button) -> void:
 	if not operation.unlocked:
 		status_label.text = "%s — LOCKED" % operation.display_name
-		unlock_button.visible = true
-		unlock_button.text = "UNLOCK %s (%s Materials)" % [operation.display_name.to_upper(), NumberFormatter.format_number(operation.unlock_cost())]
-		unlock_button.disabled = not can_unlock
+		unlock_button.visible = false
 		level_up_button_ref.visible = false
 		build_new_button_ref.visible = false
 		milestone_button.visible = false
@@ -125,9 +147,8 @@ func _update_operation_ui(operation: ProductionOperation, status_label: Label, u
 	level_up_button_ref.visible = true
 	level_up_button_ref.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(operation.level_up_cost()), operation.level_up_energy_cost]
 	level_up_button_ref.disabled = GameState.data.materials.is_less_than(operation.level_up_cost()) or GameState.data.energy < operation.level_up_energy_cost
-	build_new_button_ref.visible = true
+	build_new_button_ref.visible = operation.can_build_new(GameState.data.materials, GameState.data.energy)
 	build_new_button_ref.text = "BUILD NEW (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(operation.build_new_cost()), operation.build_new_energy_cost]
-	build_new_button_ref.disabled = not operation.can_build_new(GameState.data.materials, GameState.data.energy)
 	_update_milestone_button(operation, milestone_button)
 
 func _on_save_pressed() -> void:
