@@ -30,6 +30,7 @@ func scrap_yard_level_production_per_second() -> float:
 
 
 func scrap_yard_milestone_multiplier() -> float:
+	# Each completed 10-level milestone doubles productivity only. It never adds a building.
 	var milestone_tier := int(scrap_yard_level / SCRAP_YARD_MILESTONE_INTERVAL)
 	return pow(2.0, milestone_tier)
 
@@ -110,10 +111,6 @@ func level_up_scrap_yard() -> bool:
 	materials -= scrap_yard_level_up_cost()
 	scrap_yard_level += 1
 
-	# Every tenth shared level expands the operation automatically.
-	if scrap_yard_level % SCRAP_YARD_MILESTONE_INTERVAL == 0:
-		scrap_yard_count += 1
-
 	return true
 
 
@@ -126,6 +123,7 @@ func build_new_scrap_yard() -> bool:
 		return false
 
 	materials -= scrap_yard_build_new_cost()
+	# BUILD NEW is the only action that adds a Scrap Yard building.
 	scrap_yard_count += 1
 	return true
 

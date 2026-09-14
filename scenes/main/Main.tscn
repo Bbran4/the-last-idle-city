@@ -69,7 +69,7 @@ text = "Scrap Yards: 1 (×1)"
 
 [node name="MilestoneLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=1088111716]
 layout_mode = 2
-text = "Milestone multiplier: ×1 | Next expansion: level 10"
+text = "Milestone productivity: ×1 | Next double: level 10"
 
 [node name="LevelUpButton" type="Button" parent="UI/MarginContainer/VBoxContainer" unique_id=777667501]
 layout_mode = 2

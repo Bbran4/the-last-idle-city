@@ -55,7 +55,7 @@ func _update_ui() -> void:
 	_update_allocation_feedback()
 	scrap_yard_level_label.text = "Scrap Yard level: %d" % GameState.data.scrap_yard_level
 	scrap_yard_count_label.text = "Scrap Yards: %d (×%d)" % [GameState.data.scrap_yard_count, GameState.data.scrap_yard_count]
-	milestone_label.text = "Milestone multiplier: ×%s | Next expansion: level %d" % [
+	milestone_label.text = "Milestone productivity: ×%s | Next double: level %d" % [
 		NumberFormatter.format_number(GameState.data.scrap_yard_milestone_multiplier()),
 		GameState.data.scrap_yard_next_milestone_level()
 	]

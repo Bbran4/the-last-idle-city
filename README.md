@@ -587,13 +587,15 @@ It has exactly two buttons:
 
 - Improves the existing Scrap Yard operation.
 - Increases its productivity.
-- At selected levels, automatically triggers major expansion milestones.
+- At selected levels, automatically doubles the operation's productivity through a milestone multiplier.
+- Does not add a Scrap Yard building.
 
 **BUILD NEW**
 
 - Adds another Scrap Yard to the operation.
 - Uses the same shared upgrade level.
 - Increases the operation multiplier linearly.
+- Is the only action that increases the Scrap Yard building count.
 
 ```text
 1 Scrap Yard = ×1
