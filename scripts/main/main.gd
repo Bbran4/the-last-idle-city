@@ -23,6 +23,7 @@ extends Control
 @onready var scrap_yard_level_label: Label = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/ScrapYardLevelLabel
 @onready var scrap_yard_count_label: Label = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/ScrapYardCountLabel
 @onready var milestone_label: Label = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/MilestoneLabel
+@onready var scrap_yard_card_vbox: VBoxContainer = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox
 @onready var tick_label: Label = $Layout/VBox/Body/RightRail/VBox/TickLabel
 @onready var level_up_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/LevelUpButton
 @onready var build_new_button: Button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox/BuildNewButton
@@ -38,6 +39,9 @@ var scrap_yard_milestone_button: Button
 var reclamation_depot_milestone_button: Button
 var workshop_milestone_button: Button
 var factory_milestone_button: Button
+var scrap_yard_production_rate_label: Label
+var level_up_mode_container: HBoxContainer
+var level_up_mode: String = "x1"
 var production_feedback_tween: Tween
 
 func _ready() -> void:
@@ -49,6 +53,8 @@ func _ready() -> void:
 	reclamation_depot_card.visible = false
 	workshop_card.visible = false
 	factory_card.visible = false
+	_create_scrap_yard_production_rate_label()
+	_create_level_up_mode_controls()
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox, "ScrapYardMilestoneButton", func(): return GameState.data.scrap_yard)
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox, "ReclamationDepotMilestoneButton", func(): return GameState.data.reclamation_depot)
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox, "WorkshopMilestoneButton", func(): return GameState.data.workshop)
@@ -72,6 +78,40 @@ func _ready() -> void:
 	factory_level_up_button.pressed.connect(_on_factory_level_up_pressed)
 	factory_build_new_button.pressed.connect(_on_factory_build_new_pressed)
 	_update_ui()
+
+func _create_scrap_yard_production_rate_label() -> void:
+	scrap_yard_production_rate_label = Label.new()
+	scrap_yard_production_rate_label.name = "ScrapYardProductionRateLabel"
+	scrap_yard_production_rate_label.text = "Production: 0/sec"
+	scrap_yard_card_vbox.add_child(scrap_yard_production_rate_label)
+
+func _create_level_up_mode_controls() -> void:
+	level_up_mode_container = HBoxContainer.new()
+	level_up_mode_container.name = "LevelUpModeControls"
+	level_up_mode_container.add_theme_constant_override("separation", 4)
+	level_up_mode_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	level_up_mode_container.position = Vector2(-230, 8)
+	level_up_mode_container.size = Vector2(220, 36)
+	$Layout/VBox/TopBar.add_child(level_up_mode_container)
+
+	var button_group := ButtonGroup.new()
+	_create_level_up_mode_button("Max", "max", button_group)
+	_create_level_up_mode_button("Next", "next", button_group)
+	_create_level_up_mode_button("x1", "x1", button_group)
+
+func _create_level_up_mode_button(display_text: String, mode: String, button_group: ButtonGroup) -> void:
+	var button := Button.new()
+	button.text = display_text
+	button.toggle_mode = true
+	button.button_group = button_group
+	button.custom_minimum_size = Vector2(65, 32)
+	button.set_meta("level_up_mode", mode)
+	button.pressed.connect(func():
+		level_up_mode = str(button.get_meta("level_up_mode"))
+	)
+	if mode == level_up_mode:
+		button.button_pressed = true
+	level_up_mode_container.add_child(button)
 
 func _create_milestone_button(card: VBoxContainer, button_name: String, operation_getter: Callable) -> void:
 	var button: Button = Button.new()
@@ -99,6 +139,7 @@ func _update_ui() -> void:
 
 	scrap_yard_level_label.text = "Scrap Yard level: %d" % data.scrap_yard.level
 	scrap_yard_count_label.text = "Scrap Yards: %d" % data.scrap_yard.count
+	scrap_yard_production_rate_label.text = "Production: %s Materials/sec" % NumberFormatter.format_number(data.scrap_yard_production_per_second())
 	level_up_button.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_level_up_cost()), data.scrap_yard.level_up_energy_cost]
 	level_up_button.disabled = not data.can_level_up_scrap_yard()
 	build_new_button.text = "BUILD SCRAP YARD (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_build_new_cost()), data.scrap_yard.build_new_energy_cost]
@@ -159,8 +200,33 @@ func _on_load_pressed() -> void:
 		_update_ui()
 
 func _on_level_up_pressed() -> void:
-	if GameState.data.level_up_scrap_yard():
-		_update_ui()
+	var data: GameData = GameState.data
+	match level_up_mode:
+		"x1":
+			data.level_up_scrap_yard()
+		"next":
+			_level_up_scrap_yard_to_next_milestone()
+		"max":
+			_level_up_scrap_yard_max()
+	_update_ui()
+
+func _level_up_scrap_yard_to_next_milestone() -> void:
+	var data: GameData = GameState.data
+	var target_level: int = data.scrap_yard_next_milestone_level()
+	var purchased: bool = false
+	while data.scrap_yard.level < target_level and data.can_level_up_scrap_yard():
+		if not data.level_up_scrap_yard():
+			break
+		purchased = true
+
+	if not purchased:
+		_level_up_scrap_yard_max()
+
+func _level_up_scrap_yard_max() -> void:
+	var data: GameData = GameState.data
+	while data.can_level_up_scrap_yard():
+		if not data.level_up_scrap_yard():
+			break
 
 func _on_build_new_pressed() -> void:
 	if GameState.data.build_new_scrap_yard():
