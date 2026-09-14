@@ -11,6 +11,11 @@ func scrap_yard_production_per_second() -> float:
 	return float(scrap_yard_level)
 
 
+func scrap_yard_manual_production() -> float:
+	# Manual processing benefits from the same upgrades as idle production.
+	return scrap_yard_production_per_second()
+
+
 func scrap_yard_level_up_cost() -> float:
 	return 10.0 * pow(1.15, scrap_yard_level - 1)
 
@@ -26,3 +31,7 @@ func level_up_scrap_yard() -> bool:
 	materials -= scrap_yard_level_up_cost()
 	scrap_yard_level += 1
 	return true
+
+
+func produce_materials(amount: float) -> void:
+	materials += amount

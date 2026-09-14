@@ -62,12 +62,12 @@ This section intentionally lives near the top of the README so it can be used as
 - [x] Add Scrap Yard production per second
 - [x] Add **Level Up** button
 - [x] Make Level Up increase Scrap Yard productivity
-- [ ] Add production cost scaling
-- [ ] Add a manual production/click action
-- [ ] Make clicking contribute to Scrap Yard productivity
-- [ ] Add basic production display
-- [ ] Add basic cost display
-- [ ] Add a simple feedback animation when production occurs
+- [x] Add production cost scaling
+- [x] Add a manual production/click action
+- [x] Make clicking contribute to Scrap Yard productivity
+- [x] Add basic production display
+- [x] Add basic cost display
+- [x] Add a simple feedback animation when production occurs
 
 **Milestone complete when:** The player can start with one Scrap Yard, click it, level it up, watch Materials increase, and immediately understand what to do.
 
