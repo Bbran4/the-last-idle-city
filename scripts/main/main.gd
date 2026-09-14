@@ -62,8 +62,7 @@ func _ready() -> void:
 
 func _on_game_tick(delta: float) -> void:
 	_update_ui()
-	_show_production_feedback(GameState.data.scrap_yard_production_per_second() * delta)
-
+	_show_production_feedback(GameState.data.scrap_yard_production_per_second().multiply_float(delta))
 
 func _update_ui() -> void:
 	materials_label.text = "Materials: %s" % NumberFormatter.format_number(GameState.data.materials)
@@ -204,7 +203,7 @@ func _on_manual_production_pressed() -> void:
 	_show_production_feedback(amount)
 
 
-func _show_production_feedback(amount: float) -> void:
+func _show_production_feedback(amount: BigNumber) -> void:
 	production_feedback_label.text = "+%s Materials" % NumberFormatter.format_number(amount)
 	production_feedback_label.modulate = Color(1.0, 0.85, 0.35, 1.0)
 	production_feedback_label.scale = Vector2.ONE
@@ -216,7 +215,6 @@ func _show_production_feedback(amount: float) -> void:
 	production_feedback_tween.set_parallel()
 	production_feedback_tween.tween_property(production_feedback_label, "modulate:a", 0.0, 0.6)
 	production_feedback_tween.tween_property(production_feedback_label, "scale", Vector2(1.12, 1.12), 0.6)
-
 
 func _update_allocation_feedback() -> void:
 	var state := GameState.data.industrial_allocation_feedback_state()
@@ -249,7 +247,7 @@ func _update_operation_ui(
 	if not operation.unlocked:
 		status_label.text = "%s — LOCKED (%s)" % [operation.display_name, unlock_requirement]
 		unlock_button.visible = true
-		unlock_button.text = "UNLOCK %s (%s Materials)" % [operation.display_name.to_upper(), NumberFormatter.format_number(operation.unlock_cost)]
+		unlock_button.text = "UNLOCK %s (%s Materials)" % [operation.display_name.to_upper(), NumberFormatter.format_number(operation.unlock_cost())]
 		unlock_button.disabled = not can_unlock
 		level_up_button.visible = false
 		build_new_button.visible = false
@@ -264,7 +262,7 @@ func _update_operation_ui(
 	unlock_button.visible = false
 	level_up_button.visible = true
 	level_up_button.text = "LEVEL UP (%s Materials)" % NumberFormatter.format_number(operation.level_up_cost())
-	level_up_button.disabled = GameState.data.materials < operation.level_up_cost()
+	level_up_button.disabled = GameState.data.materials.is_less_than(operation.level_up_cost())
 	build_new_button.visible = true
 	build_new_button.text = "BUILD NEW (%s Materials)" % NumberFormatter.format_number(operation.build_new_cost())
-	build_new_button.disabled = GameState.data.materials < operation.build_new_cost()
+	build_new_button.disabled = GameState.data.materials.is_less_than(operation.build_new_cost())

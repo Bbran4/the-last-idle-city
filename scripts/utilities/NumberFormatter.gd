@@ -11,70 +11,49 @@ enum FormatMode {
 static var format_mode: FormatMode = FormatMode.SHORT_SCALE
 
 
-## Short-scale abbreviations.
+## Short-scale abbreviations for the first 21 named tiers
+## (thousand through vigintillion). Index = tier group:
 ##
-## Index represents the power group:
+## 0 = 10^3  (K)
+## 1 = 10^6  (M)
+## ...
+## 20 = 10^63 (Vg)
 ##
-## 1 = 10^3
-## 2 = 10^6
-## 3 = 10^9
-## etc.
-
-
+## Beyond this table, names/abbreviations are generated indefinitely
+## using the standard ones/tens/hundreds "-illion" naming convention
+## (the same system behind names like "Unvigintillion" or
+## "Centillion"), so growth never silently falls back to scientific
+## notation just because it outgrew a hardcoded list.
 const SHORT_SUFFIXES := [
-	"K",   # 10^3
-	"M",   # 10^6
-	"B",   # 10^9
-	"T",   # 10^12
-	"Qa",  # 10^15
-	"Qi",  # 10^18
-	"Sx",  # 10^21
-	"Sp",  # 10^24
-	"Oc",  # 10^27
-	"No",  # 10^30
-	"Dc",  # 10^33
-	"Ud",  # 10^36
-	"Dd",  # 10^39
-	"Td",  # 10^42
-	"Qad", # 10^45
-	"Qid", # 10^48
-	"Sxd", # 10^51
-	"Spd", # 10^54
-	"Ocd", # 10^57
-	"Nod", # 10^60
-	"Vg"   # 10^63
+	"K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No",
+	"Dc", "Ud", "Dd", "Td", "Qad", "Qid", "Sxd", "Spd", "Ocd", "Nod",
+	"Vg"
 ]
-
-
-## Full short-scale names for the early tiers.
-##
-## These are useful for tooltips, accessibility, and future
-## settings where the player may want full number names.
-
 
 const FULL_NAMES := [
-	"thousand",
-	"million",
-	"billion",
-	"trillion",
-	"quadrillion",
-	"quintillion",
-	"sextillion",
-	"septillion",
-	"octillion",
-	"nonillion",
-	"decillion",
-	"undecillion",
-	"duodecillion",
-	"tredecillion",
-	"quattuordecillion",
-	"quindecillion",
-	"sexdecillion",
-	"septendecillion",
-	"octodecillion",
-	"novemdecillion",
-	"vigintillion"
+	"thousand", "million", "billion", "trillion", "quadrillion",
+	"quintillion", "sextillion", "septillion", "octillion", "nonillion",
+	"decillion", "undecillion", "duodecillion", "tredecillion",
+	"quattuordecillion", "quindecillion", "sexdecillion", "septendecillion",
+	"octodecillion", "novemdecillion", "vigintillion"
 ]
+
+## Combining-form tables used to generate names/abbreviations for
+## tier groups beyond vigintillion (group >= 21). Index 0 is
+## unused (digit 0 contributes nothing to the name).
+const ONES_COMBINED := ["", "Un", "Duo", "Tres", "Quattuor", "Quin", "Ses", "Septem", "Octo", "Novem"]
+const ONES_ABBR := ["", "U", "D", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No"]
+
+const TENS_COMBINED := ["", "Dec", "Vigint", "Trigint", "Quadragint", "Quinquagint", "Sexagint", "Septuagint", "Octogint", "Nonagint"]
+const TENS_ABBR := ["", "d", "Vg", "Tg", "Qg", "Qq", "Sg", "Sn", "Og", "Ng"]
+
+const HUNDREDS_COMBINED := ["", "Cent", "Ducent", "Trecent", "Quadringent", "Quingent", "Sescent", "Septingent", "Octingent", "Nongent"]
+const HUNDREDS_ABBR := ["", "C", "DC", "TC", "QC", "QqC", "SC", "SnC", "OC", "NC"]
+
+## Highest tier group we'll generate a name for. Group 999 is roughly
+## 10^3002 — already far beyond anything a save file will reach, so
+## the fallback below this is effectively dead code in practice.
+const MAX_GENERATED_TIER := 999
 
 
 static func set_format_mode(mode: FormatMode) -> void:
@@ -136,23 +115,12 @@ static func format_full_name(value: Variant) -> String:
 			_format_small_integer(absolute_number.to_float())
 		]
 
-	var tier := absolute_number.exponent / 3
+	var grouped := _tier_and_scaled(number)
 
-	if tier <= FULL_NAMES.size():
-		var scaled := absolute_number.mantissa * pow(
-			10.0,
-			absolute_number.exponent - (tier * 3)
-		)
-
-		return "%s%.2f %s" % [
-			sign,
-			scaled,
-			FULL_NAMES[tier - 1]
-		]
-
-	return "%s%s" % [
+	return "%s%.2f %s" % [
 		sign,
-		_format_large_full_name(absolute_number)
+		grouped.scaled,
+		_illion_name(grouped.tier - 1)
 	]
 
 
@@ -162,30 +130,13 @@ static func _format_short_scale(number: BigNumber) -> String:
 	if absolute_number.exponent < 3:
 		return "%.0f" % number.to_float()
 
-	var tier := int(floori(absolute_number.exponent / 3))
-
-	var scaled_exponent := number.exponent - (tier * 3)
-	var scaled := number.mantissa * pow(10.0, scaled_exponent)
-
+	var grouped := _tier_and_scaled(number)
 	var sign := "-" if number.is_negative() else ""
-
-	# We still have a named suffix.
-	if tier <= SHORT_SUFFIXES.size():
-		return "%s%.2f%s" % [
-			sign,
-			scaled,
-			SHORT_SUFFIXES[tier - 1]
-		]
-
-	# Beyond the initial abbreviation table, generate
-	# an "illions" style name rather than switching
-	# to scientific notation.
-	var generated_suffix := _generate_short_suffix(tier)
 
 	return "%s%.2f%s" % [
 		sign,
-		scaled,
-		generated_suffix
+		grouped.scaled,
+		_illion_abbreviation(grouped.tier - 1)
 	]
 
 
@@ -197,6 +148,21 @@ static func _format_scientific(number: BigNumber) -> String:
 		number.mantissa,
 		number.exponent
 	]
+
+
+## Groups a BigNumber into its tier (1 = K/thousand, 2 = M/million, ...)
+## and the mantissa scaled to that tier (e.g. 1234.0 -> tier 1,
+## scaled 1.23). Shared by the abbreviation and full-name paths so
+## they always agree on the number shown before the suffix — the old
+## full-name path skipped this step, which is why it showed the wrong
+## value whenever the exponent wasn't a multiple of 3.
+static func _tier_and_scaled(number: BigNumber) -> Dictionary:
+	var absolute_number := number.abs()
+	var tier := int(floor(float(absolute_number.exponent) / 3.0))
+	var scaled_exponent := absolute_number.exponent - (tier * 3)
+	var scaled := absolute_number.mantissa * pow(10.0, scaled_exponent)
+
+	return {"tier": tier, "scaled": scaled}
 
 
 static func _to_big_number(value: Variant) -> BigNumber:
@@ -216,92 +182,59 @@ static func _format_small_integer(value: float) -> String:
 	return "%.0f" % value
 
 
-static func _generate_short_suffix(tier: int) -> String:
-	# tier:
-	#
-	# 1  = K
-	# 2  = M
-	# 3  = B
-	# 4  = T
-	# 5  = Qa
-	# ...
-	#
-	# For now, use generated "illions" abbreviations after
-	# the explicitly defined early tiers.
-	#
-	# This keeps the formatter safe while the full naming
-	# system is expanded.
+## Returns the abbreviation for tier group (0 = thousand, 1 = million,
+## ..., 20 = vigintillion, 21 = unvigintillion, ...). Uses the
+## hardcoded table while available, then generates indefinitely.
+static func _illion_abbreviation(group: int) -> String:
+	if group < SHORT_SUFFIXES.size():
+		return SHORT_SUFFIXES[group]
 
-	if tier <= SHORT_SUFFIXES.size():
-		return SHORT_SUFFIXES[tier - 1]
+	if group > MAX_GENERATED_TIER:
+		return "e%d" % ((group + 1) * 3)
 
-	var illion_index := tier - 1
+	var digits := _illion_digits(group)
+	var abbr := ""
 
-	return _generate_illion_abbreviation(illion_index)
+	if digits.o > 0:
+		abbr += ONES_ABBR[digits.o]
+	if digits.t > 0:
+		abbr += TENS_ABBR[digits.t]
+	if digits.h > 0:
+		abbr += HUNDREDS_ABBR[digits.h]
 
-
-static func _generate_illion_abbreviation(index: int) -> String:
-	# This covers the common idle-game naming pattern.
-	#
-	# Examples:
-	#
-	# 11 -> Dc
-	# 12 -> Ud
-	# 13 -> Dd
-	# 14 -> Td
-	#
-	# Beyond this point, use a generated prefix.
-
-	if index == 11:
-		return "Dc"
-
-	if index == 12:
-		return "Ud"
-
-	if index == 13:
-		return "Dd"
-
-	if index == 14:
-		return "Td"
-
-	if index == 15:
-		return "Qad"
-
-	if index == 16:
-		return "Qid"
-
-	if index == 17:
-		return "Sxd"
-
-	if index == 18:
-		return "Spd"
-
-	if index == 19:
-		return "Ocd"
-
-	if index == 20:
-		return "Nod"
-
-	# Generic fallback.
-	#
-	# We deliberately DO NOT fall back to scientific notation.
-	# The game can continue displaying named tiers while we
-	# expand the naming table.
-
-	return "e%d" % (index * 3)
+	return abbr
 
 
-static func _generate_short_full_name(tier: int) -> String:
-	if tier <= FULL_NAMES.size():
-		return FULL_NAMES[tier - 1]
+## Returns the full name for tier group (0 = thousand, ...), same
+## indefinite-generation behaviour as _illion_abbreviation above.
+static func _illion_name(group: int) -> String:
+	if group < FULL_NAMES.size():
+		return FULL_NAMES[group]
 
-	return "10^%d" % (tier * 3)
+	if group > MAX_GENERATED_TIER:
+		return "10^%d" % ((group + 1) * 3)
+
+	var digits := _illion_digits(group)
+	var name := ""
+
+	if digits.o > 0:
+		name += ONES_COMBINED[digits.o]
+	if digits.t > 0:
+		name += TENS_COMBINED[digits.t]
+		if digits.h > 0:
+			name += "a" # linking vowel, e.g. "viginti" + "a" + "cent"
+	if digits.h > 0:
+		name += HUNDREDS_COMBINED[digits.h]
+
+	return (name + "illion").to_lower()
 
 
-static func _format_large_full_name(number: BigNumber) -> String:
-	var tier := int(floori(number.exponent / 3))
-
-	return "%.2f %s" % [
-		number.mantissa,
-		_generate_short_full_name(tier)
-	]
+## Decomposes a tier group into hundreds/tens/ones digits. Group
+## also doubles as the classical "-illion" index (million = 1,
+## billion = 2, ..., vigintillion = 20, unvigintillion = 21, ...).
+static func _illion_digits(group: int) -> Dictionary:
+	return {
+		"h": int(group / 100),
+		"t": int(group / 10) % 10,
+		"o": group % 10
+	}

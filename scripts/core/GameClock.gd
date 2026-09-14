@@ -25,6 +25,6 @@ func _process_tick(delta: float) -> void:
 	GameState.data.total_ticks += 1
 	GameState.data.grow_population(delta)
 	GameState.data.process_chain_automation(delta)
-	GameState.data.produce_materials(GameState.data.scrap_yard_production_per_second() * delta)
-	
+	GameState.data.produce_materials(GameState.data.scrap_yard_production_per_second().multiply_float(delta))
+
 	tick.emit(delta)

@@ -19,7 +19,13 @@ const WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND := 0.05
 const FACTORY_WORKSHOP_LEVELS_PER_SECOND := 0.025
 const AUTOMATION_COMPLETION_EPSILON := 0.000001
 
-@export var materials: float = 0.0
+# NOTE: materials / total_materials_produced are BigNumber (RefCounted),
+# not a Resource-derived type, so they are intentionally NOT @export'd —
+# Godot's inspector export only supports Resource/Node/variant types.
+# SaveManager handles their persistence manually instead.
+var materials: BigNumber
+var total_materials_produced: BigNumber
+
 @export var scrap_yard_level: int = 1
 @export var scrap_yard_count: int = 1
 @export var population: float = STARTING_POPULATION
@@ -27,7 +33,6 @@ const AUTOMATION_COMPLETION_EPSILON := 0.000001
 @export var reclamation_depot: ProductionOperation
 @export var workshop: ProductionOperation
 @export var factory: ProductionOperation
-@export var total_materials_produced := 0.0
 @export var scrap_yard_level_automation_progress := 0.0
 @export var reclamation_depot_level_automation_progress := 0.0
 @export var workshop_level_automation_progress := 0.0
@@ -36,40 +41,53 @@ const AUTOMATION_COMPLETION_EPSILON := 0.000001
 
 
 func _init() -> void:
+	materials = BigNumber.zero()
+	total_materials_produced = BigNumber.zero()
 	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, 50.0, 300.0)
 	workshop = ProductionOperation.new("Workshop", WORKSHOP_UNLOCK_COST, 300.0, 1_800.0)
 	factory = ProductionOperation.new("Factory", FACTORY_UNLOCK_COST, 2_000.0, 12_000.0)
 
 
-func scrap_yard_production_per_second() -> float:
-	return scrap_yard_level_production_per_second() * scrap_yard_count * scrap_yard_milestone_multiplier() * industrial_productivity_multiplier() * reclamation_depot_multiplier()
+func scrap_yard_production_per_second() -> BigNumber:
+	var production := BigNumber.from_float(scrap_yard_level_production_per_second())
+	production = production.multiply_float(float(scrap_yard_count))
+	production = production.multiply(scrap_yard_milestone_multiplier())
+	production = production.multiply_float(industrial_productivity_multiplier())
+	production = production.multiply_float(reclamation_depot_multiplier())
+	return production
 
 
 func reclamation_depot_multiplier() -> float:
 	# Reclamation directly accelerates Scrap Yard output. Workshop boosts this link.
-	return 1.0 + reclamation_depot.total_effectiveness() * 0.10 * workshop_multiplier()
+	# NOTE: this stays float-based for now — total_effectiveness() is BigNumber,
+	# but converting it back with to_float() means this specific multiplier chain
+	# will eventually saturate to INF at extreme effectiveness values, same as
+	# the old milestone_multiplier did. Flagging as a known follow-up rather than
+	# fully propagating BigNumber through the recursive chain/workshop/factory
+	# multipliers right now.
+	return 1.0 + reclamation_depot.total_effectiveness().to_float() * 0.10 * workshop_multiplier()
 
 
 func workshop_multiplier() -> float:
 	# Workshop accelerates the Reclamation Depot. Factory boosts this link.
-	return 1.0 + workshop.total_effectiveness() * 0.10 * factory_multiplier()
+	return 1.0 + workshop.total_effectiveness().to_float() * 0.10 * factory_multiplier()
 
 
 func factory_multiplier() -> float:
 	# Factory is the top of this first automated production chain.
-	return 1.0 + factory.total_effectiveness() * 0.10
+	return 1.0 + factory.total_effectiveness().to_float() * 0.10
 
 
 func reclamation_depot_scrap_yard_level_rate() -> float:
-	return reclamation_depot.total_effectiveness() * RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND
+	return reclamation_depot.total_effectiveness().to_float() * RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND
 
 
 func workshop_reclamation_depot_level_rate() -> float:
-	return workshop.total_effectiveness() * WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND
+	return workshop.total_effectiveness().to_float() * WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND
 
 
 func factory_workshop_level_rate() -> float:
-	return factory.total_effectiveness() * FACTORY_WORKSHOP_LEVELS_PER_SECOND
+	return factory.total_effectiveness().to_float() * FACTORY_WORKSHOP_LEVELS_PER_SECOND
 
 
 func process_chain_automation(delta: float) -> void:
@@ -94,15 +112,15 @@ func process_chain_automation(delta: float) -> void:
 
 
 func can_unlock_reclamation_depot() -> bool:
-	return not reclamation_depot.unlocked and materials >= reclamation_depot.unlock_cost
+	return not reclamation_depot.unlocked and materials.is_greater_or_equal(reclamation_depot.unlock_cost())
 
 
 func can_unlock_workshop() -> bool:
-	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.level >= ProductionOperation.MILESTONE_INTERVAL and materials >= workshop.unlock_cost
+	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.level >= ProductionOperation.MILESTONE_INTERVAL and materials.is_greater_or_equal(workshop.unlock_cost())
 
 
 func can_unlock_factory() -> bool:
-	return not factory.unlocked and workshop.unlocked and workshop.level >= ProductionOperation.MILESTONE_INTERVAL and materials >= factory.unlock_cost
+	return not factory.unlocked and workshop.unlocked and workshop.level >= ProductionOperation.MILESTONE_INTERVAL and materials.is_greater_or_equal(factory.unlock_cost())
 
 
 func unlock_operation(operation: ProductionOperation) -> bool:
@@ -122,7 +140,7 @@ func unlock_operation(operation: ProductionOperation) -> bool:
 
 
 func level_up_operation(operation: ProductionOperation) -> bool:
-	if not operation.unlocked or materials < operation.level_up_cost():
+	if not operation.unlocked or materials.is_less_than(operation.level_up_cost()):
 		return false
 
 	materials = operation.level_up(materials)
@@ -130,7 +148,7 @@ func level_up_operation(operation: ProductionOperation) -> bool:
 
 
 func build_new_operation(operation: ProductionOperation) -> bool:
-	if not operation.unlocked or materials < operation.build_new_cost():
+	if not operation.unlocked or materials.is_less_than(operation.build_new_cost()):
 		return false
 
 	materials = operation.build_new(materials)
@@ -141,17 +159,17 @@ func scrap_yard_level_production_per_second() -> float:
 	return float(scrap_yard_level)
 
 
-func scrap_yard_milestone_multiplier() -> float:
+func scrap_yard_milestone_multiplier() -> BigNumber:
 	# Each completed 10-level milestone doubles productivity only. It never adds a building.
 	var milestone_tier := int(scrap_yard_level / SCRAP_YARD_MILESTONE_INTERVAL)
-	return pow(2.0, milestone_tier)
+	return BigNumber.from_float(2.0).pow_int(milestone_tier)
 
 
 func scrap_yard_next_milestone_level() -> int:
 	return (int(scrap_yard_level / SCRAP_YARD_MILESTONE_INTERVAL) + 1) * SCRAP_YARD_MILESTONE_INTERVAL
 
 
-func scrap_yard_manual_production() -> float:
+func scrap_yard_manual_production() -> BigNumber:
 	# Manual processing benefits from the same upgrades as idle production.
 	return scrap_yard_production_per_second()
 
@@ -204,42 +222,46 @@ func grow_population(delta: float) -> void:
 	population += POPULATION_GROWTH_PER_SECOND * delta
 
 
-func scrap_yard_level_up_cost() -> float:
-	return LEVEL_UP_BASE_COST * pow(LEVEL_UP_COST_GROWTH, scrap_yard_level - 1)
+func scrap_yard_level_up_cost() -> BigNumber:
+	return BigNumber.from_float(LEVEL_UP_BASE_COST).multiply(
+		BigNumber.from_float(LEVEL_UP_COST_GROWTH).pow_int(scrap_yard_level - 1)
+	)
 
 
-func scrap_yard_build_new_cost() -> float:
-	return BUILD_NEW_BASE_COST * pow(BUILD_NEW_COST_GROWTH, scrap_yard_count - 1)
+func scrap_yard_build_new_cost() -> BigNumber:
+	return BigNumber.from_float(BUILD_NEW_BASE_COST).multiply(
+		BigNumber.from_float(BUILD_NEW_COST_GROWTH).pow_int(scrap_yard_count - 1)
+	)
 
 
 func can_level_up_scrap_yard() -> bool:
-	return materials >= scrap_yard_level_up_cost()
+	return materials.is_greater_or_equal(scrap_yard_level_up_cost())
 
 
 func level_up_scrap_yard() -> bool:
 	if not can_level_up_scrap_yard():
 		return false
 
-	materials -= scrap_yard_level_up_cost()
+	materials = materials.subtract(scrap_yard_level_up_cost())
 	scrap_yard_level += 1
 
 	return true
 
 
 func can_build_new_scrap_yard() -> bool:
-	return materials >= scrap_yard_build_new_cost()
+	return materials.is_greater_or_equal(scrap_yard_build_new_cost())
 
 
 func build_new_scrap_yard() -> bool:
 	if not can_build_new_scrap_yard():
 		return false
 
-	materials -= scrap_yard_build_new_cost()
+	materials = materials.subtract(scrap_yard_build_new_cost())
 	# BUILD NEW is the only action that adds a Scrap Yard building.
 	scrap_yard_count += 1
 	return true
 
 
-func produce_materials(amount: float) -> void:
-	materials += amount
-	total_materials_produced += amount
+func produce_materials(amount: BigNumber) -> void:
+	materials = materials.add(amount)
+	total_materials_produced = total_materials_produced.add(amount)

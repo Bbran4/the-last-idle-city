@@ -366,6 +366,7 @@ layout_mode = 2
 text = "Milestone productivity: ×1"
 
 [node name="ManualProductionButton" type="Button" parent="Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox" unique_id=1914522198]
+visible = false
 layout_mode = 2
 theme_override_styles/normal = SubResource("button")
 theme_override_styles/disabled = SubResource("button_disabled")

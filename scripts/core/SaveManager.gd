@@ -6,7 +6,7 @@ const SAVE_PATH := "user://savegame.json"
 
 static func save_game() -> bool:
 	var save_data := {
-		"materials": GameState.data.materials,
+		"materials": GameState.data.materials.to_dict(),
 		"scrap_yard_level": GameState.data.scrap_yard_level,
 		"scrap_yard_count": GameState.data.scrap_yard_count,
 		"population": GameState.data.population,
@@ -14,7 +14,7 @@ static func save_game() -> bool:
 		"reclamation_depot": GameState.data.reclamation_depot.save_data(),
 		"workshop": GameState.data.workshop.save_data(),
 		"factory": GameState.data.factory.save_data(),
-		"total_materials_produced": GameState.data.total_materials_produced,
+		"total_materials_produced": GameState.data.total_materials_produced.to_dict(),
 		"scrap_yard_level_automation_progress": GameState.data.scrap_yard_level_automation_progress,
 		"reclamation_depot_level_automation_progress": GameState.data.reclamation_depot_level_automation_progress,
 		"workshop_level_automation_progress": GameState.data.workshop_level_automation_progress,
@@ -32,6 +32,19 @@ static func save_game() -> bool:
 	file.close()
 
 	return true
+
+
+## Reads a BigNumber field that may be stored either as the new
+## {mantissa, exponent} dict, or as a legacy plain float/int from a
+## save made before the BigNumber migration.
+static func _load_big_number(value: Variant, fallback: BigNumber) -> BigNumber:
+	if value is Dictionary:
+		return BigNumber.from_dict(value)
+
+	if value is float or value is int:
+		return BigNumber.from_float(float(value))
+
+	return fallback
 
 
 static func load_game() -> bool:
@@ -60,7 +73,10 @@ static func load_game() -> bool:
 		return false
 
 	# Preserve progress from the Milestone 0 placeholder resource.
-	GameState.data.materials = float(save_data.get("materials", save_data.get("gold", 0.0)))
+	GameState.data.materials = _load_big_number(
+		save_data.get("materials", save_data.get("gold", 0.0)),
+		BigNumber.zero()
+	)
 	GameState.data.scrap_yard_level = max(1, int(save_data.get("scrap_yard_level", 1)))
 	GameState.data.scrap_yard_count = max(1, int(save_data.get("scrap_yard_count", 1)))
 	GameState.data.population = max(1.0, float(save_data.get("population", GameData.STARTING_POPULATION)))
@@ -68,7 +84,10 @@ static func load_game() -> bool:
 	GameState.data.reclamation_depot.load_save_data(save_data.get("reclamation_depot", {}))
 	GameState.data.workshop.load_save_data(save_data.get("workshop", {}))
 	GameState.data.factory.load_save_data(save_data.get("factory", {}))
-	GameState.data.total_materials_produced = float(save_data.get("total_materials_produced", GameState.data.materials))
+	GameState.data.total_materials_produced = _load_big_number(
+		save_data.get("total_materials_produced", null),
+		GameState.data.materials
+	)
 	GameState.data.scrap_yard_level_automation_progress = max(0.0, float(save_data.get("scrap_yard_level_automation_progress", save_data.get("scrap_yard_automation_progress", 0.0))))
 	GameState.data.reclamation_depot_level_automation_progress = max(0.0, float(save_data.get("reclamation_depot_level_automation_progress", save_data.get("reclamation_depot_automation_progress", 0.0))))
 	GameState.data.workshop_level_automation_progress = max(0.0, float(save_data.get("workshop_level_automation_progress", save_data.get("workshop_automation_progress", 0.0))))
