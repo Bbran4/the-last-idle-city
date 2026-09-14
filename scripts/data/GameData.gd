@@ -248,8 +248,8 @@ func set_industrial_allocation_percent(value: float) -> void:
 
 
 func set_department_allocation(department: String, value: float) -> void:
-	var old_value := get_department_allocation(department)
-	var new_value := clamp(value, 0.0, 100.0)
+	var old_value : float = get_department_allocation(department)
+	var new_value : float = clamp(value, 0.0, 100.0)
 	var delta := new_value - old_value
 	set_department_raw(department, new_value)
 	if delta > 0.0:
