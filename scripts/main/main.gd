@@ -82,7 +82,7 @@ func _ready() -> void:
 func _create_scrap_yard_production_rate_label() -> void:
 	scrap_yard_production_rate_label = Label.new()
 	scrap_yard_production_rate_label.name = "ScrapYardProductionRateLabel"
-	scrap_yard_production_rate_label.text = "To create Scrap Yard you need:\n1 Material\n1 Energy"
+	scrap_yard_production_rate_label.text = ""
 	scrap_yard_card_vbox.add_child(scrap_yard_production_rate_label)
 
 func _create_level_up_mode_controls() -> void:
@@ -143,9 +143,9 @@ func _update_ui() -> void:
 	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, data.can_unlock_factory(), factory_milestone_button)
 
 func _update_scrap_yard_ui(data: GameData) -> void:
-	scrap_yard_level_label.text = "You have %d Scrap Yard%s" % [data.scrap_yard.count, "" if data.scrap_yard.count == 1 else "s"]
-	scrap_yard_count_label.text = "Each produces %s Material/sec\nAll produce %s Material/sec" % [NumberFormatter.format_number(data.scrap_yard.production_per_building()), NumberFormatter.format_number(data.scrap_yard_production_per_second())]
-	scrap_yard_production_rate_label.text = "To create Scrap Yard you need:\n%s Material\n%.1f Energy" % [NumberFormatter.format_number(data.scrap_yard_build_new_cost()), data.scrap_yard.build_new_energy_cost]
+	scrap_yard_level_label.text = "SCRAP YARD (%d)" % data.scrap_yard.count
+	scrap_yard_count_label.text = "You have %d Scrap Yard level %d\nEach level produces %s Material/s\nAll produce %s Material/s" % [data.scrap_yard.count, data.scrap_yard.level, NumberFormatter.format_number(data.scrap_yard.milestone_multiplier()), NumberFormatter.format_number(data.scrap_yard_production_per_second())]
+	scrap_yard_production_rate_label.text = "To create Scrap Yard you need:\nScrap Yard Level 25"
 	level_up_button.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_level_up_cost()), data.scrap_yard.level_up_energy_cost]
 	level_up_button.disabled = not data.can_level_up_scrap_yard()
 	build_new_button.text = "BUILD SCRAP YARD"
@@ -153,33 +153,32 @@ func _update_scrap_yard_ui(data: GameData) -> void:
 	_update_scrap_yard_milestone_ui(data)
 
 func _milestone_description(operation: ProductionOperation) -> String:
-	return "To upgrade %s you need %d %s levels\nEach doubles %s production\nUpgrades ×%d (Production ×%s)" % [operation.display_name, operation.next_milestone_level(), operation.display_name, operation.display_name, operation.milestones_triggered, NumberFormatter.format_number(operation.milestone_multiplier())]
+	return "To upgrade %s you need %s Level %d\nEach doubles %s Production\nUpgrade x%d (Production x%s)" % [operation.display_name, operation.display_name, operation.next_milestone_level(), operation.display_name, operation.milestones_triggered, NumberFormatter.format_number(operation.milestone_multiplier())]
 
 func _update_scrap_yard_milestone_ui(data: GameData) -> void:
 	var next_level: int = data.scrap_yard_next_milestone_level()
-	var next_energy: float = data.scrap_yard_next_milestone_energy_cost()
 	var reached_milestone: bool = data.scrap_yard.level >= next_level
 
 	milestone_label.visible = true
 	milestone_label.text = _milestone_description(data.scrap_yard)
 	scrap_yard_milestone_button.visible = reached_milestone
-	scrap_yard_milestone_button.text = "UPGRADE (Level %d + %.1f Energy)" % [next_level, next_energy]
+	scrap_yard_milestone_button.text = "UPGRADE"
 	scrap_yard_milestone_button.disabled = not data.can_trigger_scrap_yard_milestone()
 
 func _operation_production_unit(operation: ProductionOperation) -> String:
 	match operation.display_name:
 		"Reclamation Depot":
-			return "Scrap Yard levels/sec"
+			return "Scrap Yard levels/s"
 		"Workshop":
-			return "Reclamation Depots/sec"
+			return "Reclamation Depots/s"
 		"Factory":
-			return "Workshops/sec"
+			return "Workshops/s"
 		_:
-			return "units/sec"
+			return "units/s"
 
 func _update_milestone_button(operation: ProductionOperation, button: Button) -> void:
-	button.text = "UPGRADE (Level %d + %.1f Energy)" % [operation.next_milestone_level(), operation.next_milestone_energy_cost()]
-	button.disabled = not operation.can_trigger_milestone(GameState.data.energy)
+	button.text = "UPGRADE"
+	button.disabled = not operation.can_trigger_milestone()
 	button.visible = operation.unlocked and operation.level >= operation.next_milestone_level()
 
 func _update_operation_ui(operation: ProductionOperation, status_label: Label, unlock_button: Button, level_up_button_ref: Button, build_new_button_ref: Button, can_unlock: bool, milestone_button: Button) -> void:
@@ -191,16 +190,18 @@ func _update_operation_ui(operation: ProductionOperation, status_label: Label, u
 		milestone_button.visible = false
 		return
 
-	status_label.text = "You have %d %s%s\nEach produces %s\nAll produce %s\n\nTo create %s you need:\n%s Material\n%.1f Energy\n\n%s" % [
+	status_label.text = "%s (%d)\nYou have %d %s level %d\nEach level produces %s %s\nAll produce %s %s\n\nTo create %s you need:\n%s" % [
+		operation.display_name.to_upper(),
+		operation.count,
 		operation.count,
 		operation.display_name,
-		"" if operation.count == 1 else "s",
-		NumberFormatter.format_number(operation.production_per_building()) + " " + _operation_production_unit(operation),
-		NumberFormatter.format_number(operation.total_effectiveness()) + " " + _operation_production_unit(operation),
+		operation.level,
+		NumberFormatter.format_number(operation.milestone_multiplier()),
+		_operation_production_unit(operation),
+		NumberFormatter.format_number(operation.total_effectiveness()),
+		_operation_production_unit(operation),
 		operation.display_name,
-		NumberFormatter.format_number(operation.build_new_cost()),
-		operation.build_new_energy_cost,
-		_milestone_description(operation)
+		"the required level"
 	]
 	unlock_button.visible = false
 	level_up_button_ref.visible = true
@@ -236,7 +237,6 @@ func _level_up_scrap_yard_to_next_milestone() -> void:
 		if not data.level_up_scrap_yard():
 			break
 		purchased = true
-
 	if not purchased:
 		_level_up_scrap_yard_max()
 
