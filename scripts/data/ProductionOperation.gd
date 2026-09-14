@@ -2,7 +2,7 @@ class_name ProductionOperation
 extends Resource
 
 const LEVEL_COST_GROWTH: float = 1.25
-const BUILD_COST_GROWTH: float = 15.0
+const DEFAULT_BUILD_COST_GROWTH: float = 15.0
 const MILESTONE_ENERGY_BASE_COST: float = 1.0
 const MILESTONE_ENERGY_GROWTH: float = 2.0
 const MILESTONE_LEVELS: Array[int] = [10, 25, 100, 500, 1_000, 10_000, 50_000]
@@ -15,6 +15,7 @@ const FIRST_MILESTONE_LEVEL: int = 10
 @export var unlock_cost_base: float = 0.0
 @export var level_up_base_cost: float = 0.0
 @export var build_new_base_cost: float = 0.0
+@export var build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
 @export var build_new_energy_cost: float = 1.0
 @export var milestones_triggered: int = 0
 
@@ -23,13 +24,15 @@ func _init(
 	operation_unlock_cost: float = 0.0,
 	operation_level_up_base_cost: float = 0.0,
 	operation_build_new_base_cost: float = 0.0,
-	operation_build_new_energy_cost: float = 1.0
+	operation_build_new_energy_cost: float = 1.0,
+	operation_build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
 ) -> void:
 	display_name = operation_name
 	unlock_cost_base = operation_unlock_cost
 	level_up_base_cost = operation_level_up_base_cost
 	build_new_base_cost = operation_build_new_base_cost
 	build_new_energy_cost = operation_build_new_energy_cost
+	build_cost_growth = operation_build_cost_growth
 
 static func milestone_level_at(index: int) -> int:
 	if index < MILESTONE_LEVELS.size():
@@ -68,7 +71,7 @@ func level_up_cost() -> BigNumber:
 
 func build_new_cost() -> BigNumber:
 	return BigNumber.from_float(build_new_base_cost).multiply(
-		BigNumber.from_float(BUILD_COST_GROWTH).pow_int(max(0, count - 1))
+		BigNumber.from_float(build_cost_growth).pow_int(max(0, count - 1))
 	)
 
 func can_build_new(materials: BigNumber, current_energy: float) -> bool:
@@ -77,10 +80,11 @@ func can_build_new(materials: BigNumber, current_energy: float) -> bool:
 func build_new(materials: BigNumber, current_energy: float) -> Dictionary:
 	if not can_build_new(materials, current_energy):
 		return {"success": false, "materials": materials, "energy": current_energy}
+	var cost: BigNumber = build_new_cost()
 	count += 1
 	return {
 		"success": true,
-		"materials": materials.subtract(build_new_cost()),
+		"materials": materials.subtract(cost),
 		"energy": current_energy - build_new_energy_cost
 	}
 
