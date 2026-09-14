@@ -2,10 +2,10 @@ class_name GameData
 extends Resource
 
 const SCRAP_YARD_MILESTONE_INTERVAL := 10
-const LEVEL_UP_BASE_COST := 10.0
-const LEVEL_UP_COST_GROWTH := 1.15
-const BUILD_NEW_BASE_COST := 100.0
-const BUILD_NEW_COST_GROWTH := 1.6
+const LEVEL_UP_BASE_COST := 10.0     # was 25.0 — first level-up costs exactly 1 Material
+const LEVEL_UP_COST_GROWTH := 1.2   # was 1.28
+const BUILD_NEW_BASE_COST := 1_000_000_000_000.0   # 1e12 = 1 trillion (cost to build the 2nd yard)
+const BUILD_NEW_COST_GROWTH := 1_000_000_000_000_000_000_000.0  # 1e21
 const STARTING_POPULATION := 100.0
 const POPULATION_GROWTH_PER_SECOND := 1.0
 const WORKFORCE_RATE := 0.5

@@ -2,8 +2,8 @@ class_name ProductionOperation
 extends Resource
 
 const MILESTONE_INTERVAL := 10
-const LEVEL_COST_GROWTH := 1.15
-const BUILD_COST_GROWTH := 1.6
+const LEVEL_COST_GROWTH := 1.25   # was 1.15
+const BUILD_COST_GROWTH := 15.0   # was 1.6	
 
 @export var display_name := "Operation"
 @export var unlocked := false
