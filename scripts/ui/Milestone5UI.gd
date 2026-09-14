@@ -2,7 +2,6 @@ extends Node
 
 var panel: VBoxContainer
 var energy_label: Label
-var souls_label: Label
 var department_label: Label
 var priority_label: Label
 var units_label: Label
@@ -35,9 +34,6 @@ func _try_initialize() -> void:
 
 	energy_label = Label.new()
 	panel.add_child(energy_label)
-
-	souls_label = Label.new()
-	panel.add_child(souls_label)
 
 	department_label = Label.new()
 	department_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -87,12 +83,11 @@ func _set_priority(priority: String) -> void:
 func _purchase_unit(unit_name: String) -> void:
 	var result: Dictionary
 	match unit_name:
-		"A": result = GameState.data.production_unit_a.purchase(GameState.data.materials, GameState.data.souls, null)
-		"B": result = GameState.data.production_unit_b.purchase(GameState.data.materials, GameState.data.souls, GameState.data.production_unit_a)
-		"C": result = GameState.data.production_unit_c.purchase(GameState.data.materials, GameState.data.souls, GameState.data.production_unit_b)
+		"A": result = GameState.data.production_unit_a.purchase(GameState.data.materials, null)
+		"B": result = GameState.data.production_unit_b.purchase(GameState.data.materials, GameState.data.production_unit_a)
+		"C": result = GameState.data.production_unit_c.purchase(GameState.data.materials, GameState.data.production_unit_b)
 	if result.get("success", false):
 		GameState.data.materials = result["materials"]
-		GameState.data.souls = result["souls"]
 	_update_ui()
 
 
@@ -110,7 +105,6 @@ func _update_ui() -> void:
 	var data := GameState.data
 	var state := data.energy_shortage_state()
 	energy_label.text = "Energy: %.1f | %.2f/sec | use %.2f/sec | %s" % [data.energy, data.energy_production_per_second(), data.energy_consumption_per_second(), state]
-	souls_label.text = "Souls: %.1f (+%.1f/sec)" % [data.souls, GameData.SOULS_PER_SECOND]
 	department_label.text = "Government workforce: Industrial %.0f%% | Civilian %.0f%% | Security %.0f%% | Scientific %.0f%%" % [data.industrial_allocation_percent, data.civilian_allocation_percent, data.security_allocation_percent, data.scientific_allocation_percent]
 	priority_label.text = "Energy priority: %s | Load-shed: ×%.2f" % [data.energy_priority, data.energy_production_multiplier()]
 	units_label.text = "Units: A %d (×%s, next %d) | B %d (×%s, next %d) | C %d (×%s, next %d)" % [
