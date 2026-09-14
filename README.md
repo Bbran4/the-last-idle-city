@@ -101,16 +101,16 @@ This section intentionally lives near the top of the README so it can be used as
 
 **Goal:** Introduce the game's first civilization-level system without turning it into a survival simulator.
 
-- [ ] Add Population
-- [ ] Add Workforce calculation
-- [ ] Implement percentage-based workforce allocation
-- [ ] Add allocation sliders
-- [ ] Make workforce counts automatically follow Population changes
-- [ ] Add allocation efficiency calculation
-- [ ] Implement Red → Orange → Green → Orange → Red allocation feedback
-- [ ] Make efficient allocation ranges dynamic
-- [ ] Connect Industrial Authority allocation to Scrap Yard productivity
-- [ ] Test Population growth changing workforce without requiring reassignment
+- [x] Add Population
+- [x] Add Workforce calculation
+- [x] Implement percentage-based workforce allocation
+- [x] Add allocation sliders
+- [x] Make workforce counts automatically follow Population changes
+- [x] Add allocation efficiency calculation
+- [x] Implement Red → Orange → Green → Orange → Red allocation feedback
+- [x] Make efficient allocation ranges dynamic
+- [x] Connect Industrial Authority allocation to Scrap Yard productivity
+- [x] Test Population growth changing workforce without requiring reassignment
 
 **Core rule:**
 

@@ -23,6 +23,7 @@ func _process(delta: float) -> void:
 func _process_tick(delta: float) -> void:
 	GameState.data.game_time += delta
 	GameState.data.total_ticks += 1
+	GameState.data.grow_population(delta)
 	GameState.data.produce_materials(GameState.data.scrap_yard_production_per_second() * delta)
 	
 	tick.emit(delta)
