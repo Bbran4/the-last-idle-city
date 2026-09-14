@@ -151,15 +151,15 @@ func _update_ui() -> void:
 	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, data.can_unlock_factory(), factory_milestone_button)
 
 func _update_scrap_yard_milestone_ui(data: GameData) -> void:
-	var can_trigger: bool = data.can_trigger_scrap_yard_milestone()
 	var next_level: int = data.scrap_yard_next_milestone_level()
 	var next_energy: float = data.scrap_yard_next_milestone_energy_cost()
+	var reached_milestone: bool = data.scrap_yard.level >= next_level
 
-	if can_trigger:
+	if reached_milestone:
 		milestone_label.visible = false
 		scrap_yard_milestone_button.visible = true
 		scrap_yard_milestone_button.text = "MILESTONE (Level %d + %.1f Energy)" % [next_level, next_energy]
-		scrap_yard_milestone_button.disabled = false
+		scrap_yard_milestone_button.disabled = not data.can_trigger_scrap_yard_milestone()
 		return
 
 	scrap_yard_milestone_button.visible = false
