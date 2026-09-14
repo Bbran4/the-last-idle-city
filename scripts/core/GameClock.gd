@@ -17,10 +17,5 @@ func _process(delta: float) -> void:
 		_process_tick(tick_interval)
 
 func _process_tick(delta: float) -> void:
-	GameState.data.game_time += delta
-	GameState.data.total_ticks += 1
-	GameState.data.grow_population(delta)
-	GameState.data.process_energy(delta)
-	GameState.data.process_chain_automation(delta)
-	GameState.data.produce_materials(GameState.data.scrap_yard_production_per_second().multiply_float(delta))
+	GameState.data.process(delta)
 	tick.emit(delta)
