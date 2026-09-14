@@ -41,3 +41,12 @@ static func format_number(value: float) -> String:
 	var sign := "-" if value < 0 else ""
 
 	return "%s%.2f%s" % [sign, scaled, suffixes[tier - 1]]
+
+
+static func format_rate(value: float) -> String:
+	var absolute_value : float = abs(value)
+	if absolute_value < 0.01:
+		return "%.3f" % value
+	if absolute_value < 10.0:
+		return "%.2f" % value
+	return format_number(value)

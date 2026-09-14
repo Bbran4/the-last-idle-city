@@ -14,6 +14,10 @@ const EFFICIENT_RANGE_HALF_WIDTH := 10.0
 const RECLAMATION_DEPOT_UNLOCK_COST := 250.0
 const WORKSHOP_UNLOCK_COST := 1_500.0
 const FACTORY_UNLOCK_COST := 10_000.0
+const RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND := 0.10
+const WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND := 0.05
+const FACTORY_WORKSHOP_LEVELS_PER_SECOND := 0.025
+const AUTOMATION_COMPLETION_EPSILON := 0.000001
 
 @export var materials: float = 0.0
 @export var scrap_yard_level: int = 1
@@ -24,6 +28,9 @@ const FACTORY_UNLOCK_COST := 10_000.0
 @export var workshop: ProductionOperation
 @export var factory: ProductionOperation
 @export var total_materials_produced := 0.0
+@export var scrap_yard_level_automation_progress := 0.0
+@export var reclamation_depot_level_automation_progress := 0.0
+@export var workshop_level_automation_progress := 0.0
 @export var game_time: float = 0.0
 @export var total_ticks: int = 0
 
@@ -51,6 +58,39 @@ func workshop_multiplier() -> float:
 func factory_multiplier() -> float:
 	# Factory is the top of this first automated production chain.
 	return 1.0 + factory.total_effectiveness() * 0.10
+
+
+func reclamation_depot_scrap_yard_level_rate() -> float:
+	return reclamation_depot.total_effectiveness() * RECLAMATION_SCRAP_YARD_LEVELS_PER_SECOND
+
+
+func workshop_reclamation_depot_level_rate() -> float:
+	return workshop.total_effectiveness() * WORKSHOP_RECLAMATION_DEPOT_LEVELS_PER_SECOND
+
+
+func factory_workshop_level_rate() -> float:
+	return factory.total_effectiveness() * FACTORY_WORKSHOP_LEVELS_PER_SECOND
+
+
+func process_chain_automation(delta: float) -> void:
+	# Each higher-tier operation levels the next operation down the chain at its stated rate.
+	workshop_level_automation_progress += factory_workshop_level_rate() * delta
+	var workshop_levels_gained := int(floor(workshop_level_automation_progress + AUTOMATION_COMPLETION_EPSILON))
+	if workshop_levels_gained > 0:
+		workshop.level += workshop_levels_gained
+		workshop_level_automation_progress = max(0.0, workshop_level_automation_progress - workshop_levels_gained)
+
+	reclamation_depot_level_automation_progress += workshop_reclamation_depot_level_rate() * delta
+	var reclamation_depot_levels_gained := int(floor(reclamation_depot_level_automation_progress + AUTOMATION_COMPLETION_EPSILON))
+	if reclamation_depot_levels_gained > 0:
+		reclamation_depot.level += reclamation_depot_levels_gained
+		reclamation_depot_level_automation_progress = max(0.0, reclamation_depot_level_automation_progress - reclamation_depot_levels_gained)
+
+	scrap_yard_level_automation_progress += reclamation_depot_scrap_yard_level_rate() * delta
+	var scrap_yard_levels_gained := int(floor(scrap_yard_level_automation_progress + AUTOMATION_COMPLETION_EPSILON))
+	if scrap_yard_levels_gained > 0:
+		scrap_yard_level += scrap_yard_levels_gained
+		scrap_yard_level_automation_progress = max(0.0, scrap_yard_level_automation_progress - scrap_yard_levels_gained)
 
 
 func can_unlock_reclamation_depot() -> bool:

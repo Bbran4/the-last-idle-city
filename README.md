@@ -137,6 +137,14 @@ No Food, Housing, Healthcare, or Education survival meters.
 - [x] Add simple production statistics
 - [x] Add unlock requirements between tiers
 
+**Production-chain automation rates:**
+
+- Reclamation Depot: **0.10 Scrap Yard Levels/sec** per operation effectiveness
+- Workshop: **0.05 Reclamation Depot Levels/sec** per operation effectiveness
+- Factory: **0.025 Workshop Levels/sec** per operation effectiveness
+
+Automation grants lower-tier levels without spending Materials. Fractional progress is retained until it reaches one complete level.
+
 Initial chain:
 
 ```text

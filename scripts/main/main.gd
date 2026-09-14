@@ -76,10 +76,10 @@ func _update_ui() -> void:
 	industrial_allocation_label.text = "Industrial Authority allocation: %.0f%%" % GameState.data.industrial_allocation_percent
 	allocation_slider.set_value_no_signal(GameState.data.industrial_allocation_percent)
 	_update_allocation_feedback()
-	chain_status_label.text = "Automated chain: Factory ×%.2f → Workshop ×%.2f → Reclamation ×%.2f → Scrap Yard" % [
-		GameState.data.factory_multiplier(),
-		GameState.data.workshop_multiplier(),
-		GameState.data.reclamation_depot_multiplier()
+	chain_status_label.text = "Automation: Factory +%s Workshop Levels/sec → Workshop +%s Depot Levels/sec → Reclamation +%s Scrap Yard Levels/sec" % [
+		NumberFormatter.format_rate(GameState.data.factory_workshop_level_rate()),
+		NumberFormatter.format_rate(GameState.data.workshop_reclamation_depot_level_rate()),
+		NumberFormatter.format_rate(GameState.data.reclamation_depot_scrap_yard_level_rate())
 	]
 	production_stats_label.text = "Lifetime Materials produced: %s" % NumberFormatter.format_number(GameState.data.total_materials_produced)
 	scrap_yard_level_label.text = "Scrap Yard level: %d" % GameState.data.scrap_yard_level

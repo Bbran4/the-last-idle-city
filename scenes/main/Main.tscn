@@ -65,7 +65,7 @@ text = "GREEN allocation efficiency: 100% | Efficient range: 40%–60% | Scrap Y
 
 [node name="ChainStatusLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=1825300241]
 layout_mode = 2
-text = "Automated chain: Factory ×1.00 → Workshop ×1.00 → Reclamation ×1.00 → Scrap Yard"
+text = "Automation: Factory +0 Workshops/sec → Workshop +0 Depots/sec → Reclamation +0 Scrap Yards/sec"
 autowrap_mode = 2
 
 [node name="ProductionStatsLabel" type="Label" parent="UI/MarginContainer/VBoxContainer" unique_id=116537571]

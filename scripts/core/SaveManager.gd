@@ -15,6 +15,9 @@ static func save_game() -> bool:
 		"workshop": GameState.data.workshop.save_data(),
 		"factory": GameState.data.factory.save_data(),
 		"total_materials_produced": GameState.data.total_materials_produced,
+		"scrap_yard_level_automation_progress": GameState.data.scrap_yard_level_automation_progress,
+		"reclamation_depot_level_automation_progress": GameState.data.reclamation_depot_level_automation_progress,
+		"workshop_level_automation_progress": GameState.data.workshop_level_automation_progress,
 		"game_time": GameState.data.game_time,
 		"total_ticks": GameState.data.total_ticks
 	}
@@ -66,6 +69,9 @@ static func load_game() -> bool:
 	GameState.data.workshop.load_save_data(save_data.get("workshop", {}))
 	GameState.data.factory.load_save_data(save_data.get("factory", {}))
 	GameState.data.total_materials_produced = float(save_data.get("total_materials_produced", GameState.data.materials))
+	GameState.data.scrap_yard_level_automation_progress = max(0.0, float(save_data.get("scrap_yard_level_automation_progress", save_data.get("scrap_yard_automation_progress", 0.0))))
+	GameState.data.reclamation_depot_level_automation_progress = max(0.0, float(save_data.get("reclamation_depot_level_automation_progress", save_data.get("reclamation_depot_automation_progress", 0.0))))
+	GameState.data.workshop_level_automation_progress = max(0.0, float(save_data.get("workshop_level_automation_progress", save_data.get("workshop_automation_progress", 0.0))))
 	GameState.data.game_time = float(save_data.get("game_time", 0.0))
 	GameState.data.total_ticks = int(save_data.get("total_ticks", 0))
 
