@@ -82,7 +82,7 @@ func _ready() -> void:
 func _create_scrap_yard_production_rate_label() -> void:
 	scrap_yard_production_rate_label = Label.new()
 	scrap_yard_production_rate_label.name = "ScrapYardProductionRateLabel"
-	scrap_yard_production_rate_label.text = "Production: 0/sec"
+	scrap_yard_production_rate_label.text = "To create Scrap Yard you need:\n1 Material\n1 Energy"
 	scrap_yard_card_vbox.add_child(scrap_yard_production_rate_label)
 
 func _create_level_up_mode_controls() -> void:
@@ -116,7 +116,7 @@ func _create_level_up_mode_button(display_text: String, mode: String, button_gro
 func _create_milestone_button(card: VBoxContainer, button_name: String, operation_getter: Callable) -> void:
 	var button: Button = Button.new()
 	button.name = button_name
-	button.text = "MILESTONE"
+	button.text = "UPGRADE"
 	button.pressed.connect(func():
 		var operation: ProductionOperation = operation_getter.call()
 		if GameState.data.trigger_operation_milestone(operation):
@@ -137,42 +137,50 @@ func _update_ui() -> void:
 	production_stats_label.text = "Lifetime Materials: %s | Energy: %.1f (+%.1f/sec)" % [NumberFormatter.format_number(data.total_materials_produced), data.energy, data.energy_production_per_second()]
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [data.game_time, data.total_ticks]
 
-	scrap_yard_level_label.text = "Scrap Yard level: %d" % data.scrap_yard.level
-	scrap_yard_count_label.text = "Scrap Yards: %d" % data.scrap_yard.count
-	scrap_yard_production_rate_label.text = "Production: %s Materials/sec" % NumberFormatter.format_number(data.scrap_yard_production_per_second())
-	level_up_button.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_level_up_cost()), data.scrap_yard.level_up_energy_cost]
-	level_up_button.disabled = not data.can_level_up_scrap_yard()
-	build_new_button.text = "BUILD SCRAP YARD (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_build_new_cost()), data.scrap_yard.build_new_energy_cost]
-	build_new_button.visible = data.can_build_new_scrap_yard()
-	_update_scrap_yard_milestone_ui(data)
-
+	_update_scrap_yard_ui(data)
 	_update_operation_ui(data.reclamation_depot, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, data.can_unlock_reclamation_depot(), reclamation_depot_milestone_button)
 	_update_operation_ui(data.workshop, workshop_label, workshop_unlock_button, workshop_level_up_button, workshop_build_new_button, data.can_unlock_workshop(), workshop_milestone_button)
 	_update_operation_ui(data.factory, factory_label, factory_unlock_button, factory_level_up_button, factory_build_new_button, data.can_unlock_factory(), factory_milestone_button)
+
+func _update_scrap_yard_ui(data: GameData) -> void:
+	scrap_yard_level_label.text = "You have %d Scrap Yard%s" % [data.scrap_yard.count, "" if data.scrap_yard.count == 1 else "s"]
+	scrap_yard_count_label.text = "Each produces %s Material/sec\nAll produce %s Material/sec" % [NumberFormatter.format_number(data.scrap_yard.production_per_building()), NumberFormatter.format_number(data.scrap_yard_production_per_second())]
+	scrap_yard_production_rate_label.text = "To create Scrap Yard you need:\n%s Material\n%.1f Energy" % [NumberFormatter.format_number(data.scrap_yard_build_new_cost()), data.scrap_yard.build_new_energy_cost]
+	level_up_button.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(data.scrap_yard_level_up_cost()), data.scrap_yard.level_up_energy_cost]
+	level_up_button.disabled = not data.can_level_up_scrap_yard()
+	build_new_button.text = "BUILD SCRAP YARD"
+	build_new_button.visible = data.can_build_new_scrap_yard()
+	_update_scrap_yard_milestone_ui(data)
+
+func _milestone_description(operation: ProductionOperation) -> String:
+	return "To upgrade %s you need %d %s levels\nEach doubles %s production\nUpgrades ×%d (Production ×%s)" % [operation.display_name, operation.next_milestone_level(), operation.display_name, operation.display_name, operation.milestones_triggered, NumberFormatter.format_number(operation.milestone_multiplier())]
 
 func _update_scrap_yard_milestone_ui(data: GameData) -> void:
 	var next_level: int = data.scrap_yard_next_milestone_level()
 	var next_energy: float = data.scrap_yard_next_milestone_energy_cost()
 	var reached_milestone: bool = data.scrap_yard.level >= next_level
 
-	if reached_milestone:
-		milestone_label.visible = false
-		scrap_yard_milestone_button.visible = true
-		scrap_yard_milestone_button.text = "MILESTONE (Level %d + %.1f Energy)" % [next_level, next_energy]
-		scrap_yard_milestone_button.disabled = not data.can_trigger_scrap_yard_milestone()
-		return
+	milestone_label.visible = true
+	milestone_label.text = _milestone_description(data.scrap_yard)
+	scrap_yard_milestone_button.visible = reached_milestone
+	scrap_yard_milestone_button.text = "UPGRADE (Level %d + %.1f Energy)" % [next_level, next_energy]
+	scrap_yard_milestone_button.disabled = not data.can_trigger_scrap_yard_milestone()
 
-	scrap_yard_milestone_button.visible = false
-	if data.scrap_yard.milestones_triggered > 0:
-		milestone_label.visible = true
-		milestone_label.text = "Next milestone: level %d" % next_level
-	else:
-		milestone_label.visible = false
+func _operation_production_unit(operation: ProductionOperation) -> String:
+	match operation.display_name:
+		"Reclamation Depot":
+			return "Scrap Yard levels/sec"
+		"Workshop":
+			return "Reclamation Depots/sec"
+		"Factory":
+			return "Workshops/sec"
+		_:
+			return "units/sec"
 
 func _update_milestone_button(operation: ProductionOperation, button: Button) -> void:
-	button.text = "MILESTONE (Level %d + %.1f Energy)" % [operation.next_milestone_level(), operation.next_milestone_energy_cost()]
+	button.text = "UPGRADE (Level %d + %.1f Energy)" % [operation.next_milestone_level(), operation.next_milestone_energy_cost()]
 	button.disabled = not operation.can_trigger_milestone(GameState.data.energy)
-	button.visible = operation.unlocked
+	button.visible = operation.unlocked and operation.level >= operation.next_milestone_level()
 
 func _update_operation_ui(operation: ProductionOperation, status_label: Label, unlock_button: Button, level_up_button_ref: Button, build_new_button_ref: Button, can_unlock: bool, milestone_button: Button) -> void:
 	if not operation.unlocked:
@@ -183,13 +191,23 @@ func _update_operation_ui(operation: ProductionOperation, status_label: Label, u
 		milestone_button.visible = false
 		return
 
-	status_label.text = "%s — Level %d | Buildings %d | Milestone ×%s" % [operation.display_name, operation.level, operation.count, NumberFormatter.format_number(operation.milestone_multiplier())]
+	status_label.text = "You have %d %s%s\nEach produces %s\nAll produce %s\n\nTo create %s you need:\n%s Material\n%.1f Energy\n\n%s" % [
+		operation.count,
+		operation.display_name,
+		"" if operation.count == 1 else "s",
+		NumberFormatter.format_number(operation.production_per_building()) + " " + _operation_production_unit(operation),
+		NumberFormatter.format_number(operation.total_effectiveness()) + " " + _operation_production_unit(operation),
+		operation.display_name,
+		NumberFormatter.format_number(operation.build_new_cost()),
+		operation.build_new_energy_cost,
+		_milestone_description(operation)
+	]
 	unlock_button.visible = false
 	level_up_button_ref.visible = true
 	level_up_button_ref.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(operation.level_up_cost()), operation.level_up_energy_cost]
 	level_up_button_ref.disabled = GameState.data.materials.is_less_than(operation.level_up_cost()) or GameState.data.energy < operation.level_up_energy_cost
 	build_new_button_ref.visible = operation.can_build_new(GameState.data.materials, GameState.data.energy)
-	build_new_button_ref.text = "BUILD NEW (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(operation.build_new_cost()), operation.build_new_energy_cost]
+	build_new_button_ref.text = "BUILD NEW"
 	_update_milestone_button(operation, milestone_button)
 
 func _on_save_pressed() -> void:
