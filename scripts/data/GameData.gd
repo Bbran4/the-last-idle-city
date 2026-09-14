@@ -44,9 +44,9 @@ var total_materials_produced: BigNumber
 @export var game_time: float = 0.0
 @export var total_ticks: int = 0
 
-var scrap_yard_production_progress: float = 0.0
 var reclamation_depot_production_progress: float = 0.0
 var workshop_production_progress: float = 0.0
+var factory_production_progress: float = 0.0
 
 func _init() -> void:
 	materials = BigNumber.zero()
