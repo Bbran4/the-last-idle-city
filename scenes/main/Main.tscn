@@ -87,15 +87,19 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBox" type="VBoxContainer" parent="Layout" unique_id=1759011591]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 6
 
 [node name="TopBar" type="PanelContainer" parent="Layout/VBox" unique_id=942601178]
-custom_minimum_size = Vector2(0, 72)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_override_styles/panel = SubResource("panel")
 
@@ -121,32 +125,28 @@ text = "ORDERS • PRODUCTION • SURVIVAL"
 [node name="TopPopulationLabel" type="Label" parent="Layout/VBox/TopBar/HBox" unique_id=914060495]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "POPULATION
-100  +1/sec"
+text = "POPULATION\n100  +1/sec"
 
 [node name="TopMaterialsLabel" type="Label" parent="Layout/VBox/TopBar/HBox" unique_id=2060066125]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "MATERIALS
-0  +1/sec"
+text = "MATERIALS\n0  +1/sec"
 
 [node name="TopProductionLabel" type="Label" parent="Layout/VBox/TopBar/HBox" unique_id=1390473878]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "PRODUCTION
-1/sec"
+text = "PRODUCTION\n1/sec"
 
 [node name="SystemLabel" type="Label" parent="Layout/VBox/TopBar/HBox" unique_id=1977383953]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.54, 0.65, 0.61, 1)
-text = "SECTOR 01
-ONLINE"
+text = "SECTOR 01\nONLINE"
 horizontal_alignment = 2
 
 [node name="Body" type="HBoxContainer" parent="Layout/VBox" unique_id=1922749818]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 6
 
 [node name="LeftRail" type="PanelContainer" parent="Layout/VBox/Body" unique_id=1670244095]
 custom_minimum_size = Vector2(250, 0)
@@ -165,30 +165,19 @@ text = "ACTIVE UPDATES"
 [node name="Updates" type="Label" parent="Layout/VBox/Body/LeftRail/VBox" unique_id=165544043]
 layout_mode = 2
 size_flags_vertical = 3
-text = "PRODUCTION UPDATE
-Scrap Yard automation is processing available materials.
-
-POPULATION GROWTH
-Workforce capacity follows population growth automatically.
-
-CURRENT OBJECTIVE
-Expand the production chain beyond the Scrap Yard."
+text = "PRODUCTION UPDATE\nScrap Yard automation is processing available materials.\n\nPOPULATION GROWTH\nWorkforce capacity follows population growth automatically.\n\nCURRENT OBJECTIVE\nExpand the production chain beyond the Scrap Yard."
 autowrap_mode = 2
 
 [node name="Motto" type="Label" parent="Layout/VBox/Body/LeftRail/VBox" unique_id=1589452601]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.53, 0.6, 0.57, 1)
-text = "A STRONGER TOMORROW
-
-THROUGH UNITY
-THROUGH WORK
-THROUGH PROGRESS"
+text = "A STRONGER TOMORROW\n\nTHROUGH UNITY\nTHROUGH WORK\nTHROUGH PROGRESS"
 horizontal_alignment = 1
 
 [node name="Center" type="VBoxContainer" parent="Layout/VBox/Body" unique_id=569978351]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+theme_override_constants/separation = 6
 
 [node name="CityOverview" type="PanelContainer" parent="Layout/VBox/Body/Center" unique_id=605705649]
 layout_mode = 2
@@ -316,8 +305,9 @@ theme_override_styles/disabled = SubResource("button_disabled")
 text = "LOAD"
 
 [node name="OperationsPanel" type="PanelContainer" parent="Layout/VBox" unique_id=485534510]
-custom_minimum_size = Vector2(0, 235)
+custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
+size_flags_vertical = 1
 theme_override_styles/panel = SubResource("panel")
 
 [node name="VBox" type="VBoxContainer" parent="Layout/VBox/OperationsPanel" unique_id=628970339]
