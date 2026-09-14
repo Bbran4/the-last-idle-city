@@ -58,7 +58,7 @@ func _init() -> void:
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
 
-	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, RECLAMATION_DEPOT_LEVEL_UP_COST, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST)
+	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, RECLAMATION_DEPOT_LEVEL_UP_COST, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST, 1.0)
 	reclamation_depot.level_up_energy_cost = RECLAMATION_DEPOT_LEVEL_UP_ENERGY_COST
 
 	workshop = ProductionOperation.new("Workshop", WORKSHOP_UNLOCK_COST, WORKSHOP_LEVEL_UP_COST, WORKSHOP_BUILD_COST, WORKSHOP_BUILD_ENERGY_COST)
