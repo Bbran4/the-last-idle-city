@@ -65,39 +65,12 @@ var total_materials_produced: BigNumber
 func _init() -> void:
 	materials = BigNumber.zero()
 	total_materials_produced = BigNumber.zero()
-
-	scrap_yard = ProductionOperation.new(
-		"Scrap Yard",
-		0.0,
-		LEVEL_UP_BASE_COST,
-		SCRAP_YARD_BUILD_COST,
-		SCRAP_YARD_BUILD_ENERGY_COST,
-		1.0
-	)
+	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, LEVEL_UP_BASE_COST, SCRAP_YARD_BUILD_COST, SCRAP_YARD_BUILD_ENERGY_COST, 1.0)
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1
-
-	reclamation_depot = ProductionOperation.new(
-		"Reclamation Depot",
-		RECLAMATION_DEPOT_UNLOCK_COST,
-		RECLAMATION_DEPOT_LEVEL_UP_COST,
-		RECLAMATION_DEPOT_BUILD_COST,
-		RECLAMATION_DEPOT_BUILD_ENERGY_COST
-	)
-	workshop = ProductionOperation.new(
-		"Workshop",
-		WORKSHOP_UNLOCK_COST,
-		WORKSHOP_LEVEL_UP_COST,
-		WORKSHOP_BUILD_COST,
-		WORKSHOP_BUILD_ENERGY_COST
-	)
-	factory = ProductionOperation.new(
-		"Factory",
-		FACTORY_UNLOCK_COST,
-		FACTORY_LEVEL_UP_COST,
-		FACTORY_BUILD_COST,
-		FACTORY_BUILD_ENERGY_COST
-	)
+	reclamation_depot = ProductionOperation.new("Reclamation Depot", RECLAMATION_DEPOT_UNLOCK_COST, RECLAMATION_DEPOT_LEVEL_UP_COST, RECLAMATION_DEPOT_BUILD_COST, RECLAMATION_DEPOT_BUILD_ENERGY_COST)
+	workshop = ProductionOperation.new("Workshop", WORKSHOP_UNLOCK_COST, WORKSHOP_LEVEL_UP_COST, WORKSHOP_BUILD_COST, WORKSHOP_BUILD_ENERGY_COST)
+	factory = ProductionOperation.new("Factory", FACTORY_UNLOCK_COST, FACTORY_LEVEL_UP_COST, FACTORY_BUILD_COST, FACTORY_BUILD_ENERGY_COST)
 
 func scrap_yard_production_per_second() -> BigNumber:
 	var production: BigNumber = scrap_yard.total_effectiveness()
@@ -147,10 +120,10 @@ func can_unlock_reclamation_depot() -> bool:
 	return not reclamation_depot.unlocked and materials.is_greater_or_equal(reclamation_depot.unlock_cost())
 
 func can_unlock_workshop() -> bool:
-	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.level >= ProductionOperation.FIRST_MILESTONE_LEVEL and materials.is_greater_or_equal(workshop.unlock_cost())
+	return not workshop.unlocked and reclamation_depot.unlocked and reclamation_depot.milestones_triggered >= 1 and materials.is_greater_or_equal(workshop.unlock_cost())
 
 func can_unlock_factory() -> bool:
-	return not factory.unlocked and workshop.unlocked and workshop.level >= ProductionOperation.FIRST_MILESTONE_LEVEL and materials.is_greater_or_equal(factory.unlock_cost())
+	return not factory.unlocked and workshop.unlocked and workshop.milestones_triggered >= 1 and materials.is_greater_or_equal(factory.unlock_cost())
 
 func unlock_operation(operation: ProductionOperation) -> bool:
 	var can_unlock: bool = false
