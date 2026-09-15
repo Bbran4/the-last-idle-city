@@ -8,6 +8,10 @@ extends Control
 func _ready() -> void:
 	GameState.wave_changed.connect(_on_wave_changed)
 	Economy.coins_changed.connect(_on_coins_changed)
+	var castle := get_node_or_null("../Castle") as Castle
+	if castle:
+		castle.health_changed.connect(set_castle_health)
+		set_castle_health(castle.health, castle.max_health)
 	_on_wave_changed(GameState.current_wave)
 	_on_coins_changed(Economy.get_coins())
 
