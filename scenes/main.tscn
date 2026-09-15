@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://boryseoaxbyn6" path="res://scripts/ui.gd" id="6_ui"]
 [ext_resource type="Resource" uid="uid://donuryanswuqa" path="res://data/player_stats.tres" id="7_stats"]
 [ext_resource type="Script" uid="uid://b7o3w8yxayp15" path="res://scripts/upgrade_manager.gd" id="8_upgrade"]
-[ext_resource type="Script" uid="uid://3c7p7qo0cpdn" path="res://scripts/skill_manager.gd" id="9_skill"]
+[ext_resource type="Script" path="res://scripts/skill_manager.gd" id="9_skill"]
 
 [node name="Main" type="Node2D" unique_id=852949483]
 script = ExtResource("1_controller")
@@ -169,7 +169,7 @@ text = "Multi Shot"
 [node name="SkillCard3" type="Button" parent="UI/SkillPanel" unique_id=1200000005]
 layout_mode = 0
 offset_left = 730.0
-offset_top = 90.0
+oxset_top = 90.0
 offset_right = 1030.0
 offset_bottom = 280.0
 theme_override_font_sizes/font_size = 22
@@ -184,6 +184,16 @@ offset_right = 1880.0
 offset_bottom = 125.0
 theme_override_font_sizes/font_size = 22
 text = "Power Shot: READY"
+
+[node name="MultiShotButton" type="Button" parent="UI" unique_id=1200000007]
+visible = false
+layout_mode = 0
+offset_left = 1450.0
+offset_top = 135.0
+offset_right = 1880.0
+offset_bottom = 185.0
+theme_override_font_sizes/font_size = 22
+text = "Multi Shot: READY"
 
 [node name="BossHealthLabel" type="Label" parent="UI" unique_id=554574719]
 visible = false
