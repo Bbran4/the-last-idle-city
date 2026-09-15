@@ -84,20 +84,37 @@ func _on_boss_spawned(boss: Enemy) -> void:
 		boss_health_label.text = "%s: %.0f / %.0f" % [boss_name, boss.stats.health, boss.stats.max_health]
 	boss.boss_health_changed.connect(_on_boss_health_changed)
 	boss.boss_phase_changed.connect(_on_boss_phase_changed)
+	boss.boss_shield_changed.connect(_on_boss_shield_changed)
 	if wave_status_label:
 		wave_status_label.text = "%s HAS ARRIVED: defeat it for %d coins!" % [boss_name, boss.coin_reward]
 
 func _on_boss_health_changed(current: float, maximum: float) -> void:
-	if boss_health_label:
-		boss_health_label.text = "%s: %.0f / %.0f" % [get_boss_name(active_boss), current, maximum]
+	if boss_health_label == null or active_boss == null:
+		return
+	var boss_name := get_boss_name(active_boss)
+	if active_boss.boss_shield_active:
+		boss_health_label.text = "%s: %.0f / %.0f | SHIELD: %.0f / %.0f" % [boss_name, current, maximum, active_boss.boss_shield, active_boss.boss_shield_max]
+	else:
+		boss_health_label.text = "%s: %.0f / %.0f" % [boss_name, current, maximum]
+
+func _on_boss_shield_changed(current: float, maximum: float) -> void:
+	if boss_health_label == null or active_boss == null or not active_boss.is_major_boss:
+		return
+	if maximum <= 0.0:
+		return
+	boss_health_label.text = "%s: %.0f / %.0f | SHIELD: %.0f / %.0f" % [get_boss_name(active_boss), active_boss.stats.health, active_boss.stats.max_health, current, maximum]
 
 func _on_boss_phase_changed(phase_name: String) -> void:
-	if phase_name == "ENRAGED" and active_boss:
-		var boss_name := get_boss_name(active_boss)
+	if active_boss == null:
+		return
+	var boss_name := get_boss_name(active_boss)
+	if phase_name == "SHIELDED":
+		if wave_status_label:
+			wave_status_label.text = "%s SHIELD ACTIVE: break it to continue!" % boss_name
+		return
+	if phase_name == "ENRAGED":
 		if wave_status_label:
 			wave_status_label.text = "%s ENRAGED: move faster, hits harder!" % boss_name
-		if boss_health_label:
-			boss_health_label.text = "%s: ENRAGED" % boss_name
 
 func _on_boss_defeated(boss: Enemy) -> void:
 	var boss_name := get_boss_name(boss)
