@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/castle.tscn" id="2_castle"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="Script" uid="uid://jdbie8mvcd6a" path="res://scripts/wave_manager.gd" id="5_wave"]
-[ext_resource type="Script" uid="uid:boryseoaxbyn6" path="res://scripts/ui.gd" id="6_ui"]
+[ext_resource type="Script" uid="uid://boryseoaxbyn6" path="res://scripts/ui.gd" id="6_ui"]
 [ext_resource type="Resource" path="res://data/player_stats.tres" id="7_stats"]
 [ext_resource type="Script" path="res://scripts/upgrade_manager.gd" id="8_upgrade"]
 
