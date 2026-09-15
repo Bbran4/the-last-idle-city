@@ -8,6 +8,7 @@ signal boss_phase_changed(phase_name: String)
 const BOSS_ENRAGE_HEALTH_RATIO: float = 0.5
 const BOSS_ENRAGED_SPEED: float = 80.0
 const BOSS_ENRAGED_CASTLE_DAMAGE: float = 35.0
+const BOSS_SCALE: float = 1.6
 
 @export var coin_reward: int = 1
 @export var movement_speed: float = 80.0
@@ -31,6 +32,7 @@ func setup(castle: Castle, enemy_stats: Stats) -> void:
 	health_changed.emit(stats.health, stats.max_health)
 	if is_boss:
 		boss_health_changed.emit(stats.health, stats.max_health)
+		_play_boss_entrance_feedback()
 
 func _setup_health_bar() -> void:
 	if health_bar == null or stats == null:
@@ -91,6 +93,20 @@ func _play_hit_feedback() -> void:
 	feedback_tween = create_tween()
 	feedback_tween.tween_property(self, "modulate", Color.WHITE, 0.08)
 
+func _play_boss_entrance_feedback() -> void:
+	if feedback_tween and feedback_tween.is_valid():
+		feedback_tween.kill()
+
+	var target_scale := Vector2.ONE * BOSS_SCALE
+	scale = target_scale * 0.45
+	modulate = Color(1.0, 0.75, 0.45, 0.0)
+
+	feedback_tween = create_tween()
+	feedback_tween.set_parallel(true)
+	feedback_tween.tween_property(self, "scale", target_scale * 1.12, 0.16)
+	feedback_tween.tween_property(self, "modulate", Color.WHITE, 0.16)
+	feedback_tween.chain().tween_property(self, "scale", target_scale, 0.12)
+
 func _play_boss_enrage_feedback() -> void:
 	if feedback_tween and feedback_tween.is_valid():
 		feedback_tween.kill()
@@ -99,8 +115,24 @@ func _play_boss_enrage_feedback() -> void:
 	enrage_tween.tween_property(self, "scale", Vector2.ONE * 1.85, 0.12)
 	enrage_tween.tween_property(self, "modulate", Color(1.0, 0.55, 0.2, 1.0), 0.12)
 	enrage_tween.chain().set_parallel(true)
-	enrage_tween.tween_property(self, "scale", Vector2.ONE * 1.6, 0.18)
+	enrage_tween.tween_property(self, "scale", target_boss_scale(), 0.18)
 	enrage_tween.tween_property(self, "modulate", Color(1.0, 0.75, 0.45, 1.0), 0.18)
+
+func target_boss_scale() -> Vector2:
+	return Vector2.ONE * BOSS_SCALE
+
+func _play_boss_death_feedback() -> void:
+	if feedback_tween and feedback_tween.is_valid():
+		feedback_tween.kill()
+
+	var death_tween := create_tween()
+	death_tween.set_parallel(true)
+	death_tween.tween_property(self, "scale", Vector2.ONE * 1.9, 0.10)
+	death_tween.tween_property(self, "modulate", Color(1.0, 0.9, 0.65, 1.0), 0.06)
+	death_tween.chain().set_parallel(true)
+	death_tween.tween_property(self, "scale", Vector2.ONE * 0.25, 0.24)
+	death_tween.tween_property(self, "modulate:a", 0.0, 0.24)
+	death_tween.chain().tween_callback(queue_free)
 
 func reach_castle() -> void:
 	if is_dead:
@@ -116,6 +148,9 @@ func die() -> void:
 	if health_bar:
 		health_bar.visible = false
 	died.emit(self)
+	if is_boss:
+		_play_boss_death_feedback()
+		return
 	if feedback_tween and feedback_tween.is_valid():
 		feedback_tween.kill()
 	var death_tween := create_tween()
