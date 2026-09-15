@@ -82,7 +82,7 @@ func _on_boss_spawned(boss: Enemy) -> void:
 	boss.boss_health_changed.connect(_on_boss_health_changed)
 	boss.boss_phase_changed.connect(_on_boss_phase_changed)
 	if wave_status_label:
-		wave_status_label.text = "MINI BOSS: defeat it for 10 coins"
+		wave_status_label.text = "MINI BOSS HAS ARRIVED: defeat it for 10 coins!"
 
 func _on_boss_health_changed(current: float, maximum: float) -> void:
 	if boss_health_label:
@@ -100,7 +100,7 @@ func _on_boss_defeated(_boss: Enemy) -> void:
 	if boss_health_label:
 		boss_health_label.visible = false
 	if wave_status_label:
-		wave_status_label.text = "MINI BOSS defeated: +10 coins"
+		wave_status_label.text = "MINI BOSS DEFEATED: +10 coins!"
 
 func _on_passive_unlocked(_display_name: String) -> void:
 	set_passive_text("Passive: Sharpened Arrows (+1 Damage)")
