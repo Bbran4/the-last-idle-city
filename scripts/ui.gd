@@ -6,6 +6,7 @@ extends Control
 @onready var castle_health_label: Label = get_node_or_null("CastleHealthLabel")
 @onready var wave_status_label: Label = get_node_or_null("WaveStatusLabel")
 @onready var passive_label: Label = get_node_or_null("PassiveLabel")
+@onready var boss_health_label: Label = get_node_or_null("BossHealthLabel")
 @onready var damage_upgrade_button: Button = get_node_or_null("DamageUpgradeButton")
 @onready var attack_speed_upgrade_button: Button = get_node_or_null("AttackSpeedUpgradeButton")
 @onready var critical_chance_upgrade_button: Button = get_node_or_null("CriticalChanceUpgradeButton")
@@ -15,6 +16,7 @@ extends Control
 @onready var castle_health_upgrade_button: Button = get_node_or_null("CastleHealthUpgradeButton")
 
 var upgrade_manager: UpgradeManager
+var active_boss: Enemy
 
 func _ready() -> void:
 	GameState.wave_changed.connect(_on_wave_changed)
@@ -27,6 +29,8 @@ func _ready() -> void:
 	if wave_manager:
 		wave_manager.wave_started.connect(_on_wave_started)
 		wave_manager.wave_completed.connect(_on_wave_completed)
+		wave_manager.boss_spawned.connect(_on_boss_spawned)
+		wave_manager.boss_defeated.connect(_on_boss_defeated)
 	upgrade_manager = get_node_or_null("../UpgradeManager") as UpgradeManager
 	if upgrade_manager:
 		upgrade_manager.passive_unlocked.connect(_on_passive_unlocked)
@@ -61,11 +65,34 @@ func _on_coins_changed(amount: int) -> void:
 
 func _on_wave_started(wave: int) -> void:
 	if wave_status_label:
-		wave_status_label.text = "Wave %d: enemies incoming" % wave
+		if wave % WaveManager.MINI_BOSS_INTERVAL == 0:
+			wave_status_label.text = "Wave %d: MINI BOSS INCOMING" % wave
+		else:
+			wave_status_label.text = "Wave %d: enemies incoming" % wave
 
 func _on_wave_completed(wave: int) -> void:
 	if wave_status_label:
 		wave_status_label.text = "Wave %d cleared. Next wave incoming..." % wave
+
+func _on_boss_spawned(boss: Enemy) -> void:
+	active_boss = boss
+	if boss_health_label:
+		boss_health_label.visible = true
+		boss_health_label.text = "MINI BOSS: %.0f / %.0f" % [boss.stats.health, boss.stats.max_health]
+	boss.boss_health_changed.connect(_on_boss_health_changed)
+	if wave_status_label:
+		wave_status_label.text = "MINI BOSS: defeat it for 10 coins"
+
+func _on_boss_health_changed(current: float, maximum: float) -> void:
+	if boss_health_label:
+		boss_health_label.text = "MINI BOSS: %.0f / %.0f" % [current, maximum]
+
+func _on_boss_defeated(_boss: Enemy) -> void:
+	active_boss = null
+	if boss_health_label:
+		boss_health_label.visible = false
+	if wave_status_label:
+		wave_status_label.text = "MINI BOSS defeated: +10 coins"
 
 func _on_passive_unlocked(_display_name: String) -> void:
 	set_passive_text("Passive: Sharpened Arrows (+1 Damage)")
