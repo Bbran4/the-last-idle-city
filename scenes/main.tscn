@@ -109,6 +109,15 @@ offset_bottom = 305.0
 theme_override_font_sizes/font_size = 18
 text = "Arrow Speed +100 | Cost: 5 coins"
 
+[node name="RangeUpgradeButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 370.0
+offset_top = 260.0
+offset_right = 680.0
+offset_bottom = 305.0
+theme_override_font_sizes/font_size = 18
+text = "Range +100 | Cost: 6 coins"
+
 [node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
 layout_mode = 0
 offset_left = 40.0
