@@ -4,10 +4,12 @@ extends Unit
 signal reached_castle(damage: float)
 signal boss_health_changed(current: float, maximum: float)
 signal boss_phase_changed(phase_name: String)
+signal boss_shield_changed(current: float, maximum: float)
 
 const BOSS_ENRAGE_HEALTH_RATIO: float = 0.5
 const BOSS_ENRAGED_SPEED: float = 80.0
 const BOSS_ENRAGED_CASTLE_DAMAGE: float = 35.0
+const MAJOR_BOSS_SHIELD_RATIO: float = 0.25
 const MINI_BOSS_SCALE: float = 1.6
 const MAJOR_BOSS_SCALE: float = 2.2
 
@@ -22,18 +24,25 @@ var feedback_tween: Tween
 var is_boss: bool = false
 var is_major_boss: bool = false
 var boss_enraged: bool = false
+var boss_shield: float = 0.0
+var boss_shield_max: float = 0.0
+var boss_shield_active: bool = false
 
 func setup(castle: Castle, enemy_stats: Stats) -> void:
 	target_castle = castle
 	stats = enemy_stats.duplicate(true)
 	is_dead = false
 	boss_enraged = false
+	boss_shield = 0.0
+	boss_shield_max = 0.0
+	boss_shield_active = false
 	scale = Vector2.ONE
 	modulate = Color.WHITE
 	_setup_health_bar()
 	health_changed.emit(stats.health, stats.max_health)
 	if is_boss:
 		boss_health_changed.emit(stats.health, stats.max_health)
+		boss_shield_changed.emit(0.0, 0.0)
 		_play_boss_entrance_feedback()
 
 func _setup_health_bar() -> void:
@@ -66,7 +75,20 @@ func take_damage(amount: float) -> void:
 	if is_dead or stats == null:
 		return
 
-	super.take_damage(amount)
+	var remaining_damage := maxf(amount, 0.0)
+	if boss_shield_active:
+		var absorbed_damage := minf(remaining_damage, boss_shield)
+		boss_shield -= absorbed_damage
+		remaining_damage -= absorbed_damage
+		boss_shield_changed.emit(boss_shield, boss_shield_max)
+		if boss_shield <= 0.0:
+			boss_shield = 0.0
+			boss_shield_active = false
+			boss_phase_changed.emit("ENRAGED")
+
+	if remaining_damage > 0.0:
+		super.take_damage(remaining_damage)
+
 	if is_boss:
 		boss_health_changed.emit(stats.health, stats.max_health)
 		_check_boss_enrage()
@@ -86,7 +108,7 @@ func _check_boss_enrage() -> void:
 	if is_major_boss:
 		movement_speed = 70.0
 		castle_damage = 60.0
-		boss_phase_changed.emit("ENRAGED")
+		_activate_major_boss_shield()
 		_play_major_boss_enrage_feedback()
 		return
 
@@ -94,6 +116,13 @@ func _check_boss_enrage() -> void:
 	castle_damage = BOSS_ENRAGED_CASTLE_DAMAGE
 	boss_phase_changed.emit("ENRAGED")
 	_play_boss_enrage_feedback()
+
+func _activate_major_boss_shield() -> void:
+	boss_shield_max = stats.max_health * MAJOR_BOSS_SHIELD_RATIO
+	boss_shield = boss_shield_max
+	boss_shield_active = true
+	boss_shield_changed.emit(boss_shield, boss_shield_max)
+	boss_phase_changed.emit("SHIELDED")
 
 func _play_hit_feedback() -> void:
 	if feedback_tween and feedback_tween.is_valid():
@@ -165,6 +194,8 @@ func die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+	boss_shield_active = false
+	boss_shield = 0.0
 	if health_bar:
 		health_bar.visible = false
 	died.emit(self)
