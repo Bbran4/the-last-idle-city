@@ -131,6 +131,7 @@ Current feedback includes:
 - Active boss health is displayed while a boss is alive.
 - Boss enrage displays a warning.
 - Major Boss shields display their remaining shield in the boss UI.
+- Major Boss shields also display as a pulsing blue circular glow around the boss.
 - Upgrade purchases display confirmation.
 - Passive unlocks display confirmation.
 
@@ -187,6 +188,7 @@ At **50% health**, a Major Boss enters its special second phase:
 - Incoming damage is absorbed by the shield before it reaches boss health.
 - The UI displays the remaining shield value.
 - The UI announces **MAJOR BOSS SHIELD ACTIVE**.
+- The shield appears as a **pulsing blue circular glow** around the Major Boss.
 - Once the shield is broken, the UI announces **MAJOR BOSS ENRAGED** and the boss remains in its stronger combat state.
 - The phase happens once per boss.
 
@@ -351,6 +353,7 @@ Remaining polish can wait until later systems expose actual problems.
 - [x] Major Boss shield phase
 - [x] Enrage UI feedback
 - [x] Major Boss shield UI feedback
+- [x] Major Boss blue shield glow
 - [x] Enemy/boss health bars that appear after first damage
 - [x] Stronger boss entrance feedback
 - [x] Stronger boss death feedback
@@ -451,6 +454,7 @@ Work on one system at a time.
 - [x] Major Boss system foundation
 - [x] Boss enrage
 - [x] Major Boss shield mechanic
+- [x] Major Boss shield visual
 - [x] Reactive enemy health bars
 - [x] Boss entrance/death feedback
 
