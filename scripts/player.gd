@@ -1,12 +1,38 @@
 class_name Player
 extends Unit
 
-@export var move_enabled: bool = false
+@export var arrow_scene: PackedScene = preload("res://scenes/arrow.tscn")
+@export var arrow_spawn_offset: float = 28.0
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		# Aiming and arrow firing are implemented in Milestone 1.
-		look_at(get_global_mouse_position())
+var attack_cooldown: float = 0.0
+
+func _process(delta: float) -> void:
+	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
+	if is_dead:
+		return
+
+	look_at(get_global_mouse_position())
+
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and attack_cooldown <= 0.0:
+		fire_arrow(get_global_mouse_position())
+
+func fire_arrow(target_position: Vector2) -> void:
+	if arrow_scene == null or stats == null:
+		return
+
+	var arrow := arrow_scene.instantiate() as Arrow
+	if arrow == null:
+		return
+
+	get_tree().current_scene.add_child(arrow)
+	var direction := global_position.direction_to(target_position)
+	arrow.setup(
+		global_position + direction * arrow_spawn_offset,
+		target_position,
+		stats.damage,
+		stats.arrow_speed
+	)
+	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
 
 func get_player_stats() -> Stats:
 	return stats
