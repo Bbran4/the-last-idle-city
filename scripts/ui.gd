@@ -65,7 +65,9 @@ func _on_coins_changed(amount: int) -> void:
 
 func _on_wave_started(wave: int) -> void:
 	if wave_status_label:
-		if wave % WaveManager.MINI_BOSS_INTERVAL == 0:
+		if wave % WaveManager.MAJOR_BOSS_INTERVAL == 0:
+			wave_status_label.text = "Wave %d: MAJOR BOSS INCOMING" % wave
+		elif wave % WaveManager.MINI_BOSS_INTERVAL == 0:
 			wave_status_label.text = "Wave %d: MINI BOSS INCOMING" % wave
 		else:
 			wave_status_label.text = "Wave %d: enemies incoming" % wave
@@ -76,31 +78,40 @@ func _on_wave_completed(wave: int) -> void:
 
 func _on_boss_spawned(boss: Enemy) -> void:
 	active_boss = boss
+	var boss_name := get_boss_name(boss)
 	if boss_health_label:
 		boss_health_label.visible = true
-		boss_health_label.text = "MINI BOSS: %.0f / %.0f" % [boss.stats.health, boss.stats.max_health]
+		boss_health_label.text = "%s: %.0f / %.0f" % [boss_name, boss.stats.health, boss.stats.max_health]
 	boss.boss_health_changed.connect(_on_boss_health_changed)
 	boss.boss_phase_changed.connect(_on_boss_phase_changed)
 	if wave_status_label:
-		wave_status_label.text = "MINI BOSS HAS ARRIVED: defeat it for 10 coins!"
+		wave_status_label.text = "%s HAS ARRIVED: defeat it for %d coins!" % [boss_name, boss.coin_reward]
 
 func _on_boss_health_changed(current: float, maximum: float) -> void:
 	if boss_health_label:
-		boss_health_label.text = "MINI BOSS: %.0f / %.0f" % [current, maximum]
+		boss_health_label.text = "%s: %.0f / %.0f" % [get_boss_name(active_boss), current, maximum]
 
 func _on_boss_phase_changed(phase_name: String) -> void:
-	if phase_name == "ENRAGED":
+	if phase_name == "ENRAGED" and active_boss:
+		var boss_name := get_boss_name(active_boss)
 		if wave_status_label:
-			wave_status_label.text = "MINI BOSS ENRAGED: move faster, hits harder!"
+			wave_status_label.text = "%s ENRAGED: move faster, hits harder!" % boss_name
 		if boss_health_label:
-			boss_health_label.text = "MINI BOSS: ENRAGED"
+			boss_health_label.text = "%s: ENRAGED" % boss_name
 
-func _on_boss_defeated(_boss: Enemy) -> void:
+func _on_boss_defeated(boss: Enemy) -> void:
+	var boss_name := get_boss_name(boss)
+	var reward := boss.coin_reward
 	active_boss = null
 	if boss_health_label:
 		boss_health_label.visible = false
 	if wave_status_label:
-		wave_status_label.text = "MINI BOSS DEFEATED: +10 coins!"
+		wave_status_label.text = "%s DEFEATED: +%d coins!" % [boss_name, reward]
+
+func get_boss_name(boss: Enemy) -> String:
+	if boss and boss.is_major_boss:
+		return "MAJOR BOSS"
+	return "MINI BOSS"
 
 func _on_passive_unlocked(_display_name: String) -> void:
 	set_passive_text("Passive: Sharpened Arrows (+1 Damage)")
