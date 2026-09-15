@@ -18,8 +18,11 @@ const ARROW_SPEED_UPGRADE_COST: int = 5
 const ARROW_SPEED_UPGRADE_BONUS: float = 100.0
 const RANGE_UPGRADE_COST: int = 6
 const RANGE_UPGRADE_BONUS: float = 100.0
+const CASTLE_HEALTH_UPGRADE_COST: int = 7
+const CASTLE_HEALTH_UPGRADE_BONUS: float = 25.0
 
 var player: Player
+var castle: Castle
 var first_passive_unlocked: bool = false
 var damage_upgrades: int = 0
 var attack_speed_upgrades: int = 0
@@ -27,9 +30,11 @@ var critical_chance_upgrades: int = 0
 var critical_damage_upgrades: int = 0
 var arrow_speed_upgrades: int = 0
 var range_upgrades: int = 0
+var castle_health_upgrades: int = 0
 
-func setup(target_player: Player) -> void:
+func setup(target_player: Player, target_castle: Castle) -> void:
 	player = target_player
+	castle = target_castle
 	first_passive_unlocked = false
 	damage_upgrades = 0
 	attack_speed_upgrades = 0
@@ -37,6 +42,7 @@ func setup(target_player: Player) -> void:
 	critical_damage_upgrades = 0
 	arrow_speed_upgrades = 0
 	range_upgrades = 0
+	castle_health_upgrades = 0
 	if not Economy.coins_changed.is_connected(_on_coins_changed):
 		Economy.coins_changed.connect(_on_coins_changed)
 	_check_first_passive()
@@ -62,7 +68,6 @@ func _check_first_passive() -> void:
 func buy_damage_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(DAMAGE_UPGRADE_COST):
 		return false
-
 	player.stats.damage += DAMAGE_UPGRADE_BONUS
 	damage_upgrades += 1
 	upgrades_changed.emit()
@@ -71,7 +76,6 @@ func buy_damage_upgrade() -> bool:
 func buy_attack_speed_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(ATTACK_SPEED_UPGRADE_COST):
 		return false
-
 	player.stats.attack_speed += ATTACK_SPEED_UPGRADE_BONUS
 	attack_speed_upgrades += 1
 	upgrades_changed.emit()
@@ -80,7 +84,6 @@ func buy_attack_speed_upgrade() -> bool:
 func buy_critical_chance_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(CRITICAL_CHANCE_UPGRADE_COST):
 		return false
-
 	player.stats.critical_chance += CRITICAL_CHANCE_UPGRADE_BONUS
 	critical_chance_upgrades += 1
 	upgrades_changed.emit()
@@ -89,7 +92,6 @@ func buy_critical_chance_upgrade() -> bool:
 func buy_critical_damage_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(CRITICAL_DAMAGE_UPGRADE_COST):
 		return false
-
 	player.stats.critical_damage += CRITICAL_DAMAGE_UPGRADE_BONUS
 	critical_damage_upgrades += 1
 	upgrades_changed.emit()
@@ -98,7 +100,6 @@ func buy_critical_damage_upgrade() -> bool:
 func buy_arrow_speed_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(ARROW_SPEED_UPGRADE_COST):
 		return false
-
 	player.stats.arrow_speed += ARROW_SPEED_UPGRADE_BONUS
 	arrow_speed_upgrades += 1
 	upgrades_changed.emit()
@@ -107,9 +108,16 @@ func buy_arrow_speed_upgrade() -> bool:
 func buy_range_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(RANGE_UPGRADE_COST):
 		return false
-
 	player.stats.range += RANGE_UPGRADE_BONUS
 	range_upgrades += 1
+	upgrades_changed.emit()
+	return true
+
+func buy_castle_health_upgrade() -> bool:
+	if castle == null or not Economy.spend_coins(CASTLE_HEALTH_UPGRADE_COST):
+		return false
+	castle.increase_max_health(CASTLE_HEALTH_UPGRADE_BONUS)
+	castle_health_upgrades += 1
 	upgrades_changed.emit()
 	return true
 
@@ -138,3 +146,6 @@ func get_arrow_speed_upgrade_text() -> String:
 
 func get_range_upgrade_text() -> String:
 	return "Range +%.0f  |  Cost: %d coins" % [RANGE_UPGRADE_BONUS, RANGE_UPGRADE_COST]
+
+func get_castle_health_upgrade_text() -> String:
+	return "Castle Health +%.0f  |  Cost: %d coins" % [CASTLE_HEALTH_UPGRADE_BONUS, CASTLE_HEALTH_UPGRADE_COST]
