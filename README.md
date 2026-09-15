@@ -76,7 +76,8 @@ The current fixed costs are intentionally simple and are considered reasonably b
 - A **2 second** break occurs between waves.
 - Enemies spawn from both sides.
 - Normal enemies award **1 coin**.
-- Every **10th wave** also contains a Mini Boss.
+- Every **5th wave** contains a Mini Boss unless it is also a Major Boss wave.
+- Every **10th wave** contains a Major Boss instead of a Mini Boss.
 - Castle destruction ends the run.
 
 The starting **1 Damage vs 3 HP** balance is intentional. Damage upgrades therefore create clear combat breakpoints.
@@ -111,7 +112,7 @@ Behavior:
 - The bar updates as the enemy takes additional damage.
 - The bar remains visible for that enemy after it has been revealed.
 - Health bars disappear when the enemy dies.
-- Mini Bosses use the same system automatically.
+- Mini Bosses and Major Bosses use the same system automatically.
 
 This keeps the battlefield clean while still giving the player immediate information about enemies they have actually engaged.
 
@@ -124,12 +125,11 @@ Current feedback includes:
 - Enemy health bars appear after the first hit.
 - Enemies flash when hit.
 - Enemies shrink and fade when killed.
-- Mini Bosses use a stronger entrance animation.
-- Mini Bosses use a stronger death animation.
+- Bosses use stronger entrance and death animations.
 - Wave status communicates incoming and cleared waves.
-- Mini Boss waves announce themselves.
-- Mini Boss health is displayed while active.
-- Mini Boss enrage displays a warning.
+- Mini Boss and Major Boss waves announce themselves.
+- Active boss health is displayed while a boss is alive.
+- Boss enrage displays a warning.
 - Upgrade purchases display confirmation.
 - Passive unlocks display confirmation.
 
@@ -141,7 +141,7 @@ Bosses are progression events rather than ordinary enemies with huge health pool
 
 ## Mini Bosses
 
-- Appear every **10 waves**.
+- Appear every **5 waves** except on Major Boss waves.
 - Spawn alongside normal enemies.
 - Use the existing Enemy framework.
 - Have **10x normal enemy health** for that wave.
@@ -166,7 +166,26 @@ The phase happens once per boss.
 
 ## Major Bosses
 
-Planned every **50 waves**. Not implemented yet.
+- Appear every **10 waves**.
+- Replace the Mini Boss on those waves.
+- Have **20x normal enemy health** for that wave.
+- Award **25 coins** when killed.
+- Move at **40 speed** before enraging.
+- Deal **40 castle damage** before enraging.
+- Appear at **2.2x scale**.
+- Have distinct entrance and death feedback.
+- Use the dedicated boss health UI.
+
+### Major Boss Enrage
+
+At **50% health**:
+
+- Movement speed changes to **70**.
+- Castle damage increases to **60**.
+- The boss uses a stronger enrage animation.
+- The UI announces **MAJOR BOSS ENRAGED**.
+
+The current Major Boss values are an initial balance pass and can be tuned after playtesting.
 
 ---
 
@@ -231,6 +250,7 @@ Currently:
 - Total coins earned are tracked for progression unlocks.
 - Coins buy the current upgrades.
 - Mini Bosses award **10 coins**.
+- Major Bosses award **25 coins**.
 
 Avoid adding currencies or complicated scaling unless they genuinely improve progression.
 
@@ -281,6 +301,8 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] Coin rewards
 - [x] Automatic next waves
 - [x] Game over on castle destruction
+- [x] Mini Boss every 5 waves
+- [x] Major Boss every 10 waves
 
 ---
 
@@ -305,30 +327,32 @@ Remaining polish can wait until later systems expose actual problems.
 
 ## 👹 Milestone 4 - Bosses
 
-**Status: In progress, first Mini Boss implemented**
+**Status: In progress**
 
 ### Completed
 
-- [x] Mini Boss every 10 waves
+- [x] Mini Boss every 5 waves
+- [x] Major Boss every 10 waves
 - [x] Mini Boss rewards
-- [x] Mini Boss health display
+- [x] Major Boss rewards
+- [x] Boss health display
 - [x] Existing Enemy framework reused
-- [x] Visual distinction
+- [x] Visual distinction between boss tiers
 - [x] Enrage phase at 50% health
-- [x] Enrage speed/damage increase
+- [x] Mini Boss enrage speed/damage increase
+- [x] Major Boss enrage behavior
 - [x] Enrage UI feedback
 - [x] Enemy/boss health bars that appear after first damage
-- [x] Stronger Mini Boss entrance feedback
-- [x] Stronger Mini Boss death feedback
+- [x] Stronger boss entrance feedback
+- [x] Stronger boss death feedback
 
 ### Remaining
 
-- [ ] Major Boss system
-- [ ] Major Boss every 50 waves
-- [ ] Major Boss health bars/UI
-- [ ] Major Boss rewards
+- [ ] Give Major Bosses a unique encounter mechanic beyond their current combat profile
+- [ ] Final boss balance pass
+- [ ] Final boss visual polish
 
-The Mini Boss now has a two-phase encounter, a distinct arrival/death presentation, and reactive health information without cluttering the battlefield.
+Bosses now create regular progression events: Mini Bosses every 5 waves and larger Major Boss encounters every 10 waves.
 
 ---
 
@@ -416,17 +440,18 @@ Work on one system at a time.
 - [x] Basic upgrades
 - [x] Critical hits
 - [x] Mini Boss system
-- [x] Mini Boss enrage
+- [x] Major Boss system foundation
+- [x] Boss enrage
 - [x] Reactive enemy health bars
-- [x] Mini Boss entrance/death feedback
+- [x] Boss entrance/death feedback
 
 ### Next Focus
 
-**Milestone 4: Major Boss planning and implementation**
+**Milestone 4: Major Boss encounter design**
 
-- [ ] Design Major Boss behavior so it feels like a new encounter, not just a stronger Mini Boss
-- [ ] Major Boss every 50 waves
-- [ ] Major Boss rewards and UI
+- [ ] Give Major Bosses one memorable gameplay mechanic
+- [ ] Playtest Mini Boss every 5 / Major Boss every 10 cadence
+- [ ] Tune boss health, damage, speed, and rewards
 
 ### Later
 
