@@ -10,5 +10,17 @@ script = ExtResource("1_arrow")
 monitoring = true
 monitorable = true
 
+[node name="Shaft" type="Line2D" parent="."]
+points = PackedVector2Array(-18, 0, 18, 0)
+width = 5.0
+
+[node name="Head" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(18, 0, 7, -7, 10, 0, 7, 7)
+color = Color(0.95, 0.82, 0.3, 1)
+
+[node name="Fletching" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-18, 0, -27, -6, -22, 0, -27, 6)
+color = Color(0.65, 0.15, 0.12, 1)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape_arrow")
