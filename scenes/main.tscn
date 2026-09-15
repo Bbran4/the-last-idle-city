@@ -21,6 +21,7 @@ stats = ExtResource("7_stats")
 
 [node name="WaveManager" type="Node" parent="." unique_id=102710928]
 script = ExtResource("5_wave")
+wave_break = 5.0
 spawn_distance = 850.0
 
 [node name="UpgradeManager" type="Node" parent="." unique_id=114245918]
