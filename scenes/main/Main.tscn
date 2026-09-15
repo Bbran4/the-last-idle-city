@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dgk04oi1juw6f" path="res://scripts/main/main.gd" id="1"]
 [ext_resource type="Script" uid="uid://cyxowdt4omrm" path="res://scripts/core/GameClock.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/data/MaterialsDepartment.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/data/EnergyDepartment.gd" id="4"]
 
 [sub_resource type="StyleBoxFlat" id="panel"]
 content_margin_left = 12.0
@@ -474,3 +476,9 @@ text = "BUILD NEW"
 
 [node name="GameClock" type="Node" parent="." unique_id=762937034]
 script = ExtResource("2")
+
+[node name="MaterialsDepartment" type="Node" parent="." unique_id=990010001]
+script = ExtResource("3")
+
+[node name="EnergyDepartment" type="Node" parent="." unique_id=990010002]
+script = ExtResource("4")
