@@ -291,7 +291,7 @@ func _update_ui() -> void:
 	production_label.text = "Scrap Yard production: %s Materials/sec" % NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())
 	top_production_label.text = "Production: %s/sec" % NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())
 	chain_status_label.text = "Factory: %s Workshops/sec  →  Workshop: %s Depots/sec  →  Depot: %s Scrap Yards/sec" % [NumberFormatter.format_rate(materials_department.factory_workshop_rate()), NumberFormatter.format_rate(materials_department.workshop_reclamation_depot_rate()), NumberFormatter.format_rate(materials_department.reclamation_depot_scrap_yard_rate())]
-	production_stats_label.text = "Lifetime Materials: %s | Energy: %.1f (+%.1f/sec)" % [NumberFormatter.format_number(data.total_materials_produced), data.energy, data.energy_balance_per_second()]
+	production_stats_label.text = "Lifetime Materials: %s | Energy: %s (+%s/sec)" % [NumberFormatter.format_number(data.total_materials_produced),NumberFormatter.format_number(data.energy),NumberFormatter.format_number(data.energy_balance_per_second())]
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [data.game_time, data.total_ticks]
 
 	top_population_label.text = "POPULATION\n%d  +%.1f/sec" % [int(data.population), GameData.POPULATION_GROWTH_PER_SECOND]
