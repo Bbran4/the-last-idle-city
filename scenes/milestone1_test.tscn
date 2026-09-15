@@ -10,11 +10,12 @@
 script = ExtResource("1_controller")
 
 [node name="Castle" parent="." instance=ExtResource("2_castle")]
-position = Vector2(1750, 540)
+position = Vector2(960, 540)
 max_health = 1000.0
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
-position = Vector2(300, 540)
+position = Vector2(900, 500)
+auto_fire_range = 1600.0
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
@@ -29,7 +30,7 @@ script = ExtResource("5_ui")
 [node name="WaveLabel" type="Label" parent="UI"]
 offset_left = 40.0
 offset_top = 30.0
-offset_right = 300.0
+offset_right = 420.0
 offset_bottom = 70.0
 text = "Milestone 1: First Arrow"
 theme_override_font_sizes/font_size = 28
@@ -37,15 +38,15 @@ theme_override_font_sizes/font_size = 28
 [node name="CoinsLabel" type="Label" parent="UI"]
 offset_left = 40.0
 offset_top = 75.0
-offset_right = 300.0
+offset_right = 500.0
 offset_bottom = 115.0
-text = "Left click to fire"
+text = "Auto Fire"
 theme_override_font_sizes/font_size = 22
 
 [node name="CastleHealthLabel" type="Label" parent="UI"]
-offset_left = 1580.0
+offset_left = 1450.0
 offset_top = 30.0
-offset_right = 1880.0
+offset_right = 1850.0
 offset_bottom = 70.0
 text = "Castle: 1000 / 1000"
 theme_override_font_sizes/font_size = 28
