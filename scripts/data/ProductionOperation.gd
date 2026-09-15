@@ -1,7 +1,6 @@
 class_name ProductionOperation
 extends Resource
 
-const LEVEL_COST_GROWTH: float = 1.25
 const DEFAULT_BUILD_COST_GROWTH: float = 15.0
 const MILESTONE_LEVELS: Array[int] = [10, 25, 100, 500, 1_000, 10_000, 50_000]
 const FIRST_MILESTONE_LEVEL: int = 10
@@ -12,7 +11,6 @@ const FIRST_MILESTONE_LEVEL: int = 10
 @export var count: int = 0
 @export var unlock_cost_base: float = 0.0
 @export var level_up_base_cost: float = 0.0
-@export var level_up_cost_growth: float = LEVEL_COST_GROWTH
 @export var level_up_energy_cost: float = 0.0
 @export var build_new_base_cost: float = 0.0
 @export var build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
@@ -30,8 +28,7 @@ func _init(
 	operation_level_up_base_cost: float = 0.0,
 	operation_build_new_base_cost: float = 0.0,
 	operation_build_new_energy_cost: float = 0.0,
-	operation_build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH,
-	operation_level_up_cost_growth: float = LEVEL_COST_GROWTH
+	operation_build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
 ) -> void:
 	display_name = operation_name
 	unlock_cost_base = operation_unlock_cost
@@ -39,7 +36,6 @@ func _init(
 	build_new_base_cost = operation_build_new_base_cost
 	build_new_energy_cost = operation_build_new_energy_cost
 	build_cost_growth = operation_build_cost_growth
-	level_up_cost_growth = operation_level_up_cost_growth
 
 static func milestone_level_at(index: int) -> int:
 	if index < MILESTONE_LEVELS.size():
@@ -71,9 +67,7 @@ func unlock_cost() -> BigNumber:
 	return BigNumber.from_float(unlock_cost_base)
 
 func level_up_cost() -> BigNumber:
-	return BigNumber.from_float(level_up_base_cost).multiply(
-		BigNumber.from_float(level_up_cost_growth).pow_int(max(0, level))
-	)
+	return BigNumber.from_float(level_up_base_cost)
 
 func build_new_cost() -> BigNumber:
 	return BigNumber.from_float(build_new_base_cost).multiply(
@@ -165,9 +159,7 @@ func max_purchasable_levels(currency: BigNumber, available_energy: float, max_le
 	var simulated_level: int = level
 	var purchased: int = 0
 	while max_levels < 0 or purchased < max_levels:
-		var cost: BigNumber = BigNumber.from_float(level_up_base_cost).multiply(
-			BigNumber.from_float(level_up_cost_growth).pow_int(max(0, simulated_level))
-		)
+		var cost: BigNumber = BigNumber.from_float(level_up_base_cost)
 		if remaining.is_less_than(cost):
 			break
 		if level_up_energy_cost > 0.0 and energy_budget < level_up_energy_cost:
@@ -184,9 +176,7 @@ func total_level_up_cost(levels: int) -> BigNumber:
 	var total: BigNumber = BigNumber.zero()
 	var simulated_level: int = level
 	for i in range(max(0, levels)):
-		var cost: BigNumber = BigNumber.from_float(level_up_base_cost).multiply(
-			BigNumber.from_float(level_up_cost_growth).pow_int(max(0, simulated_level))
-		)
+		var cost: BigNumber = BigNumber.from_float(level_up_base_cost)
 		total = total.add(cost)
 		simulated_level += 1
 	return total

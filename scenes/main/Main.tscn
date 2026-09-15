@@ -479,12 +479,13 @@ script = ExtResource("2")
 
 [node name="MaterialsDepartment" type="Node" parent="." unique_id=990010001]
 script = ExtResource("3")
-reclamation_depot_scrap_yards_per_second = 0.0
 reclamation_depot_energy_consumption_per_unit = 0.0
 workshop_build_cost = 1e+22
 workshop_build_energy_cost = 100.0
-workshop_reclamation_depots_per_second = 0.0
 workshop_energy_consumption_per_unit = 0.0
+factory_build_cost = 1.0000000000000003e+25
+factory_build_energy_cost = 1000.0
+factory_energy_consumption_per_unit = 0.0
 department_name = "MaterialDepartment"
 
 [node name="EnergyDepartment" type="Node" parent="." unique_id=990010002]
