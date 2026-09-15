@@ -104,7 +104,7 @@ func _spawn_enemy(index: int, total: int) -> void:
 
 	var enemy_stats := Stats.new()
 	var health_scale := 1.0 + ((current_wave - 1) * 0.15)
-	enemy_stats.max_health = 3.0 * health_scale
+	enemy_stats.max_health = 1.0 * health_scale
 	enemy_stats.health = enemy_stats.max_health
 	enemy.setup(target_castle, enemy_stats)
 	active_enemies += 1
