@@ -17,6 +17,7 @@ extends Control
 
 var upgrade_manager: UpgradeManager
 var active_boss: Enemy
+var upgrade_buttons: Array[Button] = []
 
 func _ready() -> void:
 	GameState.wave_changed.connect(_on_wave_changed)
@@ -29,6 +30,8 @@ func _ready() -> void:
 	if wave_manager:
 		wave_manager.wave_started.connect(_on_wave_started)
 		wave_manager.wave_completed.connect(_on_wave_completed)
+		wave_manager.intermission_started.connect(_on_intermission_started)
+		wave_manager.intermission_ended.connect(_on_intermission_ended)
 		wave_manager.boss_spawned.connect(_on_boss_spawned)
 		wave_manager.boss_defeated.connect(_on_boss_defeated)
 	upgrade_manager = get_node_or_null("../UpgradeManager") as UpgradeManager
@@ -37,6 +40,18 @@ func _ready() -> void:
 		upgrade_manager.upgrades_changed.connect(_on_upgrades_changed)
 		set_passive_text(upgrade_manager.get_first_passive_text())
 		_update_upgrade_buttons()
+
+	upgrade_buttons = [
+		damage_upgrade_button,
+		attack_speed_upgrade_button,
+		critical_chance_upgrade_button,
+		critical_damage_upgrade_button,
+		arrow_speed_upgrade_button,
+		range_upgrade_button,
+		castle_health_upgrade_button
+	]
+	_set_upgrades_visible(false)
+
 	if damage_upgrade_button:
 		damage_upgrade_button.pressed.connect(_on_damage_upgrade_pressed)
 	if attack_speed_upgrade_button:
@@ -64,6 +79,7 @@ func _on_coins_changed(amount: int) -> void:
 	_update_upgrade_buttons()
 
 func _on_wave_started(wave: int) -> void:
+	_set_upgrades_visible(false)
 	if wave_status_label:
 		if wave % WaveManager.MAJOR_BOSS_INTERVAL == 0:
 			wave_status_label.text = "Wave %d: MAJOR BOSS INCOMING" % wave
@@ -74,7 +90,20 @@ func _on_wave_started(wave: int) -> void:
 
 func _on_wave_completed(wave: int) -> void:
 	if wave_status_label:
-		wave_status_label.text = "Wave %d cleared. Next wave incoming..." % wave
+		wave_status_label.text = "Wave %d cleared. Preparing intermission..." % wave
+
+func _on_intermission_started(wave: int, duration: float) -> void:
+	_set_upgrades_visible(true)
+	if wave_status_label:
+		wave_status_label.text = "Wave %d cleared. Upgrade your archer. Next wave in %.0f seconds." % [wave, duration]
+
+func _on_intermission_ended(_wave: int) -> void:
+	_set_upgrades_visible(false)
+
+func _set_upgrades_visible(visible: bool) -> void:
+	for button in upgrade_buttons:
+		if button:
+			button.visible = visible
 
 func _on_boss_spawned(boss: Enemy) -> void:
 	active_boss = boss
