@@ -3,6 +3,8 @@ extends Node
 
 signal wave_started(wave: int)
 signal wave_completed(wave: int)
+signal intermission_started(wave: int, duration: float)
+signal intermission_ended(wave: int)
 signal boss_spawned(boss: Enemy)
 signal boss_defeated(boss: Enemy)
 
@@ -21,7 +23,7 @@ const MAJOR_BOSS_CASTLE_DAMAGE: float = 40.0
 @export var starting_wave: int = 1
 @export var enemies_per_wave: int = 5
 @export var enemy_count_growth: int = 1
-@export var wave_break: float = 2.0
+@export var wave_break: float = 5.0
 @export var spawn_distance: float = 900.0
 @export var horizontal_stagger: float = 90.0
 
@@ -50,7 +52,14 @@ func _process(delta: float) -> void:
 		wave_timer -= delta
 		if wave_timer <= 0.0:
 			waiting_for_next_wave = false
+			intermission_ended.emit(current_wave)
 			start_next_wave()
+
+func is_intermission() -> bool:
+	return waiting_for_next_wave
+
+func get_intermission_time_remaining() -> float:
+	return maxf(wave_timer, 0.0)
 
 func start_next_wave() -> void:
 	if target_castle == null or enemy_scene == null or not GameState.is_game_active():
@@ -160,3 +169,4 @@ func _check_wave_complete() -> void:
 		wave_completed.emit(current_wave)
 		waiting_for_next_wave = true
 		wave_timer = wave_break
+		intermission_started.emit(current_wave, wave_break)
