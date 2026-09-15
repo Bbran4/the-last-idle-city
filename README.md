@@ -15,8 +15,8 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 # 🎯 Current Gameplay Layout
 
 ```text
-		Enemies →     🏰 Castle + Archer     ← Enemies
-						 CENTER
+        Enemies →     🏰 Castle + Archer     ← Enemies
+                              CENTER
 ```
 
 - The castle sits in the middle of the battlefield.
@@ -45,9 +45,18 @@ Current combat stats include:
 - Critical Hit Chance
 - Critical Hit Damage
 
+Current starting combat values:
+
+- **1 Damage**
+- **1.0 attacks/sec**
+- **800 Arrow Speed**
+- **1000 Range**
+- **5% Critical Chance**
+- **2.0x Critical Damage**
+
 The current implementation supports mouse aiming and automatic arrow firing.
 
-Critical hits are now active. Each arrow rolls against the archer's Critical Hit Chance and deals the configured Critical Hit Damage multiplier when successful.
+Critical hits are active. Each arrow rolls against the archer's Critical Hit Chance and deals the configured Critical Hit Damage multiplier when successful.
 
 ---
 
@@ -73,6 +82,8 @@ The current upgrade layer includes:
 | Attack Speed | +0.1 attacks/sec | 2 coins |
 | Critical Chance | +5% critical chance | 3 coins |
 
+With the new starting damage of **1**, the Damage upgrade represents a full **100% increase** to base damage. The first passive then adds another +1 damage.
+
 Critical Chance starts at **5%**, so the first Critical Chance purchase raises it to **10%**. Critical hits currently use the player's **2.0x Critical Damage** multiplier.
 
 The upgrade system is intentionally small and will be expanded with additional stats later.
@@ -87,6 +98,7 @@ Current wave behavior:
 
 - Wave 1 starts with **5 enemies**.
 - Enemy count increases by **1 per wave**.
+- Enemy health starts at **3 HP**.
 - Enemy health increases by **15% per wave** relative to the starting enemy health.
 - A **2 second** break occurs between cleared waves.
 - Enemies spawn from both sides of the castle.
@@ -95,13 +107,15 @@ Current wave behavior:
 - The next wave starts automatically.
 - Castle destruction ends the run.
 
-These values are development values. Detailed balancing can happen later after more progression systems exist.
+The new **1 Damage vs 3 HP** starting balance is intentional. The player needs several hits to kill a basic enemy, while every +1 Damage upgrade has a clearly noticeable effect.
+
+These values are development values and will continue to be balanced as the progression layer grows.
 
 ---
 
 # 💥 Combat Feedback
 
-Basic combat feedback is now implemented.
+Basic combat feedback is implemented.
 
 - Enemies flash when hit.
 - Enemies shrink and fade when killed.
@@ -121,25 +135,11 @@ Bosses are planned as progression events rather than ordinary enemies with huge 
 
 ## Mini Bosses
 
-Every **10 waves**:
-
-```text
-Wave 10 → Mini Boss
-Wave 20 → Mini Boss
-Wave 30 → Mini Boss
-...
-```
+Every **10 waves**.
 
 ## Major Bosses
 
-Every **50 waves**:
-
-```text
-Wave 50  → Major Boss
-Wave 100 → Major Boss
-Wave 150 → Major Boss
-...
-```
+Every **50 waves**.
 
 Boss systems are not implemented yet.
 
@@ -221,24 +221,6 @@ The economy should remain understandable. Avoid adding currencies or complicated
 
 ---
 
-# 🎨 Art Direction
-
-The current art is intentionally placeholder/development art.
-
-The final game should prioritize:
-
-- Clear castle silhouette
-- Readable archer
-- Obvious enemy movement
-- Visible arrows
-- Clear health and coin feedback
-- Satisfying hit/death effects
-- Boss presentation
-
-Clarity and responsiveness matter more than graphical complexity.
-
----
-
 # 🚀 DEVELOPMENT ROADMAP
 
 Development remains deliberately sequential.
@@ -298,7 +280,7 @@ The first combat loop is complete.
 - [x] End the run when castle health reaches zero
 - [x] Validate the current wave loop
 
-Detailed balance tuning is intentionally deferred until more upgrade progression exists.
+Detailed balance tuning is ongoing as upgrade progression is added.
 
 ---
 
@@ -315,6 +297,8 @@ Detailed balance tuning is intentionally deferred until more upgrade progression
 - [x] Add first passive unlock
 - [x] First passive: **+1 Attack Damage**
 - [x] Activate Critical Hit Chance in combat
+- [x] Rebalance starting player damage to **1**
+- [x] Rebalance starting enemy health to **3**
 - [x] Add basic upgrade feedback
 
 ### Remaining
@@ -452,6 +436,7 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [x] Attack Speed upgrade
 - [x] Critical Chance upgrade
 - [x] Critical hit calculation
+- [x] Rebalanced starting damage and enemy health
 - [x] Removed obsolete Milestone 1 test scene
 
 ### Next Focus
