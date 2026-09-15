@@ -83,6 +83,8 @@ The current upgrade layer includes:
 | Critical Chance | +5% critical chance | 3 coins |
 | Critical Damage | +0.5x critical multiplier | 4 coins |
 | Arrow Speed | +100 arrow speed | 5 coins |
+| Range | +100 range | 6 coins |
+| Castle Health | +25 max health and +25 current health | 7 coins |
 
 With the new starting damage of **1**, the Damage upgrade represents a full **100% increase** to base damage. The first passive then adds another +1 damage.
 
@@ -92,7 +94,11 @@ The Critical Damage upgrade raises the multiplier by **0.5x**, taking it from 2.
 
 The Arrow Speed upgrade increases projectile speed by **100**, making arrows reach their targets faster without changing damage or attack rate.
 
-The upgrade system is intentionally small and will be expanded with additional stats later.
+The Range upgrade increases the player's actual firing range by **100** per purchase.
+
+The Castle Health upgrade increases both maximum and current castle health by **25**, so buying it immediately provides the extra survivability rather than leaving the new health capacity empty.
+
+Upgrade costs currently use a simple fixed progression. Cost scaling and detailed balance tuning are intentionally deferred until the full basic upgrade set has been played and evaluated.
 
 ---
 
@@ -132,6 +138,8 @@ Basic combat feedback is implemented.
 - Critical Chance upgrades display a clear confirmation.
 - Critical Damage upgrades display a clear confirmation.
 - Arrow Speed upgrades display a clear confirmation.
+- Range upgrades display a clear confirmation.
+- Castle Health upgrades display a clear confirmation.
 
 More polished effects can be added later without changing the underlying combat architecture.
 
@@ -200,12 +208,14 @@ Current castle systems include:
 - Health regeneration support
 - Damage handling
 - Destruction/game-over state
+- Maximum Health upgrades
 
 The current development test value is **100 HP**.
 
-Planned castle upgrades include:
+The current Castle Health upgrade costs **7 coins** and adds **25 maximum health plus 25 current health** each time it is purchased.
 
-- Maximum Health
+Planned additional castle upgrades include:
+
 - Armor
 - Health Regeneration
 - Damage Reduction
@@ -222,7 +232,7 @@ Currently:
 - Enemies award coins when killed.
 - The UI displays the current coin total.
 - Total coins earned are tracked for progression unlocks.
-- Coins can be spent on Damage, Attack Speed, Critical Chance, Critical Damage, and Arrow Speed upgrades.
+- Coins can be spent on Damage, Attack Speed, Critical Chance, Critical Damage, Arrow Speed, Range, and Castle Health upgrades.
 - The first passive unlocks at 6 total coins earned.
 
 The economy should remain understandable. Avoid adding currencies or complicated scaling unless they genuinely improve progression.
@@ -294,7 +304,7 @@ Detailed balance tuning is ongoing as upgrade progression is added.
 
 ## 💰 Milestone 3 - Upgrades
 
-**Status: In progress**
+**Status: In progress, basic upgrade set complete**
 
 ### Completed
 
@@ -304,6 +314,8 @@ Detailed balance tuning is ongoing as upgrade progression is added.
 - [x] Add Critical Chance upgrade
 - [x] Add Critical Damage upgrade
 - [x] Add Arrow Speed upgrade
+- [x] Add Range upgrade
+- [x] Add Castle Health upgrade
 - [x] Add first passive unlock
 - [x] First passive: **+1 Attack Damage**
 - [x] Activate Critical Hit Chance in combat
@@ -313,14 +325,12 @@ Detailed balance tuning is ongoing as upgrade progression is added.
 
 ### Remaining
 
-- [ ] Add Range upgrade
-- [ ] Add Castle Health upgrade
 - [ ] Display broader upgrade progression
 - [ ] Implement sensible cost scaling
 - [ ] Balance upgrade values
 - [ ] Add stronger progression feedback
 
-The upgrade system should remain simple. Every upgrade should have an obvious effect and a clear purpose.
+The complete basic upgrade set is now implemented. The next Milestone 3 work is balance and progression presentation rather than adding more upgrade buttons.
 
 ---
 
@@ -445,16 +455,18 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [x] Critical Chance upgrade
 - [x] Critical Damage upgrade
 - [x] Arrow Speed upgrade
+- [x] Range upgrade
+- [x] Castle Health upgrade
 - [x] Critical hit calculation
 - [x] Rebalanced starting damage and enemy health
 - [x] Removed obsolete Milestone 1 test scene
 
 ### Next Focus
 
-- [ ] Add Range upgrade
-- [ ] Add Castle Health upgrade
-- [ ] Continue broader upgrade progression
-- [ ] Balance upgrade costs and effects
+- [ ] Playtest and balance the complete basic upgrade set
+- [ ] Improve upgrade progression display
+- [ ] Add sensible cost scaling
+- [ ] Strengthen progression feedback
 
 ### Later
 
