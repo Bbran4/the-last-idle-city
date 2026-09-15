@@ -8,7 +8,8 @@ signal boss_phase_changed(phase_name: String)
 const BOSS_ENRAGE_HEALTH_RATIO: float = 0.5
 const BOSS_ENRAGED_SPEED: float = 80.0
 const BOSS_ENRAGED_CASTLE_DAMAGE: float = 35.0
-const BOSS_SCALE: float = 1.6
+const MINI_BOSS_SCALE: float = 1.6
+const MAJOR_BOSS_SCALE: float = 2.2
 
 @export var coin_reward: int = 1
 @export var movement_speed: float = 80.0
@@ -19,6 +20,7 @@ const BOSS_SCALE: float = 1.6
 var target_castle: Castle
 var feedback_tween: Tween
 var is_boss: bool = false
+var is_major_boss: bool = false
 var boss_enraged: bool = false
 
 func setup(castle: Castle, enemy_stats: Stats) -> void:
@@ -81,6 +83,13 @@ func _check_boss_enrage() -> void:
 		return
 
 	boss_enraged = true
+	if is_major_boss:
+		movement_speed = 70.0
+		castle_damage = 60.0
+		boss_phase_changed.emit("ENRAGED")
+		_play_major_boss_enrage_feedback()
+		return
+
 	movement_speed = BOSS_ENRAGED_SPEED
 	castle_damage = BOSS_ENRAGED_CASTLE_DAMAGE
 	boss_phase_changed.emit("ENRAGED")
@@ -97,7 +106,7 @@ func _play_boss_entrance_feedback() -> void:
 	if feedback_tween and feedback_tween.is_valid():
 		feedback_tween.kill()
 
-	var target_scale := Vector2.ONE * BOSS_SCALE
+	var target_scale := get_boss_scale()
 	scale = target_scale * 0.45
 	modulate = Color(1.0, 0.75, 0.45, 0.0)
 
@@ -115,11 +124,22 @@ func _play_boss_enrage_feedback() -> void:
 	enrage_tween.tween_property(self, "scale", Vector2.ONE * 1.85, 0.12)
 	enrage_tween.tween_property(self, "modulate", Color(1.0, 0.55, 0.2, 1.0), 0.12)
 	enrage_tween.chain().set_parallel(true)
-	enrage_tween.tween_property(self, "scale", target_boss_scale(), 0.18)
+	enrage_tween.tween_property(self, "scale", get_boss_scale(), 0.18)
 	enrage_tween.tween_property(self, "modulate", Color(1.0, 0.75, 0.45, 1.0), 0.18)
 
-func target_boss_scale() -> Vector2:
-	return Vector2.ONE * BOSS_SCALE
+func _play_major_boss_enrage_feedback() -> void:
+	if feedback_tween and feedback_tween.is_valid():
+		feedback_tween.kill()
+	var enrage_tween := create_tween()
+	enrage_tween.set_parallel(true)
+	enrage_tween.tween_property(self, "scale", Vector2.ONE * 2.55, 0.16)
+	enrage_tween.tween_property(self, "modulate", Color(1.0, 0.25, 0.15, 1.0), 0.16)
+	enrage_tween.chain().set_parallel(true)
+	enrage_tween.tween_property(self, "scale", get_boss_scale(), 0.24)
+	enrage_tween.tween_property(self, "modulate", Color(1.0, 0.55, 0.35, 1.0), 0.24)
+
+func get_boss_scale() -> Vector2:
+	return Vector2.ONE * (MAJOR_BOSS_SCALE if is_major_boss else MINI_BOSS_SCALE)
 
 func _play_boss_death_feedback() -> void:
 	if feedback_tween and feedback_tween.is_valid():
@@ -127,7 +147,7 @@ func _play_boss_death_feedback() -> void:
 
 	var death_tween := create_tween()
 	death_tween.set_parallel(true)
-	death_tween.tween_property(self, "scale", Vector2.ONE * 1.9, 0.10)
+	death_tween.tween_property(self, "scale", get_boss_scale() * 1.2, 0.10)
 	death_tween.tween_property(self, "modulate", Color(1.0, 0.9, 0.65, 1.0), 0.06)
 	death_tween.chain().set_parallel(true)
 	death_tween.tween_property(self, "scale", Vector2.ONE * 0.25, 0.24)
