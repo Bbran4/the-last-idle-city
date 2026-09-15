@@ -2,21 +2,17 @@
 
 > **A simple incremental castle-defense game where you shoot enemies, earn coins, upgrade your archer, and survive increasingly ridiculous waves.**
 
-Castle Archer is a small **2D Godot game written in GDScript**, designed to be achievable as a polished browser/indie game for **Kongregate and itch.io**.
+Castle Archer is a small **2D Godot game written in GDScript**, designed for a polished browser/indie release on **Kongregate and itch.io**.
 
 The core loop is deliberately simple:
 
 **Shoot → Earn → Upgrade → Survive → Repeat.**
-
-The player begins as a single archer defending a castle. Enemies approach from both sides, the player fires arrows, earns coins from kills, and eventually unlocks upgrades, skills, automation, and additional archers.
 
 The goal is to keep the project small, readable, fun, and actually finishable.
 
 ---
 
 # 🎯 Current Gameplay Layout
-
-The current battlefield is intentionally simple:
 
 ```text
         Enemies →     🏰 Castle + Archer     ← Enemies
@@ -27,12 +23,12 @@ The current battlefield is intentionally simple:
 - The player archer is positioned at the castle.
 - Enemies spawn from both the left and right sides.
 - Enemies move toward the castle.
-- The player automatically fires arrows toward the mouse cursor.
-- Enemies deal damage when they reach the castle.
+- The player aims with the mouse and automatically fires arrows.
 - Enemy kills award coins.
-- When castle health reaches zero, the run ends.
+- Enemies reaching the castle deal damage.
+- Castle health reaching zero ends the run.
 
-The old `milestone1_test` scene has been removed. `main.tscn` is now the single gameplay scene.
+`main.tscn` is the single gameplay scene. The obsolete `milestone1_test` scene and controller have been removed.
 
 ---
 
@@ -49,60 +45,63 @@ Current combat stats include:
 - Critical Hit Chance
 - Critical Hit Damage
 
-The current implementation supports mouse aiming and automatic arrow firing. More progression systems will be layered on later.
+The current implementation supports mouse aiming and automatic arrow firing.
 
 ---
 
-# 💰 Early Progression Plan
+# 💰 Current Progression
 
-The first progression beat is intentionally small.
+The first progression layer is now in place.
 
-The castle currently starts at **100 HP** during development testing. With the current early enemy rewards, the player should accumulate a small amount of gold before the castle is destroyed.
+## First Passive
 
-The intended first meaningful unlock is:
+After the player has earned **6 total coins**, the first passive automatically unlocks:
 
-### First Passive Skill
+**Sharpened Arrows: +1 Attack Damage**
 
-**+1 Attack Damage**
+This is intentionally simple. It gives the player an immediate progression milestone without introducing a large skill tree.
 
-This is **planned, not implemented yet**.
+## First Purchasable Upgrade
 
-The idea is that the player's first failed run should teach them that the coins they earned matter and that they can come back stronger.
+The first upgrade is:
 
-The exact unlock flow and cost will be implemented during the upgrade/progression milestone rather than prematurely adding a larger skill system.
+**Damage +1 for 1 coin**
+
+The upgrade system is intentionally small and will be expanded with additional stats later.
 
 ---
 
 # 🌊 Enemy Waves
 
-Enemies arrive in progressively larger waves.
+The wave system is currently playable and considered stable enough to move forward.
 
-The current wave system supports:
+Current wave behavior:
 
-- Multiple enemies per wave
-- Increasing enemy counts
-- Increasing enemy health by wave
-- Wave display
-- Wave completion detection
-- A short delay before the next wave
-- Automatic progression into the next wave
-- Enemy coin rewards
-- Castle defeat ending the run
+- Wave 1 starts with **5 enemies**.
+- Enemy count increases by **1 per wave**.
+- Enemy health increases by **15% per wave** relative to the starting enemy health.
+- A **2 second** break occurs between cleared waves.
+- Enemies spawn from both sides of the castle.
+- Enemy kills award **1 coin** by default.
+- Killing enemies progresses the current wave.
+- The next wave starts automatically.
+- Castle destruction ends the run.
 
-The initial wave starts with **5 enemies**, and the enemy count currently increases by **1 per wave**.
+These values are development values. Detailed balancing can happen later after more progression systems exist.
 
-Enemy health currently scales upward with the wave number.
+---
 
-Future enemy types will include concepts such as:
+# 💥 Combat Feedback
 
-- Goblin
-- Orc
-- Archer
-- Knight
-- Berserker
-- Siege Enemy
+Basic combat feedback is now implemented.
 
-These will be added gradually. The game should not become a zoo of mechanics before the basic loop is fun.
+- Enemies flash when hit.
+- Enemies shrink and fade when killed.
+- Wave status communicates incoming and cleared waves.
+- Passive unlocks display a clear message.
+- Damage upgrades display a clear confirmation.
+
+More polished effects can be added later without changing the underlying combat architecture.
 
 ---
 
@@ -138,7 +137,7 @@ Boss systems are not implemented yet.
 
 # 🎯 Skills
 
-The game will eventually have active skills such as:
+Planned active skills include:
 
 - Power Shot
 - Multi Shot
@@ -147,17 +146,15 @@ The game will eventually have active skills such as:
 - Rapid Fire
 - Rain of Arrows
 
-There is also a planned **passive progression layer**, beginning with the first simple passive:
+Passive progression is separate from active combat skills. The first passive is **Sharpened Arrows: +1 Damage**.
 
-> **+1 Attack Damage**
-
-The passive system should stay much smaller than a traditional RPG skill tree.
+The skill system should remain much smaller than a traditional RPG skill tree.
 
 ---
 
 # 🤖 Automation
 
-The game should gradually transition from active shooting into incremental/idle progression.
+The game will eventually transition from active shooting into incremental/idle progression.
 
 Planned automation includes:
 
@@ -170,15 +167,13 @@ Planned automation includes:
 - Archer recruitment
 - Archer upgrades
 
-Automation is intended to feel like a major progression milestone, not just another percentage bonus.
+Automation should feel like a major progression milestone rather than another percentage bonus.
 
 ---
 
 # 🏰 Castle Defense
 
 The castle is the main objective.
-
-Enemies reaching the castle deal damage.
 
 Current castle systems include:
 
@@ -188,7 +183,9 @@ Current castle systems include:
 - Damage handling
 - Destruction/game-over state
 
-Planned upgrades include:
+The current development test value is **100 HP**.
+
+Planned castle upgrades include:
 
 - Maximum Health
 - Armor
@@ -206,16 +203,9 @@ Currently:
 
 - Enemies award coins when killed.
 - The UI displays the current coin total.
-- Coins are stored in the Economy autoload.
-
-Planned uses include:
-
-- Archer upgrades
-- Castle upgrades
-- Passive skills
-- Active skills
-- Additional archers
-- Automation
+- Total coins earned are tracked for progression unlocks.
+- Coins can be spent on the first Damage upgrade.
+- The first passive unlocks at 6 total coins earned.
 
 The economy should remain understandable. Avoid adding currencies or complicated scaling unless they genuinely improve progression.
 
@@ -262,7 +252,7 @@ Save/load and a dedicated tick are intentionally deferred until they are actuall
 
 ## 🏹 Milestone 1 - First Arrow
 
-**Status: Core combat complete**
+**Status: Complete**
 
 - [x] Create castle
 - [x] Create player archer
@@ -275,18 +265,19 @@ Save/load and a dedicated tick are intentionally deferred until they are actuall
 - [x] Implement enemy death
 - [x] Implement castle health
 - [x] Implement enemy damage to castle
-- [ ] Add basic hit/death feedback
+- [x] Add basic hit/death feedback
 
-The basic combat interaction is working. The remaining work is feedback and polish.
+The first combat loop is complete.
 
 ---
 
 ## 🌊 Milestone 2 - Waves
 
-**Status: Substantially implemented, needs final validation/polish**
+**Status: Complete for the current development pass**
 
 - [x] Implement wave manager
 - [x] Spawn multiple enemies per wave
+- [x] Spawn enemies from both sides
 - [x] Complete waves when all active enemies are gone
 - [x] Increase enemy count between waves
 - [x] Increase enemy health between waves
@@ -295,43 +286,38 @@ The basic combat interaction is working. The remaining work is feedback and poli
 - [x] Add coin rewards for enemy kills
 - [x] Start the next wave automatically
 - [x] End the run when castle health reaches zero
-- [ ] Balance wave pacing and difficulty
-- [ ] Add final hit/death feedback
+- [x] Validate the current wave loop
 
-### Current wave configuration
-
-- Starting wave: **1**
-- Enemies on wave 1: **5**
-- Enemy count growth: **+1 per wave**
-- Wave break: **2 seconds**
-- Enemy health scaling: **+15% per wave** relative to the starting enemy health
-- Enemy base coin reward: **1 coin**
-
-These numbers are development values and can be balanced later.
+Detailed balance tuning is intentionally deferred until more upgrade progression exists.
 
 ---
 
 ## 💰 Milestone 3 - Upgrades
 
-**Status: Not started**
+**Status: In progress**
 
-Planned:
+### Completed
 
-- [ ] Build upgrade system
-- [ ] Add Damage upgrade
+- [x] Build initial upgrade system
+- [x] Add Damage upgrade
+- [x] Add first passive unlock
+- [x] First passive: **+1 Attack Damage**
+- [x] Add basic upgrade feedback
+
+### Remaining
+
 - [ ] Add Attack Speed upgrade
 - [ ] Add Critical Chance upgrade
 - [ ] Add Critical Damage upgrade
 - [ ] Add Arrow Speed upgrade
 - [ ] Add Range upgrade
 - [ ] Add Castle Health upgrade
-- [ ] Display upgrade costs
+- [ ] Display broader upgrade progression
 - [ ] Implement sensible cost scaling
-- [ ] Add first passive skill unlock
-- [ ] First passive: **+1 Attack Damage**
-- [ ] Add clear upgrade feedback
+- [ ] Balance upgrade values
+- [ ] Add stronger progression feedback
 
-The first passive should be the player's first meaningful progression reward, but it should not be implemented until the core wave loop is stable.
+The upgrade system should remain simple. Every upgrade should have an obvious effect and a clear purpose.
 
 ---
 
@@ -366,8 +352,6 @@ The first passive should be the player's first meaningful progression reward, bu
 - [ ] Add Rain of Arrows
 - [ ] Add skill UI
 - [ ] Add skill feedback
-
-Passive progression is tracked separately from active combat skills so the systems do not become unnecessarily tangled.
 
 ---
 
@@ -431,7 +415,7 @@ Passive progression is tracked separately from active combat skills so the syste
 
 Work on one system at a time. Do not jump ahead simply because a later system is already described in the README.
 
-### Completed Foundation / Combat
+### Completed Foundation / Combat / Waves
 
 - [x] Main gameplay scene
 - [x] Castle in the center
@@ -443,6 +427,7 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [x] Arrow collision
 - [x] Enemy health
 - [x] Enemy death
+- [x] Hit/death feedback
 - [x] Castle health
 - [x] Castle destruction/game over
 - [x] Wave system
@@ -450,15 +435,20 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [x] Wave scaling
 - [x] Coin rewards
 - [x] Basic wave/coin/castle UI
+- [x] First upgrade system
+- [x] First passive: +1 Attack Damage
 - [x] Removed obsolete Milestone 1 test scene
 
 ### Next Focus
 
-- [ ] Validate and balance the current wave loop
-- [ ] Finish basic hit/death feedback
-- [ ] Build the first upgrade system
-- [ ] Add first passive unlock: **+1 Attack Damage**
-- [ ] Continue with broader upgrade progression
+- [ ] Add Attack Speed upgrade
+- [ ] Add Critical Chance upgrade
+- [ ] Add Critical Damage upgrade
+- [ ] Add Arrow Speed upgrade
+- [ ] Add Range upgrade
+- [ ] Add Castle Health upgrade
+- [ ] Continue broader upgrade progression
+- [ ] Balance upgrade costs and effects
 
 ### Later
 
@@ -468,12 +458,12 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [ ] Auto Aim
 - [ ] Additional archers
 - [ ] Persistence
-- [ ] Polish
+- [ ] Final polish
 - [ ] Release
 
 **Do not build prestige, complex meta-progression, large skill trees, or complicated economy systems yet.**
 
-The immediate goal is to prove that the basic loop is fun before adding layers on top of it.
+The immediate goal is to make the first progression layer feel good before adding another major system.
 
 ---
 
