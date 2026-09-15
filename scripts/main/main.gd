@@ -57,7 +57,6 @@ var scrap_yard_milestone_button: Button
 var reclamation_depot_milestone_button: Button
 var workshop_milestone_button: Button
 var factory_milestone_button: Button
-var scrap_yard_production_rate_label: Label
 var level_up_mode_container: HBoxContainer
 var level_up_mode: String = "x1"
 var production_feedback_tween: Tween
@@ -85,7 +84,6 @@ func _ready() -> void:
 	workforce_label.visible = true
 	workforce_panel.visible = true
 	manual_production_button.visible = false
-	_create_scrap_yard_production_rate_label()
 	_create_level_up_mode_controls()
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard/VBox, "ScrapYardMilestoneButton", materials_department, materials_department.scrap_yard)
 	_create_milestone_button($Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox, "ReclamationDepotMilestoneButton", materials_department, materials_department.reclamation_depot)
@@ -117,12 +115,6 @@ func _ready() -> void:
 
 	_update_chain_visibility()
 	_update_ui()
-
-func _create_scrap_yard_production_rate_label() -> void:
-	scrap_yard_production_rate_label = Label.new()
-	scrap_yard_production_rate_label.name = "ScrapYardProductionRateLabel"
-	scrap_yard_production_rate_label.text = ""
-	scrap_yard_card_vbox.add_child(scrap_yard_production_rate_label)
 
 func _create_level_up_mode_controls() -> void:
 	level_up_mode_container = HBoxContainer.new()
@@ -358,9 +350,7 @@ func _update_scrap_yard_ui() -> void:
 	var scrap_yard: ProductionOperation = materials_department.scrap_yard
 	scrap_yard_level_label.text = "SCRAP YARD (%d)" % scrap_yard.count
 	scrap_yard_count_label.text = "You have %d Scrap Yard level %d\nEach level produces %s Material/s\nAll produce %s Material/s" % [scrap_yard.count, scrap_yard.level, NumberFormatter.format_number(scrap_yard.milestone_multiplier()), NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())]
-	scrap_yard_production_rate_label.text = "To create Scrap Yard you need:\nScrap Yard Level 25"
-	level_up_button.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(scrap_yard.level_up_cost()), scrap_yard.level_up_energy_cost]
-	level_up_button.disabled = not materials_department.can_level_up(scrap_yard)
+	_format_level_up_button(materials_department, scrap_yard, level_up_button)
 	build_new_button.text = "BUILD SCRAP YARD"
 	build_new_button.visible = materials_department.can_build_new(scrap_yard)
 	_update_scrap_yard_milestone_ui()
@@ -370,8 +360,7 @@ func _update_generator_ui() -> void:
 	generator_level_label.text = "Generator level: %d" % generator.level
 	generator_count_label.text = "Generators: %d (×%s)" % [generator.count, NumberFormatter.format_number(generator.milestone_multiplier())]
 	generator_milestone_label.text = _milestone_description(generator)
-	generator_level_up_button.text = "LEVEL UP (%s Materials)" % NumberFormatter.format_number(generator.level_up_cost())
-	generator_level_up_button.disabled = not energy_department.can_level_up(generator)
+	_format_level_up_button(energy_department, generator, generator_level_up_button)
 	generator_build_new_button.text = "BUILD NEW (%s Materials)" % NumberFormatter.format_number(generator.build_new_cost())
 	generator_build_new_button.visible = energy_department.can_build_new(generator)
 	generator_milestone_button.text = "UPGRADE"
@@ -403,6 +392,28 @@ func _operation_production_unit(operation: ProductionOperation) -> String:
 		_:
 			return "units/s"
 
+func _currency_label(operation: ProductionOperation) -> String:
+	if operation.cost_source != null:
+		return "%s Levels" % operation.cost_source.display_name
+	return "Materials"
+
+func _format_level_up_button(department: Department, operation: ProductionOperation, button: Button) -> void:
+	var can_afford: bool = department.can_level_up(operation)
+	var n: int = department.purchasable_level_ups(operation, level_up_mode) if can_afford else 1
+	n = max(n, 1)
+	var cost: BigNumber = operation.total_level_up_cost(n)
+	var energy_cost: float = operation.level_up_energy_cost * n
+	if energy_cost > 0.0:
+		button.text = "LEVEL UP x%d (%s %s + %.1f Energy)" % [n, NumberFormatter.format_number(cost), _currency_label(operation), energy_cost]
+	else:
+		button.text = "LEVEL UP x%d (%s %s)" % [n, NumberFormatter.format_number(cost), _currency_label(operation)]
+	button.disabled = not can_afford
+
+func _level_up_operation(department: Department, operation: ProductionOperation) -> void:
+	var count: int = max(department.purchasable_level_ups(operation, level_up_mode), 1)
+	department.level_up_multiple(operation, count)
+	_update_ui()
+
 ## Shows a card for a not-yet-unlocked building only once it's actually
 ## affordable (Department.is_building_visible), with a live UNLOCK
 ## button - replacing the old always-visible "LOCKED" placeholder whose
@@ -414,9 +425,9 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 		return
 
 	if not operation.unlocked:
-		status_label.text = "%s\nRequires %s Materials to establish." % [operation.display_name.to_upper(), NumberFormatter.format_number(operation.unlock_cost())]
+		status_label.text = "%s\nRequires %s %s to establish." % [operation.display_name.to_upper(), NumberFormatter.format_number(operation.unlock_cost()), _currency_label(operation)]
 		unlock_button.visible = true
-		unlock_button.text = "UNLOCK (%s Materials)" % NumberFormatter.format_number(operation.unlock_cost())
+		unlock_button.text = "UNLOCK (%s %s)" % [NumberFormatter.format_number(operation.unlock_cost()), _currency_label(operation)]
 		unlock_button.disabled = not department.can_unlock(operation)
 		level_up_button_ref.visible = false
 		build_new_button_ref.visible = false
@@ -436,8 +447,7 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 	]
 	unlock_button.visible = false
 	level_up_button_ref.visible = true
-	level_up_button_ref.text = "LEVEL UP (%s Materials + %.1f Energy)" % [NumberFormatter.format_number(operation.level_up_cost()), operation.level_up_energy_cost]
-	level_up_button_ref.disabled = not department.can_level_up(operation)
+	_format_level_up_button(department, operation, level_up_button_ref)
 	build_new_button_ref.visible = department.can_build_new(operation)
 	build_new_button_ref.text = "BUILD NEW"
 	milestone_button.text = "UPGRADE"
@@ -452,31 +462,7 @@ func _on_load_pressed() -> void:
 		_update_ui()
 
 func _on_level_up_pressed() -> void:
-	match level_up_mode:
-		"x1":
-			materials_department.level_up(materials_department.scrap_yard)
-		"next":
-			_level_up_scrap_yard_to_next_milestone()
-		"max":
-			_level_up_scrap_yard_max()
-	_update_ui()
-
-func _level_up_scrap_yard_to_next_milestone() -> void:
-	var scrap_yard: ProductionOperation = materials_department.scrap_yard
-	var target_level: int = scrap_yard.next_milestone_level()
-	var purchased: bool = false
-	while scrap_yard.level < target_level and materials_department.can_level_up(scrap_yard):
-		if not materials_department.level_up(scrap_yard):
-			break
-		purchased = true
-	if not purchased:
-		_level_up_scrap_yard_max()
-
-func _level_up_scrap_yard_max() -> void:
-	var scrap_yard: ProductionOperation = materials_department.scrap_yard
-	while materials_department.can_level_up(scrap_yard):
-		if not materials_department.level_up(scrap_yard):
-			break
+	_level_up_operation(materials_department, materials_department.scrap_yard)
 
 func _on_build_new_pressed() -> void:
 	if materials_department.build_new(materials_department.scrap_yard):
@@ -487,8 +473,7 @@ func _on_reclamation_depot_unlock_pressed() -> void:
 		_update_ui()
 
 func _on_reclamation_depot_level_up_pressed() -> void:
-	if materials_department.level_up(materials_department.reclamation_depot):
-		_update_ui()
+	_level_up_operation(materials_department, materials_department.reclamation_depot)
 
 func _on_reclamation_depot_build_new_pressed() -> void:
 	if materials_department.build_new(materials_department.reclamation_depot):
@@ -499,8 +484,7 @@ func _on_workshop_unlock_pressed() -> void:
 		_update_ui()
 
 func _on_workshop_level_up_pressed() -> void:
-	if materials_department.level_up(materials_department.workshop):
-		_update_ui()
+	_level_up_operation(materials_department, materials_department.workshop)
 
 func _on_workshop_build_new_pressed() -> void:
 	if materials_department.build_new(materials_department.workshop):
@@ -511,16 +495,14 @@ func _on_factory_unlock_pressed() -> void:
 		_update_ui()
 
 func _on_factory_level_up_pressed() -> void:
-	if materials_department.level_up(materials_department.factory):
-		_update_ui()
+	_level_up_operation(materials_department, materials_department.factory)
 
 func _on_factory_build_new_pressed() -> void:
 	if materials_department.build_new(materials_department.factory):
 		_update_ui()
 
 func _on_generator_level_up_pressed() -> void:
-	if energy_department.level_up(energy_department.generator):
-		_update_ui()
+	_level_up_operation(energy_department, energy_department.generator)
 
 func _on_generator_build_new_pressed() -> void:
 	if energy_department.build_new(energy_department.generator):

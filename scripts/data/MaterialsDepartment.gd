@@ -27,9 +27,9 @@ const MIN_SCRAP_YARD_LEVEL: int = 1
 @export var reclamation_depot_energy_consumption_per_unit: float = 0.5
 
 @export_group("Workshop")
-@export var workshop_unlock_cost: float = 1_500.0
-@export var workshop_level_up_cost: float = 300.0
-@export var workshop_level_up_energy_cost: float = 10.0
+@export var workshop_unlock_cost: float = 1_000.0
+@export var workshop_level_up_cost: float = 1_000.0
+@export var workshop_level_up_energy_cost: float = 100.0
 @export var workshop_build_cost: float = 1_800.0
 @export var workshop_build_energy_cost: float = 10.0
 @export var workshop_reclamation_depots_per_second: float = 0.05
@@ -37,8 +37,8 @@ const MIN_SCRAP_YARD_LEVEL: int = 1
 
 @export_group("Factory")
 @export var factory_unlock_cost: float = 10_000.0
-@export var factory_level_up_cost: float = 2_000.0
-@export var factory_level_up_energy_cost: float = 20.0
+@export var factory_level_up_cost: float = 10_000.0
+@export var factory_level_up_energy_cost: float = 1_000.0
 @export var factory_build_cost: float = 12_000.0
 @export var factory_build_energy_cost: float = 20.0
 @export var factory_workshops_per_second: float = 0.025
@@ -73,6 +73,9 @@ func _init_buildings() -> void:
 	factory.level_up_energy_cost = factory_level_up_energy_cost
 
 	buildings = [scrap_yard, reclamation_depot, workshop, factory]
+	reclamation_depot.cost_source = scrap_yard
+	workshop.cost_source = reclamation_depot
+	factory.cost_source = workshop
 	reclamation_depot_production_progress = 0.0
 	workshop_production_progress = 0.0
 	factory_production_progress = 0.0

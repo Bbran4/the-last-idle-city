@@ -28,7 +28,7 @@ var generator: ProductionOperation
 
 func _init_buildings() -> void:
 	department_name = "Energy"
-	department_unlocked = false
+	department_unlocked = true   # was false — Energy is now unlocked
 	generator = ProductionOperation.new("Generator", 0.0, generator_level_up_cost, generator_build_cost, 0.0, 1.0, 1.0)
 	generator.unlocked = true
 	generator.count = 1
@@ -36,6 +36,10 @@ func _init_buildings() -> void:
 
 	buildings = [generator]
 
+## Level-ups are disabled for now, per design — Generator stays at its
+## starting level until this is revisited.
+func can_level_up(_operation: ProductionOperation) -> bool:
+	return false
 
 func ensure_minimums() -> void:
 	generator.level = max(MIN_GENERATOR_LEVEL, generator.level)

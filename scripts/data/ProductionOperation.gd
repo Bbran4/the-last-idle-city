@@ -18,7 +18,12 @@ const FIRST_MILESTONE_LEVEL: int = 10
 @export var build_cost_growth: float = DEFAULT_BUILD_COST_GROWTH
 @export var build_new_energy_cost: float = 0.0
 @export var milestones_triggered: int = 0
-
+## When set, this operation's unlock/level-up costs are paid by
+## consuming LEVELS from another operation instead of the shared
+## Materials pool (e.g. Reclamation Depot spends Scrap Yard levels,
+## Workshop spends Reclamation Depot levels, Factory spends Workshop
+## levels).
+@export var cost_source: ProductionOperation = null
 func _init(
 	operation_name: String = "Production Unit",
 	operation_unlock_cost: float = 0.0,
@@ -102,7 +107,17 @@ func trigger_milestone() -> Dictionary:
 	return {"success": true}
 
 func unlock(materials: BigNumber) -> BigNumber:
-	if unlocked or materials.is_less_than(unlock_cost()):
+	if unlocked:
+		return materials
+	if cost_source != null:
+		if not can_afford_unlock_from_source():
+			return materials
+		_spend_cost_source(unlock_cost())
+		unlocked = true
+		count = 1
+		level = max(1, level)
+		return materials
+	if materials.is_less_than(unlock_cost()):
 		return materials
 	unlocked = true
 	count = 1
@@ -110,11 +125,71 @@ func unlock(materials: BigNumber) -> BigNumber:
 	return materials.subtract(unlock_cost())
 
 func level_up(materials: BigNumber) -> BigNumber:
-	if not unlocked or materials.is_less_than(level_up_cost()):
+	if not unlocked:
+		return materials
+	if cost_source != null:
+		if not can_afford_level_up_from_source():
+			return materials
+		_spend_cost_source(level_up_cost())
+		level = max(1, level + 1)
+		return materials
+	if materials.is_less_than(level_up_cost()):
 		return materials
 	var cost: BigNumber = level_up_cost()
 	level = max(1, level + 1)
 	return materials.subtract(cost)
+
+func _spend_cost_source(cost: BigNumber) -> void:
+	if cost_source == null:
+		return
+	var available: BigNumber = BigNumber.from_float(float(cost_source.level))
+	var remaining: BigNumber = available.subtract(cost)
+	cost_source.level = max(1, int(round(remaining.to_float())))
+
+func can_afford_unlock_from_source() -> bool:
+	return cost_source != null and BigNumber.from_float(float(cost_source.level)).is_greater_or_equal(unlock_cost())
+
+func can_afford_level_up_from_source() -> bool:
+	return cost_source != null and BigNumber.from_float(float(cost_source.level)).is_greater_or_equal(level_up_cost())
+
+## Simulates purchasing consecutive levels against a currency pool
+## (Materials, or another operation's level when cost_source is set),
+## returning how many levels are actually affordable.
+## max_levels < 0 = uncapped ("Max"); 1 = "x1"; a positive cap is used
+## by "Next" mode to stop at a target level.
+func max_purchasable_levels(currency: BigNumber, available_energy: float, max_levels: int = -1) -> int:
+	if not unlocked:
+		return 0
+	var remaining: BigNumber = currency
+	var energy_budget: float = available_energy
+	var simulated_level: int = level
+	var purchased: int = 0
+	while max_levels < 0 or purchased < max_levels:
+		var cost: BigNumber = BigNumber.from_float(level_up_base_cost).multiply(
+			BigNumber.from_float(level_up_cost_growth).pow_int(max(0, simulated_level))
+		)
+		if remaining.is_less_than(cost):
+			break
+		if level_up_energy_cost > 0.0 and energy_budget < level_up_energy_cost:
+			break
+		remaining = remaining.subtract(cost)
+		energy_budget -= level_up_energy_cost
+		simulated_level += 1
+		purchased += 1
+	return purchased
+
+## Total cost of purchasing `levels` consecutive Level Ups from the
+## current level, in whatever currency backs this operation.
+func total_level_up_cost(levels: int) -> BigNumber:
+	var total: BigNumber = BigNumber.zero()
+	var simulated_level: int = level
+	for i in range(max(0, levels)):
+		var cost: BigNumber = BigNumber.from_float(level_up_base_cost).multiply(
+			BigNumber.from_float(level_up_cost_growth).pow_int(max(0, simulated_level))
+		)
+		total = total.add(cost)
+		simulated_level += 1
+	return total
 
 func save_data() -> Dictionary:
 	return {

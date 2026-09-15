@@ -72,8 +72,9 @@ func can_unlock(operation: ProductionOperation) -> bool:
 		return false
 	if not _unlock_requirement_met(operation):
 		return false
+	if operation.cost_source != null:
+		return operation.can_afford_unlock_from_source()
 	return GameState.data.materials.is_greater_or_equal(operation.unlock_cost())
-
 
 func unlock(operation: ProductionOperation) -> bool:
 	if not can_unlock(operation):
@@ -87,8 +88,9 @@ func can_level_up(operation: ProductionOperation) -> bool:
 	ensure_minimums()
 	if not department_unlocked or not operation.unlocked:
 		return false
+	if operation.cost_source != null:
+		return operation.can_afford_level_up_from_source() and GameState.data.energy >= operation.level_up_energy_cost
 	return GameState.data.materials.is_greater_or_equal(operation.level_up_cost()) and GameState.data.energy >= operation.level_up_energy_cost
-
 
 func level_up(operation: ProductionOperation) -> bool:
 	if not can_level_up(operation):
@@ -117,6 +119,50 @@ func build_new(operation: ProductionOperation) -> bool:
 	ensure_minimums()
 	return true
 
+func _level_up_currency(operation: ProductionOperation) -> BigNumber:
+	if operation.cost_source != null:
+		return BigNumber.from_float(float(operation.cost_source.level))
+	return GameState.data.materials
+
+func _downstream_operation(operation: ProductionOperation) -> ProductionOperation:
+	for building in buildings:
+		if building.cost_source == operation:
+			return building
+	return null
+
+## How many consecutive Level Ups of `operation` are purchasable right
+## now under the given mode ("x1", "next", "max"). "Next" stops once
+## `operation`'s level covers the next downstream building's
+## unlock/level-up requirement; with no downstream building (end of
+## the chain), "next" behaves like "max".
+func purchasable_level_ups(operation: ProductionOperation, mode: String) -> int:
+	var currency: BigNumber = _level_up_currency(operation)
+	var energy: float = GameState.data.energy
+	match mode:
+		"x1":
+			return operation.max_purchasable_levels(currency, energy, 1)
+		"max":
+			return operation.max_purchasable_levels(currency, energy, -1)
+		"next":
+			var downstream: ProductionOperation = _downstream_operation(operation)
+			if downstream == null:
+				return operation.max_purchasable_levels(currency, energy, -1)
+			var threshold: BigNumber = downstream.unlock_cost() if not downstream.unlocked else downstream.level_up_cost()
+			var target_level: int = int(ceil(threshold.to_float()))
+			var cap: int = max(0, target_level - operation.level)
+			return operation.max_purchasable_levels(currency, energy, cap)
+		_:
+			return operation.max_purchasable_levels(currency, energy, 1)
+
+## Purchases up to `count` consecutive Level Ups, stopping early if
+## affordability runs out. Returns how many were actually purchased.
+func level_up_multiple(operation: ProductionOperation, count: int) -> int:
+	var purchased: int = 0
+	for i in range(max(1, count)):
+		if not level_up(operation):
+			break
+		purchased += 1
+	return purchased
 
 func can_trigger_milestone(operation: ProductionOperation) -> bool:
 	ensure_minimums()
