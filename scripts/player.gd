@@ -17,30 +17,19 @@ func _process(delta: float) -> void:
 	var mouse_position := get_global_mouse_position()
 	look_at(mouse_position)
 
-	var target := _get_target_in_range(mouse_position)
-	if attack_cooldown <= 0.0 and target != null:
-		fire_arrow(target.global_position)
+	if attack_cooldown <= 0.0:
+		fire_arrow(_get_clamped_target_position(mouse_position))
 
-func _get_target_in_range(mouse_position: Vector2) -> Enemy:
+func _get_clamped_target_position(mouse_position: Vector2) -> Vector2:
+	var offset := mouse_position - global_position
 	var attack_range := get_attack_range()
-	var best_target: Enemy = null
-	var best_mouse_distance := INF
 
-	for node in get_tree().get_nodes_in_group("enemies"):
-		var enemy := node as Enemy
-		if enemy == null or enemy.is_dead:
-			continue
+	if offset.length() <= attack_range:
+		return mouse_position
+	if offset.length_squared() <= 0.0:
+		return global_position + Vector2.RIGHT * attack_range
 
-		var distance_to_enemy := global_position.distance_to(enemy.global_position)
-		if distance_to_enemy > attack_range:
-			continue
-
-		var mouse_distance := mouse_position.distance_to(enemy.global_position)
-		if mouse_distance < best_mouse_distance:
-			best_mouse_distance = mouse_distance
-			best_target = enemy
-
-	return best_target
+	return global_position + offset.normalized() * attack_range
 
 func fire_arrow(target_position: Vector2) -> void:
 	if arrow_scene == null or stats == null:
