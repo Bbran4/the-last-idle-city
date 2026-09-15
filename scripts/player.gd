@@ -3,6 +3,7 @@ extends Unit
 
 @export var arrow_scene: PackedScene = preload("res://scenes/arrow.tscn")
 @export var arrow_spawn_offset: float = 28.0
+@export var aim_variance_degrees: float = 2.5
 
 @onready var castle: Castle = get_node_or_null("../Castle") as Castle
 @onready var wave_manager: WaveManager = get_node_or_null("../WaveManager") as WaveManager
@@ -18,7 +19,17 @@ func _process(delta: float) -> void:
 	look_at(mouse_position)
 
 	if attack_cooldown <= 0.0:
-		fire_arrow(_get_clamped_target_position(mouse_position))
+		fire_arrow(_get_accurate_target_position(mouse_position))
+
+func _get_accurate_target_position(mouse_position: Vector2) -> Vector2:
+	var clamped_target := _get_clamped_target_position(mouse_position)
+	var offset := clamped_target - global_position
+	if offset.length_squared() <= 0.0:
+		return clamped_target
+
+	var variance := deg_to_rad(randf_range(-aim_variance_degrees, aim_variance_degrees))
+	var varied_direction := offset.normalized().rotated(variance)
+	return global_position + varied_direction * offset.length()
 
 func _get_clamped_target_position(mouse_position: Vector2) -> Vector2:
 	var offset := mouse_position - global_position
