@@ -12,12 +12,15 @@ const ATTACK_SPEED_UPGRADE_COST: int = 2
 const ATTACK_SPEED_UPGRADE_BONUS: float = 0.1
 const CRITICAL_CHANCE_UPGRADE_COST: int = 3
 const CRITICAL_CHANCE_UPGRADE_BONUS: float = 0.05
+const CRITICAL_DAMAGE_UPGRADE_COST: int = 4
+const CRITICAL_DAMAGE_UPGRADE_BONUS: float = 0.5
 
 var player: Player
 var first_passive_unlocked: bool = false
 var damage_upgrades: int = 0
 var attack_speed_upgrades: int = 0
 var critical_chance_upgrades: int = 0
+var critical_damage_upgrades: int = 0
 
 func setup(target_player: Player) -> void:
 	player = target_player
@@ -25,6 +28,7 @@ func setup(target_player: Player) -> void:
 	damage_upgrades = 0
 	attack_speed_upgrades = 0
 	critical_chance_upgrades = 0
+	critical_damage_upgrades = 0
 	if not Economy.coins_changed.is_connected(_on_coins_changed):
 		Economy.coins_changed.connect(_on_coins_changed)
 	_check_first_passive()
@@ -74,6 +78,15 @@ func buy_critical_chance_upgrade() -> bool:
 	upgrades_changed.emit()
 	return true
 
+func buy_critical_damage_upgrade() -> bool:
+	if player == null or not Economy.spend_coins(CRITICAL_DAMAGE_UPGRADE_COST):
+		return false
+
+	player.stats.critical_damage += CRITICAL_DAMAGE_UPGRADE_BONUS
+	critical_damage_upgrades += 1
+	upgrades_changed.emit()
+	return true
+
 func is_first_passive_unlocked() -> bool:
 	return first_passive_unlocked
 
@@ -90,3 +103,6 @@ func get_attack_speed_upgrade_text() -> String:
 
 func get_critical_chance_upgrade_text() -> String:
 	return "Crit Chance +%d%%  |  Cost: %d coins" % [int(CRITICAL_CHANCE_UPGRADE_BONUS * 100.0), CRITICAL_CHANCE_UPGRADE_COST]
+
+func get_critical_damage_upgrade_text() -> String:
+	return "Crit Damage +%.1fx  |  Cost: %d coins" % [CRITICAL_DAMAGE_UPGRADE_BONUS, CRITICAL_DAMAGE_UPGRADE_COST]
