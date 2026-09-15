@@ -12,6 +12,7 @@ const BOSS_ENRAGED_CASTLE_DAMAGE: float = 35.0
 const MAJOR_BOSS_SHIELD_RATIO: float = 0.25
 const MINI_BOSS_SCALE: float = 1.6
 const MAJOR_BOSS_SCALE: float = 2.2
+const MAJOR_BOSS_SHIELD_RADIUS: float = 48.0
 
 @export var coin_reward: int = 1
 @export var movement_speed: float = 80.0
@@ -27,6 +28,7 @@ var boss_enraged: bool = false
 var boss_shield: float = 0.0
 var boss_shield_max: float = 0.0
 var boss_shield_active: bool = false
+var shield_pulse_time: float = 0.0
 
 func setup(castle: Castle, enemy_stats: Stats) -> void:
 	target_castle = castle
@@ -36,14 +38,36 @@ func setup(castle: Castle, enemy_stats: Stats) -> void:
 	boss_shield = 0.0
 	boss_shield_max = 0.0
 	boss_shield_active = false
+	shield_pulse_time = 0.0
 	scale = Vector2.ONE
 	modulate = Color.WHITE
+	queue_redraw()
 	_setup_health_bar()
 	health_changed.emit(stats.health, stats.max_health)
 	if is_boss:
 		boss_health_changed.emit(stats.health, stats.max_health)
 		boss_shield_changed.emit(0.0, 0.0)
 		_play_boss_entrance_feedback()
+
+func _process(delta: float) -> void:
+	if boss_shield_active:
+		shield_pulse_time += delta
+		queue_redraw()
+
+func _draw() -> void:
+	if not boss_shield_active or not is_major_boss:
+		return
+
+	var pulse := 1.0 + sin(shield_pulse_time * 5.0) * 0.06
+	var radius := MAJOR_BOSS_SHIELD_RADIUS * pulse
+	var glow_color := Color(0.15, 0.65, 1.0, 0.10)
+	var ring_color := Color(0.25, 0.75, 1.0, 0.82)
+	var bright_ring_color := Color(0.55, 0.9, 1.0, 0.95)
+
+	draw_circle(Vector2.ZERO, radius + 7.0, glow_color)
+	draw_circle(Vector2.ZERO, radius + 3.0, Color(0.2, 0.7, 1.0, 0.16))
+	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 48, ring_color, 5.0, true)
+	draw_arc(Vector2.ZERO, radius - 4.0, 0.0, TAU, 48, bright_ring_color, 2.0, true)
 
 func _setup_health_bar() -> void:
 	if health_bar == null or stats == null:
@@ -84,6 +108,7 @@ func take_damage(amount: float) -> void:
 		if boss_shield <= 0.0:
 			boss_shield = 0.0
 			boss_shield_active = false
+			queue_redraw()
 			boss_phase_changed.emit("ENRAGED")
 
 	if remaining_damage > 0.0:
@@ -121,8 +146,10 @@ func _activate_major_boss_shield() -> void:
 	boss_shield_max = stats.max_health * MAJOR_BOSS_SHIELD_RATIO
 	boss_shield = boss_shield_max
 	boss_shield_active = true
+	shield_pulse_time = 0.0
 	boss_shield_changed.emit(boss_shield, boss_shield_max)
 	boss_phase_changed.emit("SHIELDED")
+	queue_redraw()
 
 func _play_hit_feedback() -> void:
 	if feedback_tween and feedback_tween.is_valid():
@@ -196,6 +223,7 @@ func die() -> void:
 	is_dead = true
 	boss_shield_active = false
 	boss_shield = 0.0
+	queue_redraw()
 	if health_bar:
 		health_bar.visible = false
 	died.emit(self)
