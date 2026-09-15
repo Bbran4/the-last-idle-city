@@ -91,7 +91,7 @@ func _ready() -> void:
 	_on_wave_changed(GameState.current_wave)
 	_on_coins_changed(Economy.get_coins())
 	if skill_manager:
-		_on_power_shot_state_changed(skill_manager._is_power_shot_available(), skill_manager.get_power_shot_cooldown())
+		_on_power_shot_state_changed(skill_manager.is_power_shot_available(), skill_manager.get_power_shot_cooldown())
 
 func _on_wave_changed(wave: int) -> void:
 	if wave_label:
