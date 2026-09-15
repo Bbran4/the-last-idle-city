@@ -50,11 +50,13 @@ func _physics_process(delta: float) -> void:
 	if is_dead or target_castle == null:
 		return
 
-	if global_position.distance_to(target_castle.global_position) <= 100.0:
+	var target_position := Vector2(target_castle.global_position.x, target_castle.get_ground_y())
+
+	if global_position.distance_to(target_position) <= 100.0:
 		reach_castle()
 		return
 
-	global_position += global_position.direction_to(target_castle.global_position) * movement_speed * delta
+	global_position += global_position.direction_to(target_position) * movement_speed * delta
 
 func take_damage(amount: float) -> void:
 	if is_dead or stats == null:

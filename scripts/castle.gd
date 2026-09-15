@@ -7,6 +7,7 @@ signal destroyed
 @export var max_health: float = 100.0
 @export var armor: float = 0.0
 @export var health_regen: float = 0.0
+@export var ground_offset: float = 250.0 # distance from this node's origin down to the tower's base
 
 var health: float
 var destroyed_flag: bool = false
@@ -14,6 +15,9 @@ var destroyed_flag: bool = false
 func _ready() -> void:
 	health = max_health
 	health_changed.emit(health, max_health)
+
+func get_ground_y() -> float:
+	return global_position.y + ground_offset
 
 func take_damage(amount: float) -> void:
 	if destroyed_flag:

@@ -19,7 +19,7 @@ const MINI_BOSS_SCALE: float = 1.6
 @export var enemy_count_growth: int = 1
 @export var wave_break: float = 2.0
 @export var spawn_distance: float = 900.0
-@export var vertical_spacing: float = 120.0
+@export var horizontal_stagger: float = 90.0
 
 var current_wave: int = 0
 var active_enemies: int = 0
@@ -79,10 +79,10 @@ func _spawn_enemy(index: int, total: int) -> void:
 	enemy.add_to_group("enemies")
 	enemy.died.connect(_on_enemy_died)
 
-	var center_offset := float(total - 1) * 0.5
-	var y_offset := (float(index) - center_offset) * vertical_spacing
 	var side := -1.0 if index % 2 == 0 else 1.0
-	enemy.global_position = target_castle.global_position + Vector2(side * spawn_distance, y_offset)
+	var stagger: float = floor(float(index) / 2.0) * horizontal_stagger
+	var spawn_x: float = target_castle.global_position.x + side * (spawn_distance + stagger)
+	enemy.global_position = Vector2(spawn_x, target_castle.get_ground_y())
 
 	var enemy_stats := Stats.new()
 	var health_scale := 1.0 + ((current_wave - 1) * 0.15)
@@ -99,7 +99,7 @@ func _spawn_mini_boss(enemy_count: int) -> void:
 	get_tree().current_scene.add_child(boss)
 	boss.add_to_group("enemies")
 	boss.died.connect(_on_boss_died)
-	boss.global_position = target_castle.global_position + Vector2(-spawn_distance, 0.0)
+	boss.global_position = Vector2(target_castle.global_position.x - spawn_distance, target_castle.get_ground_y())
 	boss.is_boss = true
 	boss.coin_reward = MINI_BOSS_REWARD
 	boss.movement_speed = MINI_BOSS_MOVEMENT_SPEED
