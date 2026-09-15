@@ -28,10 +28,13 @@ func fire_arrow(target_position: Vector2) -> void:
 
 	get_tree().current_scene.add_child(arrow)
 	var direction := global_position.direction_to(target_position)
+	var arrow_damage := stats.damage
+	if randf() < stats.critical_chance:
+		arrow_damage *= stats.critical_damage
 	arrow.setup(
 		global_position + direction * arrow_spawn_offset,
 		target_position,
-		stats.damage,
+		arrow_damage,
 		stats.arrow_speed
 	)
 	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
