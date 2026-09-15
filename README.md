@@ -62,7 +62,7 @@ Critical hits are active. Each arrow rolls against the archer's Critical Hit Cha
 
 # 💰 Current Progression
 
-The first progression layer is now in place.
+The first progression layer is now fully implemented.
 
 ## First Passive
 
@@ -74,7 +74,7 @@ This is intentionally simple. It gives the player an immediate progression miles
 
 ## Purchasable Upgrades
 
-The current upgrade layer includes:
+The complete basic upgrade layer currently includes:
 
 | Upgrade | Effect | Cost |
 |---|---:|---:|
@@ -86,7 +86,7 @@ The current upgrade layer includes:
 | Range | +100 range | 6 coins |
 | Castle Health | +25 max health and +25 current health | 7 coins |
 
-With the new starting damage of **1**, the Damage upgrade represents a full **100% increase** to base damage. The first passive then adds another +1 damage.
+With the starting damage of **1**, the Damage upgrade represents a full **100% increase** to base damage. The first passive then adds another +1 damage.
 
 Critical Chance starts at **5%**, so the first Critical Chance purchase raises it to **10%**. Critical hits currently use the player's **2.0x Critical Damage** multiplier.
 
@@ -98,7 +98,7 @@ The Range upgrade increases the player's actual firing range by **100** per purc
 
 The Castle Health upgrade increases both maximum and current castle health by **25**, so buying it immediately provides the extra survivability rather than leaving the new health capacity empty.
 
-Upgrade costs currently use a simple fixed progression. Cost scaling and detailed balance tuning are intentionally deferred until the full basic upgrade set has been played and evaluated.
+The current upgrade costs use a simple fixed progression. The basic set has now been played and is considered reasonably balanced for the current development pass. More detailed cost scaling will only be added if testing shows that fixed costs stop producing meaningful choices.
 
 ---
 
@@ -119,9 +119,9 @@ Current wave behavior:
 - The next wave starts automatically.
 - Castle destruction ends the run.
 
-The new **1 Damage vs 3 HP** starting balance is intentional. The player needs several hits to kill a basic enemy, while every +1 Damage upgrade has a clearly noticeable effect.
+The **1 Damage vs 3 HP** starting balance is intentional. The player needs several hits to kill a basic enemy, while every +1 Damage upgrade has a clearly noticeable effect.
 
-These values are development values and will continue to be balanced as the progression layer grows.
+These values are development values and can still be adjusted as bosses, skills, and automation are introduced.
 
 ---
 
@@ -298,13 +298,13 @@ The first combat loop is complete.
 - [x] End the run when castle health reaches zero
 - [x] Validate the current wave loop
 
-Detailed balance tuning is ongoing as upgrade progression is added.
+Detailed balance tuning will continue as later systems are introduced.
 
 ---
 
 ## 💰 Milestone 3 - Upgrades
 
-**Status: In progress, basic upgrade set complete**
+**Status: Basic upgrade set complete**
 
 ### Completed
 
@@ -323,14 +323,14 @@ Detailed balance tuning is ongoing as upgrade progression is added.
 - [x] Rebalance starting enemy health to **3**
 - [x] Add basic upgrade feedback
 
-### Remaining
+### Remaining polish
 
 - [ ] Display broader upgrade progression
-- [ ] Implement sensible cost scaling
-- [ ] Balance upgrade values
-- [ ] Add stronger progression feedback
+- [ ] Improve progression feedback
+- [ ] Revisit cost scaling if future systems require it
+- [ ] Rebalance values only when later systems expose problems
 
-The complete basic upgrade set is now implemented. The next Milestone 3 work is balance and progression presentation rather than adding more upgrade buttons.
+The complete basic upgrade set is now implemented and is considered reasonably balanced for the current development pass. We can now move to the next major progression system without adding unnecessary complexity to Milestone 3.
 
 ---
 
@@ -428,7 +428,7 @@ The complete basic upgrade set is now implemented. The next Milestone 3 work is 
 
 Work on one system at a time. Do not jump ahead simply because a later system is already described in the README.
 
-### Completed Foundation / Combat / Waves / Early Upgrades
+### Completed Foundation / Combat / Waves / Upgrades
 
 - [x] Main gameplay scene
 - [x] Castle in the center
@@ -463,14 +463,14 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 
 ### Next Focus
 
-- [ ] Playtest and balance the complete basic upgrade set
-- [ ] Improve upgrade progression display
-- [ ] Add sensible cost scaling
-- [ ] Strengthen progression feedback
+**Milestone 4: Bosses**
+
+- [ ] Design the first Mini Boss
+- [ ] Define how the Mini Boss changes the player's behaviour
+- [ ] Implement the Mini Boss without creating a second enemy framework
 
 ### Later
 
-- [ ] Mini Bosses
 - [ ] Major Bosses
 - [ ] Active skills
 - [ ] Auto Aim
@@ -481,7 +481,7 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 
 **Do not build prestige, complex meta-progression, large skill trees, or complicated economy systems yet.**
 
-The immediate goal is to make the first progression layer feel good before adding another major system.
+The immediate goal is now to introduce the first boss event while keeping the existing combat and progression systems intact.
 
 ---
 
