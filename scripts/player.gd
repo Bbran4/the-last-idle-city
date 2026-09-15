@@ -7,8 +7,14 @@ extends Unit
 
 @onready var castle: Castle = get_node_or_null("../Castle") as Castle
 @onready var wave_manager: WaveManager = get_node_or_null("../WaveManager") as WaveManager
+@onready var skill_manager: SkillManager = get_node_or_null("../SkillManager") as SkillManager
 
 var attack_cooldown: float = 0.0
+
+func _ready() -> void:
+	super._ready()
+	if skill_manager:
+		skill_manager.power_shot_requested.connect(_on_power_shot_requested)
 
 func _process(delta: float) -> void:
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
@@ -53,7 +59,9 @@ func fire_arrow(target_position: Vector2) -> void:
 	get_tree().current_scene.add_child(arrow)
 	var direction := global_position.direction_to(target_position)
 	var arrow_damage := stats.damage
-	if randf() < stats.critical_chance:
+	if skill_manager and skill_manager.consume_power_shot():
+		arrow_damage *= SkillManager.POWER_SHOT_DAMAGE_MULTIPLIER
+	elif randf() < stats.critical_chance:
 		arrow_damage *= stats.critical_damage
 	var ground_y: float = castle.get_ground_y() if castle else global_position.y + 300.0
 	arrow.setup(
@@ -64,6 +72,10 @@ func fire_arrow(target_position: Vector2) -> void:
 		ground_y
 	)
 	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
+
+func _on_power_shot_requested() -> void:
+	if wave_manager == null or wave_manager.is_intermission():
+		return
 
 func get_attack_range() -> float:
 	if stats == null:
