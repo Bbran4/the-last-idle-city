@@ -126,6 +126,17 @@ offset_bottom = 305.0
 theme_override_font_sizes/font_size = 18
 text = "Castle Health +25 | Cost: 7 coins"
 
+[node name="BossHealthLabel" type="Label" parent="UI"]
+visible = false
+layout_mode = 0
+offset_left = 650.0
+offset_top = 30.0
+offset_right = 1270.0
+offset_bottom = 70.0
+theme_override_font_sizes/font_size = 28
+text = "MINI BOSS: 0 / 0"
+horizontal_alignment = 1
+
 [node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
 layout_mode = 0
 offset_left = 40.0
