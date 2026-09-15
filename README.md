@@ -130,6 +130,7 @@ Current feedback includes:
 - Mini Boss and Major Boss waves announce themselves.
 - Active boss health is displayed while a boss is alive.
 - Boss enrage displays a warning.
+- Major Boss shields display their remaining shield in the boss UI.
 - Upgrade purchases display confirmation.
 - Passive unlocks display confirmation.
 
@@ -176,14 +177,20 @@ The phase happens once per boss.
 - Have distinct entrance and death feedback.
 - Use the dedicated boss health UI.
 
-### Major Boss Enrage
+### Major Boss Enrage & Shield
 
-At **50% health**:
+At **50% health**, a Major Boss enters its special second phase:
 
 - Movement speed changes to **70**.
 - Castle damage increases to **60**.
-- The boss uses a stronger enrage animation.
-- The UI announces **MAJOR BOSS ENRAGED**.
+- A shield activates with **25% of the boss's maximum health** as shield strength.
+- Incoming damage is absorbed by the shield before it reaches boss health.
+- The UI displays the remaining shield value.
+- The UI announces **MAJOR BOSS SHIELD ACTIVE**.
+- Once the shield is broken, the UI announces **MAJOR BOSS ENRAGED** and the boss remains in its stronger combat state.
+- The phase happens once per boss.
+
+This gives Major Bosses a distinct encounter mechanic rather than making them only larger versions of Mini Bosses.
 
 The current Major Boss values are an initial balance pass and can be tuned after playtesting.
 
@@ -341,18 +348,19 @@ Remaining polish can wait until later systems expose actual problems.
 - [x] Enrage phase at 50% health
 - [x] Mini Boss enrage speed/damage increase
 - [x] Major Boss enrage behavior
+- [x] Major Boss shield phase
 - [x] Enrage UI feedback
+- [x] Major Boss shield UI feedback
 - [x] Enemy/boss health bars that appear after first damage
 - [x] Stronger boss entrance feedback
 - [x] Stronger boss death feedback
 
 ### Remaining
 
-- [ ] Give Major Bosses a unique encounter mechanic beyond their current combat profile
 - [ ] Final boss balance pass
 - [ ] Final boss visual polish
 
-Bosses now create regular progression events: Mini Bosses every 5 waves and larger Major Boss encounters every 10 waves.
+The Major Boss now has a distinct two-part encounter: reaching 50% health triggers its stronger combat phase and a temporary shield that must be broken before normal damage can continue.
 
 ---
 
@@ -442,16 +450,17 @@ Work on one system at a time.
 - [x] Mini Boss system
 - [x] Major Boss system foundation
 - [x] Boss enrage
+- [x] Major Boss shield mechanic
 - [x] Reactive enemy health bars
 - [x] Boss entrance/death feedback
 
 ### Next Focus
 
-**Milestone 4: Major Boss encounter design**
+**Milestone 4: Boss playtesting and balance**
 
-- [ ] Give Major Bosses one memorable gameplay mechanic
 - [ ] Playtest Mini Boss every 5 / Major Boss every 10 cadence
-- [ ] Tune boss health, damage, speed, and rewards
+- [ ] Tune boss health, damage, speed, shield strength, and rewards
+- [ ] Final boss visual polish
 
 ### Later
 
