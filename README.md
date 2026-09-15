@@ -390,14 +390,16 @@ Development should remain deliberately small and sequential.
 
 **Goal:** Establish a clean Godot project and the minimum architecture required to build the game.
 
-- [ ] Confirm Godot project opens and runs
-- [ ] Establish main scene
-- [ ] Establish basic game controller/state
-- [ ] Establish simple folder/script structure
-- [ ] Create basic UI layout
+- [x] Confirm Godot project opens and runs
+- [x] Establish main scene
+- [x] Establish basic game controller/state
+- [x] Establish simple folder/script structure
+- [x] Create basic UI layout
 - [ ] Create game loop/tick where required
 - [ ] Establish save/load foundation
-- [ ] Confirm clean project startup
+- [x] Confirm clean project startup
+
+**Milestone status:** **Mostly complete.** The core foundation is in place. Save/load and a dedicated game tick are deferred until they are needed.
 
 **Milestone complete when:** The project runs cleanly and provides a stable foundation for combat.
 
@@ -407,18 +409,20 @@ Development should remain deliberately small and sequential.
 
 **Goal:** Make shooting an enemy fun.
 
-- [ ] Create castle
-- [ ] Create player archer
-- [ ] Implement mouse aiming
-- [ ] Implement arrow firing
-- [ ] Implement arrow movement
-- [ ] Create first enemy
-- [ ] Implement enemy health
-- [ ] Implement enemy movement toward castle
-- [ ] Implement enemy death
-- [ ] Implement castle health
-- [ ] Implement enemy damage to castle
+- [x] Create castle
+- [x] Create player archer
+- [x] Implement mouse aiming
+- [x] Implement arrow firing
+- [x] Implement arrow movement
+- [x] Create first enemy
+- [x] Implement enemy health
+- [x] Implement enemy movement toward castle
+- [x] Implement enemy death
+- [x] Implement castle health
+- [x] Implement enemy damage to castle
 - [ ] Add basic hit/death feedback
+
+**Milestone status:** **Core combat complete.** The castle, archer, enemies, mouse-directed automatic firing, arrows, enemy health/death, enemy movement, and castle damage are implemented. Basic hit/death feedback remains.
 
 **Milestone complete when:** A player can open the game, aim at an enemy, shoot it, kill it, and understand the objective immediately.
 
@@ -569,19 +573,19 @@ Work on these tasks **now** and ignore later systems until they are needed.
 
 ### First Build
 
-- [ ] Confirm Godot project runs
-- [ ] Create main 2D scene
-- [ ] Create castle
-- [ ] Create archer
-- [ ] Create first enemy
-- [ ] Add enemy movement
-- [ ] Add mouse aiming
-- [ ] Add arrow firing
-- [ ] Add arrow collision
-- [ ] Add enemy health
-- [ ] Add enemy death
-- [ ] Add castle health
-- [ ] Add basic combat UI
+- [x] Confirm Godot project runs
+- [x] Create main 2D scene
+- [x] Create castle
+- [x] Create archer
+- [x] Create first enemy
+- [x] Add enemy movement
+- [x] Add mouse aiming
+- [x] Add arrow firing
+- [x] Add arrow collision
+- [x] Add enemy health
+- [x] Add enemy death
+- [x] Add castle health
+- [x] Add basic combat UI
 
 ### Then
 
@@ -694,12 +698,12 @@ That is the game.
 
 # 📌 Current Project Status
 
-**Planning reset complete. Ready to begin implementation.**
+**Milestones 0 and 1 are now substantially implemented.**
 
-The previous game concept has been discarded.
+The project has a working foundation and the first playable combat interaction: a visible castle and archer, enemies approaching the castle, mouse-directed automatic arrow firing, enemy health/death, and castle damage.
 
-The README is now the primary design document and source of truth for the new project.
+Milestone 0 still has save/load and a dedicated game tick listed as deferred foundation work. Milestone 1 still has basic hit/death feedback remaining.
 
-The next development target is **Milestone 0 - Foundation**, followed immediately by **Milestone 1 - First Arrow**.
+The next development target is **Milestone 2 - Waves**.
 
 The project should remain focused on producing a small, playable, publishable game rather than expanding into an unnecessarily large system.
