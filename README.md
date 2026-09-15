@@ -118,6 +118,7 @@ Current wave behavior:
 - Killing enemies progresses the current wave.
 - The next wave starts automatically.
 - Castle destruction ends the run.
+- Every **10th wave** also contains a Mini Boss.
 
 The **1 Damage vs 3 HP** starting balance is intentional. The player needs several hits to kill a basic enemy, while every +1 Damage upgrade has a clearly noticeable effect.
 
@@ -132,6 +133,9 @@ Basic combat feedback is implemented.
 - Enemies flash when hit.
 - Enemies shrink and fade when killed.
 - Wave status communicates incoming and cleared waves.
+- Mini Boss waves announce themselves.
+- Mini Boss health is displayed while active.
+- Mini Boss defeat displays a reward message.
 - Passive unlocks display a clear message.
 - Damage upgrades display a clear confirmation.
 - Attack Speed upgrades display a clear confirmation.
@@ -147,17 +151,29 @@ More polished effects can be added later without changing the underlying combat 
 
 # 👹 Bosses
 
-Bosses are planned as progression events rather than ordinary enemies with huge health pools.
+Bosses are progression events rather than ordinary enemies with huge health pools.
 
 ## Mini Bosses
 
-Every **10 waves**.
+The first Mini Boss system is now implemented.
+
+- Appears every **10 waves**.
+- Spawns alongside that wave's normal enemies.
+- Uses the existing Enemy framework rather than a separate boss framework.
+- Has **10x the normal enemy health** for that wave.
+- Moves at **45 speed**, making it slower and more threatening as it approaches.
+- Deals **25 castle damage** if it reaches the castle.
+- Awards **10 coins** when killed.
+- Appears at **1.6x scale** so it is visually distinct.
+- Has a dedicated health display in the UI.
+
+The Mini Boss is deliberately simple for the first implementation. Its main purpose is to create a noticeable wave event and give the player a high-value target without introducing a second combat system.
 
 ## Major Bosses
 
 Every **50 waves**.
 
-Boss systems are not implemented yet.
+Major Bosses are not implemented yet.
 
 ---
 
@@ -233,6 +249,7 @@ Currently:
 - The UI displays the current coin total.
 - Total coins earned are tracked for progression unlocks.
 - Coins can be spent on Damage, Attack Speed, Critical Chance, Critical Damage, Arrow Speed, Range, and Castle Health upgrades.
+- Mini Bosses award **10 coins**.
 - The first passive unlocks at 6 total coins earned.
 
 The economy should remain understandable. Avoid adding currencies or complicated scaling unless they genuinely improve progression.
@@ -336,18 +353,27 @@ The complete basic upgrade set is now implemented and is considered reasonably b
 
 ## 👹 Milestone 4 - Bosses
 
-**Status: Not started**
+**Status: In progress, first Mini Boss implemented**
 
-- [ ] Add Mini Boss system
-- [ ] Spawn Mini Boss every 10 waves
-- [ ] Add Mini Boss health bars
-- [ ] Add Mini Boss rewards
+### Completed
+
+- [x] Add Mini Boss system
+- [x] Spawn Mini Boss every 10 waves
+- [x] Add Mini Boss health display
+- [x] Add Mini Boss rewards
+- [x] Reuse the existing Enemy framework
+- [x] Add basic Mini Boss visual distinction
+
+### Remaining
+
+- [ ] Add stronger boss entrance/death feedback
+- [ ] Add at least one unique boss mechanic
 - [ ] Add Major Boss system
 - [ ] Spawn Major Boss every 50 waves
 - [ ] Add Major Boss health bars
 - [ ] Add Major Boss rewards
-- [ ] Add at least one unique boss mechanic
-- [ ] Add boss entrance/death feedback
+
+The first Mini Boss is intentionally simple. The next boss work should focus on making the event feel distinct rather than immediately adding many boss types.
 
 ---
 
@@ -463,11 +489,11 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 
 ### Next Focus
 
-**Milestone 4: Bosses**
+**Milestone 4: Mini Boss polish**
 
-- [ ] Design the first Mini Boss
-- [ ] Define how the Mini Boss changes the player's behaviour
-- [ ] Implement the Mini Boss without creating a second enemy framework
+- [ ] Add stronger Mini Boss entrance/death feedback
+- [ ] Add one unique Mini Boss mechanic
+- [ ] Verify the Mini Boss feels like an event rather than just a large enemy
 
 ### Later
 
@@ -481,7 +507,7 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 
 **Do not build prestige, complex meta-progression, large skill trees, or complicated economy systems yet.**
 
-The immediate goal is now to introduce the first boss event while keeping the existing combat and progression systems intact.
+The immediate goal is to make the first boss encounter feel meaningful while keeping the existing combat and progression systems intact.
 
 ---
 
