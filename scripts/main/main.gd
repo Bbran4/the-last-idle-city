@@ -357,8 +357,8 @@ func _update_scrap_yard_ui() -> void:
 
 func _update_generator_ui() -> void:
 	var generator: ProductionOperation = energy_department.generator
-	generator_level_label.text = "Generator level: %d" % generator.level
-	generator_count_label.text = "Generators: %d (×%s)" % [generator.count, NumberFormatter.format_number(generator.milestone_multiplier())]
+	generator_level_label.text = "GENERATOR (%d)" % generator.count
+	generator_count_label.text = "You have %d Generator level %d\nEach level produces %s Energy/s\nAll produce %s Energy/s" % [generator.count, generator.level, NumberFormatter.format_number(generator.milestone_multiplier()), NumberFormatter.format_number(energy_department.generator_production_per_second())]
 	generator_milestone_label.text = _milestone_description(generator)
 	_format_level_up_button(energy_department, generator, generator_level_up_button)
 	generator_build_new_button.text = "BUILD NEW (%s Materials)" % NumberFormatter.format_number(generator.build_new_cost())
@@ -368,7 +368,7 @@ func _update_generator_ui() -> void:
 	generator_milestone_button.visible = generator.level >= generator.next_milestone_level()
 
 func _milestone_description(operation: ProductionOperation) -> String:
-	return "To upgrade %s you need %s Level %d\nEach doubles %s Production\nUpgrade x%d (Production x%s)" % [operation.display_name, operation.display_name, operation.next_milestone_level(), operation.display_name, operation.milestones_triggered, NumberFormatter.format_number(operation.milestone_multiplier())]
+	return "To upgrade %s you need %s Level %d\nEach doubles %s production\nUpgrade x%d (Production x%s)" % [operation.display_name, operation.display_name, operation.next_milestone_level(), operation.display_name, operation.milestones_triggered, NumberFormatter.format_number(operation.milestone_multiplier())]
 
 func _update_scrap_yard_milestone_ui() -> void:
 	var scrap_yard: ProductionOperation = materials_department.scrap_yard
@@ -384,11 +384,11 @@ func _update_scrap_yard_milestone_ui() -> void:
 func _operation_production_unit(operation: ProductionOperation) -> String:
 	match operation.display_name:
 		"Reclamation Depot":
-			return "Scrap Yard levels/s"
+			return "Scrap Yard Levels/s"
 		"Workshop":
-			return "Reclamation Depots/s"
+			return "Reclamation Depot Levels/s"
 		"Factory":
-			return "Workshops/s"
+			return "Workshop Levels/s"
 		_:
 			return "units/s"
 
@@ -418,6 +418,11 @@ func _level_up_operation(department: Department, operation: ProductionOperation)
 ## affordable (Department.is_building_visible), with a live UNLOCK
 ## button - replacing the old always-visible "LOCKED" placeholder whose
 ## unlock button was never actually shown.
+##
+## Every production card now mirrors the Scrap Yard information model:
+## building count, current level, production per level, total production,
+## next milestone requirement, milestone multiplier, and Level Up/Build New
+## controls are all shown consistently.
 func _update_operation_ui(department: Department, operation: ProductionOperation, card: Control, status_label: Label, unlock_button: Button, level_up_button_ref: Button, build_new_button_ref: Button, milestone_button: Button) -> void:
 	var visible_now: bool = department.is_building_visible(operation)
 	card.visible = visible_now
@@ -449,7 +454,7 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 	level_up_button_ref.visible = true
 	_format_level_up_button(department, operation, level_up_button_ref)
 	build_new_button_ref.visible = department.can_build_new(operation)
-	build_new_button_ref.text = "BUILD NEW"
+	build_new_button_ref.text = "BUILD NEW (%s %s)" % [NumberFormatter.format_number(operation.build_new_cost()), _currency_label(operation)]
 	milestone_button.text = "UPGRADE"
 	milestone_button.disabled = not department.can_trigger_milestone(operation)
 	milestone_button.visible = operation.unlocked and operation.level >= operation.next_milestone_level()
