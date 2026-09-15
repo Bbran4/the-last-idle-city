@@ -80,12 +80,20 @@ func _on_boss_spawned(boss: Enemy) -> void:
 		boss_health_label.visible = true
 		boss_health_label.text = "MINI BOSS: %.0f / %.0f" % [boss.stats.health, boss.stats.max_health]
 	boss.boss_health_changed.connect(_on_boss_health_changed)
+	boss.boss_phase_changed.connect(_on_boss_phase_changed)
 	if wave_status_label:
 		wave_status_label.text = "MINI BOSS: defeat it for 10 coins"
 
 func _on_boss_health_changed(current: float, maximum: float) -> void:
 	if boss_health_label:
 		boss_health_label.text = "MINI BOSS: %.0f / %.0f" % [current, maximum]
+
+func _on_boss_phase_changed(phase_name: String) -> void:
+	if phase_name == "ENRAGED":
+		if wave_status_label:
+			wave_status_label.text = "MINI BOSS ENRAGED: move faster, hits harder!"
+		if boss_health_label:
+			boss_health_label.text = "MINI BOSS: ENRAGED"
 
 func _on_boss_defeated(_boss: Enemy) -> void:
 	active_boss = null
