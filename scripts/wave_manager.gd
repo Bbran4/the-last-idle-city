@@ -3,6 +3,15 @@ extends Node
 
 signal wave_started(wave: int)
 signal wave_completed(wave: int)
+signal boss_spawned(boss: Enemy)
+signal boss_defeated(boss: Enemy)
+
+const MINI_BOSS_INTERVAL: int = 10
+const MINI_BOSS_HEALTH_MULTIPLIER: float = 10.0
+const MINI_BOSS_REWARD: int = 10
+const MINI_BOSS_MOVEMENT_SPEED: float = 45.0
+const MINI_BOSS_CASTLE_DAMAGE: float = 25.0
+const MINI_BOSS_SCALE: float = 1.6
 
 @export var enemy_scene: PackedScene = preload("res://scenes/enemy.tscn")
 @export var starting_wave: int = 1
@@ -52,8 +61,14 @@ func start_next_wave() -> void:
 	for i in enemy_count:
 		_spawn_enemy(i, enemy_count)
 
+	if is_mini_boss_wave(current_wave):
+		_spawn_mini_boss(enemy_count)
+
 func enemies_for_wave(wave: int) -> int:
 	return max(enemies_per_wave + ((wave - 1) * enemy_count_growth), 1)
+
+func is_mini_boss_wave(wave: int) -> bool:
+	return wave > 0 and wave % MINI_BOSS_INTERVAL == 0
 
 func _spawn_enemy(index: int, total: int) -> void:
 	var enemy := enemy_scene.instantiate() as Enemy
@@ -76,8 +91,40 @@ func _spawn_enemy(index: int, total: int) -> void:
 	enemy.setup(target_castle, enemy_stats)
 	active_enemies += 1
 
+func _spawn_mini_boss(enemy_count: int) -> void:
+	var boss := enemy_scene.instantiate() as Enemy
+	if boss == null:
+		return
+
+	get_tree().current_scene.add_child(boss)
+	boss.add_to_group("enemies")
+	boss.died.connect(_on_boss_died)
+	boss.global_position = target_castle.global_position + Vector2(-spawn_distance, 0.0)
+	boss.is_boss = true
+	boss.coin_reward = MINI_BOSS_REWARD
+	boss.movement_speed = MINI_BOSS_MOVEMENT_SPEED
+	boss.castle_damage = MINI_BOSS_CASTLE_DAMAGE
+	boss.scale = Vector2.ONE * MINI_BOSS_SCALE
+
+	var boss_stats := Stats.new()
+	var health_scale := 1.0 + ((current_wave - 1) * 0.15)
+	boss_stats.max_health = 3.0 * health_scale * MINI_BOSS_HEALTH_MULTIPLIER
+	boss_stats.health = boss_stats.max_health
+	boss.setup(target_castle, boss_stats)
+	boss.scale = Vector2.ONE * MINI_BOSS_SCALE
+	active_enemies += 1
+	boss_spawned.emit(boss)
+
 func _on_enemy_died(_enemy: Unit) -> void:
 	active_enemies = max(active_enemies - 1, 0)
+	_check_wave_complete()
+
+func _on_boss_died(boss: Unit) -> void:
+	active_enemies = max(active_enemies - 1, 0)
+	boss_defeated.emit(boss as Enemy)
+	_check_wave_complete()
+
+func _check_wave_complete() -> void:
 	if active_enemies == 0 and current_wave > 0 and not waiting_for_next_wave and GameState.is_game_active():
 		wave_completed.emit(current_wave)
 		waiting_for_next_wave = true
