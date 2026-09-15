@@ -22,6 +22,7 @@ const FIRST_MILESTONE_LEVEL: int = 10
 ## Workshop spends Reclamation Depot levels, Factory spends Workshop
 ## levels).
 @export var cost_source: ProductionOperation = null
+
 func _init(
 	operation_name: String = "Production Unit",
 	operation_unlock_cost: float = 0.0,
@@ -175,14 +176,15 @@ func max_purchasable_levels(currency: BigNumber, available_energy: float, max_le
 
 ## Total cost of purchasing `levels` consecutive Level Ups from the
 ## current level, in whatever currency backs this operation.
+##
+## Level-up costs are fixed, so this is intentionally O(1). Do not loop
+## once per purchased level here: this method is called while refreshing
+## the UI and must remain cheap even when Max mode can buy millions of
+## levels.
 func total_level_up_cost(levels: int) -> BigNumber:
-	var total: BigNumber = BigNumber.zero()
-	var simulated_level: int = level
-	for i in range(max(0, levels)):
-		var cost: BigNumber = BigNumber.from_float(level_up_base_cost)
-		total = total.add(cost)
-		simulated_level += 1
-	return total
+	if levels <= 0 or level_up_base_cost <= 0.0:
+		return BigNumber.zero()
+	return BigNumber.from_float(level_up_base_cost).multiply_float(float(levels))
 
 func save_data() -> Dictionary:
 	return {
