@@ -2,17 +2,23 @@ class_name UpgradeManager
 extends Node
 
 signal passive_unlocked(display_name: String)
+signal upgrades_changed
 
 const FIRST_PASSIVE_COINS: int = 6
 const FIRST_PASSIVE_DAMAGE_BONUS: float = 1.0
+const DAMAGE_UPGRADE_COST: int = 1
+const DAMAGE_UPGRADE_BONUS: float = 1.0
 
 var player: Player
 var first_passive_unlocked: bool = false
+var damage_upgrades: int = 0
 
 func setup(target_player: Player) -> void:
 	player = target_player
 	first_passive_unlocked = false
-	Economy.coins_changed.connect(_on_coins_changed)
+	damage_upgrades = 0
+	if not Economy.coins_changed.is_connected(_on_coins_changed):
+		Economy.coins_changed.connect(_on_coins_changed)
 	_check_first_passive()
 
 func _exit_tree() -> void:
@@ -31,6 +37,16 @@ func _check_first_passive() -> void:
 	first_passive_unlocked = true
 	player.stats.damage += FIRST_PASSIVE_DAMAGE_BONUS
 	passive_unlocked.emit("Sharpened Arrows")
+	upgrades_changed.emit()
+
+func buy_damage_upgrade() -> bool:
+	if player == null or not Economy.spend_coins(DAMAGE_UPGRADE_COST):
+		return false
+
+	player.stats.damage += DAMAGE_UPGRADE_BONUS
+	damage_upgrades += 1
+	upgrades_changed.emit()
+	return true
 
 func is_first_passive_unlocked() -> bool:
 	return first_passive_unlocked
@@ -39,3 +55,6 @@ func get_first_passive_text() -> String:
 	if first_passive_unlocked:
 		return "Passive: Sharpened Arrows (+1 Damage)"
 	return "Passive: Locked (earn 6 coins)"
+
+func get_damage_upgrade_text() -> String:
+	return "Damage +1  |  Cost: %d coin" % DAMAGE_UPGRADE_COST
