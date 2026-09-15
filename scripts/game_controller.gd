@@ -4,6 +4,7 @@ extends Node2D
 @onready var player: Player = $Player
 @onready var wave_manager: WaveManager = $WaveManager
 @onready var upgrade_manager: UpgradeManager = $UpgradeManager
+@onready var skill_manager: SkillManager = $SkillManager
 
 func _ready() -> void:
 	GameState.start_game()
@@ -11,6 +12,7 @@ func _ready() -> void:
 	_on_castle_health_changed(castle.health, castle.max_health)
 	upgrade_manager.setup(player, castle)
 	wave_manager.setup(castle)
+	skill_manager.setup(wave_manager)
 	wave_manager.start()
 
 func _on_castle_health_changed(current: float, maximum: float) -> void:
