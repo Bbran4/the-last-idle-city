@@ -1,4 +1,3 @@
-class_name Economy
 extends Node
 
 signal coins_changed(amount: int)

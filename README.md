@@ -634,19 +634,19 @@ The development order is:
 
 ```text
 Fun Shooting
-    ↓
+	↓
 Fun Waves
-    ↓
+	↓
 Fun Upgrades
-    ↓
+	↓
 Bosses
-    ↓
+	↓
 Skills
-    ↓
+	↓
 Automation
-    ↓
+	↓
 Polish
-    ↓
+	↓
 Release
 ```
 

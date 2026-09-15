@@ -1,4 +1,3 @@
-class_name GameState
 extends Node
 
 signal wave_changed(wave: int)

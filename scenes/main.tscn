@@ -1,22 +1,22 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://e612kir78o6i"]
 
-[ext_resource type="Script" path="res://scripts/castle.gd" id="1_castle"]
-[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
-[ext_resource type="Script" path="res://scripts/ui.gd" id="3_ui"]
+[ext_resource type="Script" uid="uid://jxocmgm3ligy" path="res://scripts/castle.gd" id="1_castle"]
+[ext_resource type="Script" uid="uid://bmtjru0wvhe3v" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" uid="uid://boryseoaxbyn6" path="res://scripts/ui.gd" id="3_ui"]
 [ext_resource type="Resource" path="res://data/player_stats.tres" id="4_stats"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=746684898]
 
-[node name="Castle" type="Node2D" parent="."]
+[node name="Castle" type="Node2D" parent="." unique_id=704095504]
 position = Vector2(1700, 540)
 script = ExtResource("1_castle")
 
-[node name="Player" type="Node2D" parent="."]
+[node name="Player" type="Node2D" parent="." unique_id=2030637374]
 position = Vector2(300, 540)
 script = ExtResource("2_player")
 stats = ExtResource("4_stats")
 
-[node name="UI" type="Control" parent="."]
+[node name="UI" type="Control" parent="." unique_id=62606037]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,26 +26,29 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_ui")
 
-[node name="WaveLabel" type="Label" parent="UI"]
+[node name="WaveLabel" type="Label" parent="UI" unique_id=210497025]
+layout_mode = 0
 offset_left = 40.0
 offset_top = 30.0
 offset_right = 300.0
 offset_bottom = 70.0
-text = "Wave: 0"
 theme_override_font_sizes/font_size = 28
+text = "Wave: 0"
 
-[node name="CoinsLabel" type="Label" parent="UI"]
+[node name="CoinsLabel" type="Label" parent="UI" unique_id=1346623508]
+layout_mode = 0
 offset_left = 40.0
 offset_top = 75.0
 offset_right = 300.0
 offset_bottom = 115.0
-text = "Coins: 0"
 theme_override_font_sizes/font_size = 28
+text = "Coins: 0"
 
-[node name="CastleHealthLabel" type="Label" parent="UI"]
+[node name="CastleHealthLabel" type="Label" parent="UI" unique_id=1854190556]
+layout_mode = 0
 offset_left = 1580.0
 offset_top = 30.0
 offset_right = 1880.0
 offset_bottom = 70.0
-text = "Castle: 1000 / 1000"
 theme_override_font_sizes/font_size = 28
+text = "Castle: 1000 / 1000"
