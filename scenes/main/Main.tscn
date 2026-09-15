@@ -492,4 +492,6 @@ department_name = "MaterialDepartment"
 
 [node name="EnergyDepartment" type="Node" parent="." unique_id=990010002]
 script = ExtResource("4")
+generator_level_up_cost = 30000000.0
+generator_build_cost = 1e+19
 department_name = "EnergyDepartment"
