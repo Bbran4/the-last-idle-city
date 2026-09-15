@@ -4,7 +4,7 @@ extends Node2D
 signal health_changed(current: float, maximum: float)
 signal destroyed
 
-@export var max_health: float = 1000.0
+@export var max_health: float = 100.0
 @export var armor: float = 0.0
 @export var health_regen: float = 0.0
 
