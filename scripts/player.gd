@@ -3,7 +3,6 @@ extends Unit
 
 @export var arrow_scene: PackedScene = preload("res://scenes/arrow.tscn")
 @export var arrow_spawn_offset: float = 28.0
-@export var auto_fire_range: float = 1600.0
 
 var attack_cooldown: float = 0.0
 
@@ -15,7 +14,8 @@ func _process(delta: float) -> void:
 	var mouse_position := get_global_mouse_position()
 	look_at(mouse_position)
 
-	if attack_cooldown <= 0.0 and global_position.distance_to(mouse_position) <= auto_fire_range:
+	var distance_to_target := global_position.distance_to(mouse_position)
+	if attack_cooldown <= 0.0 and distance_to_target <= get_attack_range():
 		fire_arrow(mouse_position)
 
 func fire_arrow(target_position: Vector2) -> void:
@@ -38,6 +38,11 @@ func fire_arrow(target_position: Vector2) -> void:
 		stats.arrow_speed
 	)
 	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
+
+func get_attack_range() -> float:
+	if stats == null:
+		return 0.0
+	return maxf(stats.range, 0.0)
 
 func get_player_stats() -> Stats:
 	return stats
