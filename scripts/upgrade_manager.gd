@@ -16,6 +16,8 @@ const CRITICAL_DAMAGE_UPGRADE_COST: int = 4
 const CRITICAL_DAMAGE_UPGRADE_BONUS: float = 0.5
 const ARROW_SPEED_UPGRADE_COST: int = 5
 const ARROW_SPEED_UPGRADE_BONUS: float = 100.0
+const RANGE_UPGRADE_COST: int = 6
+const RANGE_UPGRADE_BONUS: float = 100.0
 
 var player: Player
 var first_passive_unlocked: bool = false
@@ -24,6 +26,7 @@ var attack_speed_upgrades: int = 0
 var critical_chance_upgrades: int = 0
 var critical_damage_upgrades: int = 0
 var arrow_speed_upgrades: int = 0
+var range_upgrades: int = 0
 
 func setup(target_player: Player) -> void:
 	player = target_player
@@ -33,6 +36,7 @@ func setup(target_player: Player) -> void:
 	critical_chance_upgrades = 0
 	critical_damage_upgrades = 0
 	arrow_speed_upgrades = 0
+	range_upgrades = 0
 	if not Economy.coins_changed.is_connected(_on_coins_changed):
 		Economy.coins_changed.connect(_on_coins_changed)
 	_check_first_passive()
@@ -49,6 +53,7 @@ func _check_first_passive() -> void:
 		return
 	if Economy.total_coins_earned < FIRST_PASSIVE_COINS:
 		return
+
 	first_passive_unlocked = true
 	player.stats.damage += FIRST_PASSIVE_DAMAGE_BONUS
 	passive_unlocked.emit("Sharpened Arrows")
@@ -57,6 +62,7 @@ func _check_first_passive() -> void:
 func buy_damage_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(DAMAGE_UPGRADE_COST):
 		return false
+
 	player.stats.damage += DAMAGE_UPGRADE_BONUS
 	damage_upgrades += 1
 	upgrades_changed.emit()
@@ -65,6 +71,7 @@ func buy_damage_upgrade() -> bool:
 func buy_attack_speed_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(ATTACK_SPEED_UPGRADE_COST):
 		return false
+
 	player.stats.attack_speed += ATTACK_SPEED_UPGRADE_BONUS
 	attack_speed_upgrades += 1
 	upgrades_changed.emit()
@@ -73,6 +80,7 @@ func buy_attack_speed_upgrade() -> bool:
 func buy_critical_chance_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(CRITICAL_CHANCE_UPGRADE_COST):
 		return false
+
 	player.stats.critical_chance += CRITICAL_CHANCE_UPGRADE_BONUS
 	critical_chance_upgrades += 1
 	upgrades_changed.emit()
@@ -81,6 +89,7 @@ func buy_critical_chance_upgrade() -> bool:
 func buy_critical_damage_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(CRITICAL_DAMAGE_UPGRADE_COST):
 		return false
+
 	player.stats.critical_damage += CRITICAL_DAMAGE_UPGRADE_BONUS
 	critical_damage_upgrades += 1
 	upgrades_changed.emit()
@@ -89,8 +98,18 @@ func buy_critical_damage_upgrade() -> bool:
 func buy_arrow_speed_upgrade() -> bool:
 	if player == null or not Economy.spend_coins(ARROW_SPEED_UPGRADE_COST):
 		return false
+
 	player.stats.arrow_speed += ARROW_SPEED_UPGRADE_BONUS
 	arrow_speed_upgrades += 1
+	upgrades_changed.emit()
+	return true
+
+func buy_range_upgrade() -> bool:
+	if player == null or not Economy.spend_coins(RANGE_UPGRADE_COST):
+		return false
+
+	player.stats.range += RANGE_UPGRADE_BONUS
+	range_upgrades += 1
 	upgrades_changed.emit()
 	return true
 
@@ -116,3 +135,6 @@ func get_critical_damage_upgrade_text() -> String:
 
 func get_arrow_speed_upgrade_text() -> String:
 	return "Arrow Speed +%.0f  |  Cost: %d coins" % [ARROW_SPEED_UPGRADE_BONUS, ARROW_SPEED_UPGRADE_COST]
+
+func get_range_upgrade_text() -> String:
+	return "Range +%.0f  |  Cost: %d coins" % [RANGE_UPGRADE_BONUS, RANGE_UPGRADE_COST]
