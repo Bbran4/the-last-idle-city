@@ -13,6 +13,8 @@ const BOSS_ENRAGED_CASTLE_DAMAGE: float = 35.0
 @export var movement_speed: float = 80.0
 @export var castle_damage: float = 10.0
 
+@onready var health_bar: ProgressBar = get_node_or_null("HealthBar")
+
 var target_castle: Castle
 var feedback_tween: Tween
 var is_boss: bool = false
@@ -25,9 +27,24 @@ func setup(castle: Castle, enemy_stats: Stats) -> void:
 	boss_enraged = false
 	scale = Vector2.ONE
 	modulate = Color.WHITE
+	_setup_health_bar()
 	health_changed.emit(stats.health, stats.max_health)
 	if is_boss:
 		boss_health_changed.emit(stats.health, stats.max_health)
+
+func _setup_health_bar() -> void:
+	if health_bar == null or stats == null:
+		return
+	health_bar.max_value = stats.max_health
+	health_bar.value = stats.health
+	health_bar.visible = false
+
+func _show_health_bar() -> void:
+	if health_bar == null or stats == null or is_dead:
+		return
+	health_bar.max_value = stats.max_health
+	health_bar.value = stats.health
+	health_bar.visible = true
 
 func _physics_process(delta: float) -> void:
 	if is_dead or target_castle == null:
@@ -50,6 +67,7 @@ func take_damage(amount: float) -> void:
 	if is_dead:
 		Economy.add_coins(coin_reward)
 	else:
+		_show_health_bar()
 		_play_hit_feedback()
 
 func _check_boss_enrage() -> void:
@@ -93,6 +111,8 @@ func die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+	if health_bar:
+		health_bar.visible = false
 	died.emit(self)
 	if feedback_tween and feedback_tween.is_valid():
 		feedback_tween.kill()
