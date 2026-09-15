@@ -15,8 +15,8 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 # 🎯 Current Gameplay
 
 ```text
-        Enemies →     🏰 Castle + Archer     ← Enemies
-                              CENTER
+		Enemies →     🏰 Castle + Archer     ← Enemies
+							  CENTER
 ```
 
 - Castle sits in the center.
@@ -494,19 +494,19 @@ Work on one system at a time.
 
 ```text
 Fun Shooting
-    ↓
+	↓
 Fun Waves
-    ↓
+	↓
 Fun Upgrades
-    ↓
+	↓
 Bosses
-    ↓
+	↓
 Skills
-    ↓
+	↓
 Automation
-    ↓
+	↓
 Polish
-    ↓
+	↓
 Release
 ```
 
