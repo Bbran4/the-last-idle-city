@@ -20,7 +20,7 @@ Then discover that running a civilization is considerably harder than making the
 
 ## 🎯 Current Project Status
 
-**Design phase complete enough to begin prototyping. Implementation is now starting.**
+**Design phase complete enough to begin prototyping. Implementation is now underway.**
 
 The core systems and design direction are documented below. Exact formulas, costs, balance values, UI polish, and later-game systems will be refined during implementation and playtesting.
 
@@ -167,20 +167,22 @@ Manufacturing Complex
 
 ## ⚡ Milestone 5 - Energy & Department Allocation
 
-**Goal:** Introduce the first major constraint on runaway production.
+**Goal:** Introduce Energy and department allocation as an active part of the existing idle loop.
 
-- [ ] Add Energy
-- [ ] Create basic Energy production
-- [ ] Add Energy consumption
-- [ ] Connect Energy consumption to production systems
+- [x] Add Energy
+- [x] Create basic Energy production
+- [x] Add Energy consumption
+- [x] Connect Energy consumption to production systems
 - [ ] Add Energy shortage states
 - [ ] Add load-shedding behaviour
 - [ ] Add Industrial / Civilian / Security / Scientific priority options
-- [ ] Add Central Government workforce allocation
-- [ ] Add basic department UI
-- [ ] Make Energy interact with the existing idle loop
+- [x] Add Central Government workforce allocation
+- [x] Add basic department UI
+- [x] Make Energy interact with the existing idle loop
 
-**Milestone complete when:** The player has to make a meaningful choice between production and infrastructure rather than simply maximizing every number.
+**Deferred:** Energy shortage states, load shedding, and priority management are intentionally moved to a later milestone. They do not currently affect the core loop and will be added once there are meaningful systems for them to control.
+
+**Milestone complete when:** Energy exists as a working production/consumption constraint and interacts with the existing production and workforce systems.
 
 ---
 
@@ -365,6 +367,27 @@ The vertical slice should contain only enough content to prove the game works.
 - [ ] Basic sound/UI feedback
 
 **Milestone complete when:** A new player can start a civilization, build it, encounter problems, govern those problems, Collapse, and understand why they would want to play again.
+
+---
+
+## ⚡ Milestone 14 - Advanced Energy Management
+
+**Goal:** Add meaningful energy scarcity, prioritization, and load shedding once the civilization has enough systems for those mechanics to matter.
+
+- [ ] Add Energy shortage states
+- [ ] Define Powered / Strained / Shortage / Critical or Blackout states
+- [ ] Add Industrial / Civilian / Security / Scientific priority options
+- [ ] Add priority-based load shedding
+- [ ] Make Energy priorities affect which systems continue operating during shortages
+- [ ] Add clear player-facing Energy status feedback
+- [ ] Ensure shortage behaviour works consistently during normal and offline simulation
+- [ ] Balance Energy production and consumption around meaningful trade-offs
+
+**Core rule:**
+
+> Energy shortages should force the player to decide what keeps running, not simply punish the player by stopping everything.
+
+**Milestone complete when:** The player can intentionally manage a constrained power grid and make meaningful choices about which parts of the civilization receive power.
 
 ---
 
