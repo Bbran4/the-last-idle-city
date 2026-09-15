@@ -15,15 +15,15 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 # 🎯 Current Gameplay
 
 ```text
-		Enemies →     🏰 Castle + Archer     ← Enemies
-							  CENTER
+        Enemies →     🏰 Castle + Archer     ← Enemies
+                                CENTER
 ```
 
 - Castle sits in the center.
 - Player archer is positioned at the castle.
-- Enemies spawn from both sides.
-- Enemies move toward the castle.
+- Enemies spawn from both sides and run along the ground toward the tower.
 - Player aims with the mouse and automatically fires arrows.
+- Arrows travel in a ballistic arc and fall toward the battlefield instead of moving in a straight line.
 - Enemy kills award coins.
 - Enemies reaching the castle deal damage.
 - Castle reaching 0 HP ends the run.
@@ -83,6 +83,23 @@ The starting **1 Damage vs 3 HP** balance is intentional. Damage upgrades theref
 
 ---
 
+# 🏹 Projectile & Movement Feel
+
+The battlefield now has a clearer physical relationship between the archer and approaching enemies.
+
+- Arrows are fired using an initial ballistic velocity.
+- Arrow trajectories form visible arcs instead of straight-line projectiles.
+- Gravity continuously pulls arrows downward during flight.
+- Arrows rotate to follow their current flight direction.
+- Arrows expire when they hit the battlefield ground or exceed their flight-time limit.
+- Enemies spawn on the tower's ground line.
+- Enemies move horizontally toward the castle's ground position rather than drifting vertically through the battlefield.
+- The castle exposes a shared ground position so enemies and arrows can use the same battlefield reference.
+
+This keeps the combat readable while making the battlefield feel more like a real lane defense game.
+
+---
+
 # ❤️ Enemy Health Bars
 
 Enemy health bars are now implemented for **all enemies and bosses**.
@@ -107,6 +124,8 @@ Current feedback includes:
 - Enemy health bars appear after the first hit.
 - Enemies flash when hit.
 - Enemies shrink and fade when killed.
+- Mini Bosses use a stronger entrance animation.
+- Mini Bosses use a stronger death animation.
 - Wave status communicates incoming and cleared waves.
 - Mini Boss waves announce themselves.
 - Mini Boss health is displayed while active.
@@ -130,6 +149,8 @@ Bosses are progression events rather than ordinary enemies with huge health pool
 - Deal **25 castle damage** before enraging.
 - Award **10 coins** when killed.
 - Appear at **1.6x scale**.
+- Enter with a scale-up and fade-in animation.
+- Have a stronger death animation than normal enemies.
 - Have the normal enemy health bar plus a dedicated UI health display.
 
 ### Mini Boss Enrage
@@ -191,6 +212,7 @@ Current castle systems:
 - Damage handling
 - Destruction/game-over state
 - Maximum Health upgrades
+- Shared ground position for battlefield movement
 
 Current development castle health is **100 HP**.
 
@@ -236,7 +258,8 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] Castle
 - [x] Player archer
 - [x] Mouse aiming
-- [x] Arrow firing/movement
+- [x] Ballistic arrow firing/movement
+- [x] Ground-based enemy movement
 - [x] Enemy health/movement/death
 - [x] Castle damage
 - [x] Basic hit/death feedback
@@ -250,6 +273,7 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] Wave manager
 - [x] Multiple enemies
 - [x] Both spawn sides
+- [x] Ground-line spawning
 - [x] Wave completion
 - [x] Enemy count scaling
 - [x] Enemy health scaling
@@ -294,16 +318,17 @@ Remaining polish can wait until later systems expose actual problems.
 - [x] Enrage speed/damage increase
 - [x] Enrage UI feedback
 - [x] Enemy/boss health bars that appear after first damage
+- [x] Stronger Mini Boss entrance feedback
+- [x] Stronger Mini Boss death feedback
 
 ### Remaining
 
-- [ ] Stronger Mini Boss entrance/death feedback
 - [ ] Major Boss system
 - [ ] Major Boss every 50 waves
 - [ ] Major Boss health bars/UI
 - [ ] Major Boss rewards
 
-The Mini Boss now has a two-phase encounter and reactive health information without cluttering the battlefield.
+The Mini Boss now has a two-phase encounter, a distinct arrival/death presentation, and reactive health information without cluttering the battlefield.
 
 ---
 
@@ -381,6 +406,8 @@ Work on one system at a time.
 - [x] Castle and player
 - [x] Enemy spawning and movement
 - [x] Mouse aiming and automatic firing
+- [x] Ballistic arrow arcs
+- [x] Ground-based enemy movement
 - [x] Arrow collision
 - [x] Enemy health/death
 - [x] Castle health/game over
@@ -391,17 +418,18 @@ Work on one system at a time.
 - [x] Mini Boss system
 - [x] Mini Boss enrage
 - [x] Reactive enemy health bars
+- [x] Mini Boss entrance/death feedback
 
 ### Next Focus
 
-**Milestone 4: Mini Boss polish**
+**Milestone 4: Major Boss planning and implementation**
 
-- [ ] Stronger Mini Boss entrance/death feedback
-- [ ] Verify the Mini Boss feels like an event
+- [ ] Design Major Boss behavior so it feels like a new encounter, not just a stronger Mini Boss
+- [ ] Major Boss every 50 waves
+- [ ] Major Boss rewards and UI
 
 ### Later
 
-- [ ] Major Bosses
 - [ ] Active skills
 - [ ] Auto Aim
 - [ ] Additional archers
