@@ -1,22 +1,36 @@
-[gd_scene format=3 uid="uid://e612kir78o6i"]
+[gd_scene load_steps=8 format=3]
 
-[ext_resource type="Script" uid="uid://jxocmgm3ligy" path="res://scripts/castle.gd" id="1_castle"]
-[ext_resource type="Script" uid="uid://bmtjru0wvhe3v" path="res://scripts/player.gd" id="2_player"]
-[ext_resource type="Script" uid="uid://boryseoaxbyn6" path="res://scripts/ui.gd" id="3_ui"]
-[ext_resource type="Resource" path="res://data/player_stats.tres" id="4_stats"]
+[ext_resource type="Script" path="res://scripts/milestone1_controller.gd" id="1_controller"]
+[ext_resource type="PackedScene" path="res://scenes/castle.tscn" id="2_castle"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="4_enemy"]
+[ext_resource type="Script" path="res://scripts/wave_manager.gd" id="5_wave"]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="6_ui"]
+[ext_resource type="Resource" path="res://data/player_stats.tres" id="7_stats"]
 
-[node name="Main" type="Node2D" unique_id=746684898]
+[node name="Main" type="Node2D"]
+script = ExtResource("1_controller")
 
-[node name="Castle" type="Node2D" parent="." unique_id=704095504]
+[node name="Castle" parent="." instance=ExtResource("2_castle")]
 position = Vector2(1700, 540)
-script = ExtResource("1_castle")
+max_health = 1000.0
 
-[node name="Player" type="Node2D" parent="." unique_id=2030637374]
+[node name="Player" parent="." instance=ExtResource("3_player")]
 position = Vector2(300, 540)
-script = ExtResource("2_player")
-stats = ExtResource("4_stats")
+stats = ExtResource("7_stats")
+auto_fire_range = 2000.0
 
-[node name="UI" type="Control" parent="." unique_id=62606037]
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("5_wave")
+enemy_scene = ExtResource("4_enemy")
+starting_wave = 1
+enemies_per_wave = 5
+enemy_count_growth = 1
+wave_break = 2.0
+spawn_distance = 500.0
+vertical_spacing = 120.0
+
+[node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,31 +38,40 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("3_ui")
+script = ExtResource("6_ui")
 
-[node name="WaveLabel" type="Label" parent="UI" unique_id=210497025]
+[node name="WaveLabel" type="Label" parent="UI"]
 layout_mode = 0
 offset_left = 40.0
 offset_top = 30.0
-offset_right = 300.0
+offset_right = 420.0
 offset_bottom = 70.0
 theme_override_font_sizes/font_size = 28
 text = "Wave: 0"
 
-[node name="CoinsLabel" type="Label" parent="UI" unique_id=1346623508]
+[node name="CoinsLabel" type="Label" parent="UI"]
 layout_mode = 0
 offset_left = 40.0
 offset_top = 75.0
-offset_right = 300.0
+offset_right = 420.0
 offset_bottom = 115.0
 theme_override_font_sizes/font_size = 28
 text = "Coins: 0"
 
-[node name="CastleHealthLabel" type="Label" parent="UI" unique_id=1854190556]
+[node name="CastleHealthLabel" type="Label" parent="UI"]
 layout_mode = 0
-offset_left = 1580.0
+offset_left = 1450.0
 offset_top = 30.0
 offset_right = 1880.0
 offset_bottom = 70.0
 theme_override_font_sizes/font_size = 28
 text = "Castle: 1000 / 1000"
+
+[node name="WaveStatusLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 120.0
+offset_right = 600.0
+offset_bottom = 155.0
+theme_override_font_sizes/font_size = 20
+text = "Wave in progress"
