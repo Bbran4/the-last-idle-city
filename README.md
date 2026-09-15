@@ -22,7 +22,9 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 - Castle sits in the center.
 - Player archer is positioned at the castle.
 - Enemies spawn from both sides and run along the ground toward the tower.
-- Player aims with the mouse and automatically fires arrows.
+- Player aims with the mouse and automatically fires at enemies that are within the archer's current range.
+- The archer does not fire when there are no enemies in range.
+- Arrow targets are selected from enemies within range, so the mouse cannot make an arrow travel beyond the archer's range.
 - Arrows travel in a ballistic arc and fall toward the battlefield instead of moving in a straight line.
 - Enemy kills award coins.
 - Enemies reaching the castle deal damage.
@@ -63,6 +65,8 @@ After **6 total coins earned**:
 | Range | +100 | 6 coins |
 | Castle Health | +25 max/current HP | 7 coins |
 
+Upgrades are available during the **5 second intermission between waves** and are hidden while a wave is active.
+
 The current fixed costs are intentionally simple and are considered reasonably balanced for this development pass.
 
 ---
@@ -73,7 +77,8 @@ The current fixed costs are intentionally simple and are considered reasonably b
 - Enemy count increases by **1 per wave**.
 - Enemy health starts at **3 HP**.
 - Enemy health increases by **15% per wave**.
-- A **2 second** break occurs between waves.
+- A **5 second** intermission occurs between waves.
+- During the intermission, enemy spawning is stopped, archer firing is halted, and the upgrade controls become available.
 - Enemies spawn from both sides.
 - Normal enemies award **1 coin**.
 - Every **5th wave** contains a Mini Boss unless it is also a Major Boss wave.
@@ -96,6 +101,8 @@ The battlefield now has a clearer physical relationship between the archer and a
 - Enemies spawn on the tower's ground line.
 - Enemies move horizontally toward the castle's ground position rather than drifting vertically through the battlefield.
 - The castle exposes a shared ground position so enemies and arrows can use the same battlefield reference.
+- The archer only fires when an enemy is inside its current range.
+- The mouse still controls the archer's facing direction, but it cannot extend the archer's effective attack range.
 
 This keeps the combat readable while making the battlefield feel more like a real lane defense game.
 
@@ -194,11 +201,18 @@ At **50% health**, a Major Boss enters its special second phase:
 
 This gives Major Bosses a distinct encounter mechanic rather than making them only larger versions of Mini Bosses.
 
-The current Major Boss values are an initial balance pass and can be tuned after playtesting.
+The current Major Boss values are considered balanced for this development pass. Further tuning can wait until broader progression is implemented.
 
 ---
 
 # 🎯 Skills
+
+Skills are planned as **card choices** rather than a traditional RPG skill tree.
+
+- After every **5 completed waves**, the player will receive a small selection of skill cards.
+- The player chooses one card to add that skill to the archer's available abilities.
+- Skill choices happen during the between-wave intermission.
+- Skills are intended to be meaningful active abilities rather than small percentage bonuses.
 
 Planned active skills:
 
@@ -292,6 +306,7 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] Enemy health/movement/death
 - [x] Castle damage
 - [x] Basic hit/death feedback
+- [x] Range-gated automatic firing
 
 ---
 
@@ -309,6 +324,9 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] Wave UI
 - [x] Coin rewards
 - [x] Automatic next waves
+- [x] Five-second between-wave intermission
+- [x] Archer firing halted during intermission
+- [x] Upgrade controls available only during intermission
 - [x] Game over on castle destruction
 - [x] Mini Boss every 5 waves
 - [x] Major Boss every 10 waves
@@ -329,6 +347,8 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] First passive
 - [x] Critical hit calculation
 - [x] Basic upgrade feedback
+- [x] Upgrades hidden during active waves
+- [x] Upgrades available during intermission
 
 Remaining polish can wait until later systems expose actual problems.
 
@@ -336,9 +356,7 @@ Remaining polish can wait until later systems expose actual problems.
 
 ## 👹 Milestone 4 - Bosses
 
-**Status: In progress**
-
-### Completed
+**Status: Complete for the current development pass**
 
 - [x] Mini Boss every 5 waves
 - [x] Major Boss every 10 waves
@@ -357,20 +375,18 @@ Remaining polish can wait until later systems expose actual problems.
 - [x] Enemy/boss health bars that appear after first damage
 - [x] Stronger boss entrance feedback
 - [x] Stronger boss death feedback
+- [x] Initial balance pass
 
-### Remaining
-
-- [ ] Final boss balance pass
-- [ ] Final boss visual polish
-
-The Major Boss now has a distinct two-part encounter: reaching 50% health triggers its stronger combat phase and a temporary shield that must be broken before normal damage can continue.
+The Major Boss has a distinct two-part encounter: reaching 50% health triggers its stronger combat phase and a temporary shield that must be broken before normal damage can continue.
 
 ---
 
 ## ⚡ Milestone 5 - Skills
 
-**Status: Not started**
+**Status: Next focus**
 
+- [ ] Skill card selection after every 5 waves
+- [ ] Skill ownership/state
 - [ ] Active skill system
 - [ ] Cooldowns
 - [ ] Power Shot
@@ -435,19 +451,20 @@ The Major Boss now has a distinct two-part encounter: reaching 50% health trigge
 
 Work on one system at a time.
 
-### Completed Foundation / Combat / Waves / Upgrades
+### Completed Foundation / Combat / Waves / Upgrades / Bosses
 
 - [x] Main gameplay scene
 - [x] Castle and player
 - [x] Enemy spawning and movement
-- [x] Mouse aiming and automatic firing
+- [x] Mouse aiming and range-gated automatic firing
 - [x] Ballistic arrow arcs
 - [x] Ground-based enemy movement
 - [x] Arrow collision
 - [x] Enemy health/death
 - [x] Castle health/game over
 - [x] Wave system
-- [x] Coin rewards
+- [x] Five-second between-wave intermission
+- [x] Coins rewards
 - [x] Basic upgrades
 - [x] Critical hits
 - [x] Mini Boss system
@@ -460,15 +477,16 @@ Work on one system at a time.
 
 ### Next Focus
 
-**Milestone 4: Boss playtesting and balance**
+**Milestone 5: Skill cards**
 
-- [ ] Playtest Mini Boss every 5 / Major Boss every 10 cadence
-- [ ] Tune boss health, damage, speed, shield strength, and rewards
-- [ ] Final boss visual polish
+- [ ] Add the skill-card selection UI during the intermission after every 5 waves
+- [ ] Add skill ownership/state
+- [ ] Implement the first active skill
+- [ ] Add cooldown handling
+- [ ] Add the remaining skills one at a time
 
 ### Later
 
-- [ ] Active skills
 - [ ] Auto Aim
 - [ ] Additional archers
 - [ ] Persistence
