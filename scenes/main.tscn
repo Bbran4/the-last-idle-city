@@ -17,7 +17,6 @@ max_health = 100.0
 
 [node name="Player" parent="." unique_id=932988793 instance=ExtResource("3_player")]
 position = Vector2(960, 540)
-auto_fire_range = 2000.0
 stats = ExtResource("7_stats")
 
 [node name="WaveManager" type="Node" parent="." unique_id=102710928]
@@ -117,6 +116,15 @@ offset_right = 680.0
 offset_bottom = 305.0
 theme_override_font_sizes/font_size = 18
 text = "Range +100 | Cost: 6 coins"
+
+[node name="CastleHealthUpgradeButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 690.0
+offset_top = 260.0
+offset_right = 1020.0
+offset_bottom = 305.0
+theme_override_font_sizes/font_size = 18
+text = "Castle Health +25 | Cost: 7 coins"
 
 [node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
 layout_mode = 0
