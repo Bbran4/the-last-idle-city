@@ -1,779 +1,705 @@
-# ⚙️ THE LAST CITY
+# 🏰 Castle Archer
 
-> **An idle civilization builder where exponential economic growth creates social and political problems that the player must solve, exploit, or suppress.**
+> **A simple incremental castle-defense game where you shoot enemies, earn coins, upgrade your archer, and survive increasingly ridiculous waves.**
 
-The Last City is a **2D Godot game written in GDScript**. It takes the satisfying progression of games like AdVenture Capitalist, Underworld Idle, Idle Research, and Unnamed Space Idle, then adds a civilization layer where economic growth creates social and political consequences.
+Castle Archer is a small **2D Godot game written in GDScript**, designed specifically to be achievable as a polished indie/browser game for **Kongregate and itch.io**.
 
-Start with a single Scrap Yard.
+You are the castle's archer.
 
-Build it up.
+Enemies are coming.
 
-Grow the workforce.
+Shoot them.
 
-Turn ruins into Materials.
+Earn coins.
 
-Build an increasingly absurd industrial machine.
+Buy upgrades.
 
-Then discover that running a civilization is considerably harder than making the numbers bigger.
+Eventually recruit more archers, unlock Auto Aim, and turn one lonely defender into an increasingly absurd castle-defense machine.
+
+The design goal is deliberately simple: **make a small game that is fun, understandable, and actually finishable.**
 
 ---
 
-## 🎯 Current Project Status
+## 🎯 Core Gameplay Loop
 
-**Design phase complete enough to begin prototyping. Implementation is now underway.**
+```text
+        Enemy Wave
+            ↓
+       Shoot Enemies
+            ↓
+        Earn Coins
+            ↓
+       Buy Upgrades
+            ↓
+         Next Wave
+            ↓
+       Every 10 Waves
+            ↓
+         Mini Boss
+            ↓
+       Every 50 Waves
+            ↓
+        Major Boss
+            ↓
+       Keep Going...
+```
 
-The core systems and design direction are documented below. Exact formulas, costs, balance values, UI polish, and later-game systems will be refined during implementation and playtesting.
+The player should understand the game within seconds:
 
-**Engine:** Godot  
-**Language:** GDScript  
-**Presentation:** 2D  
-**Current priority:** Build the smallest fun playable idle loop before expanding the civilization systems.
+**Shoot → Earn → Upgrade → Survive → Repeat.**
+
+Everything else exists to make that loop more satisfying.
+
+---
+
+# 🏹 The Archer
+
+The player begins with a single archer.
+
+Early gameplay is active. The player aims and fires arrows at incoming enemies.
+
+The archer can be upgraded through several simple statistics:
+
+- Damage
+- Attack Speed
+- Arrow Speed
+- Range
+- Critical Hit Chance
+- Critical Hit Damage
+
+The player should always feel that their archer is becoming more powerful.
+
+---
+
+# 🎯 Skills
+
+Skills provide powerful active abilities with cooldowns or other limitations.
+
+Initial skill ideas:
+
+### Power Shot
+
+Fires a significantly stronger arrow.
+
+### Multi Shot
+
+Fires several arrows at once.
+
+### Piercing Arrow
+
+The arrow passes through multiple enemies.
+
+### Explosive Arrow
+
+The arrow explodes on impact and damages nearby enemies.
+
+### Rapid Fire
+
+Temporarily increases attack speed.
+
+### Rain of Arrows
+
+Fires a large number of arrows across an area.
+
+Additional skills can be added later if the core game needs them.
+
+---
+
+# 🤖 Automation
+
+The game should begin as an active aiming game and gradually become more automated.
+
+## Auto Aim
+
+Auto Aim eventually allows the archer to automatically target enemies.
+
+Possible Auto Aim upgrades can improve:
+
+- Target selection
+- Targeting speed
+- Accuracy
+- Target priority
+- Range
+
+Automation should feel like a major progression milestone rather than simply another percentage upgrade.
+
+---
+
+# 🏹🏹 Additional Archers
+
+Players can eventually recruit additional archers.
+
+Each additional archer contributes damage to the castle defense.
+
+For example:
+
+```text
+Archer 1
+Archer 2
+Archer 3
+Archer 4
+Archer 5
+...
+```
+
+Additional archers can have their own upgrades or share global upgrades, depending on what produces the better gameplay experience.
+
+The long-term fantasy is simple: start as one archer and eventually command an entire defensive force.
+
+---
+
+# 👹 Enemy Waves
+
+Enemies arrive in waves and become progressively stronger.
+
+Difficulty can increase through:
+
+- Enemy Health
+- Enemy Damage
+- Enemy Movement Speed
+- Enemy Quantity
+- Enemy Armor
+- Special Abilities
+
+Initial enemy concepts:
+
+### Goblin
+
+Basic enemy with low health and damage.
+
+### Orc
+
+Slow but durable.
+
+### Archer
+
+Attacks the castle from range.
+
+### Knight
+
+High health and armor.
+
+### Berserker
+
+Fast enemy with high damage.
+
+### Siege Enemy
+
+Slow enemy designed to deal heavy damage to the castle.
+
+New enemy types should be introduced gradually rather than dumping a zoo on the player immediately.
+
+---
+
+# 👹 Mini Bosses
+
+Every **10 waves** contains a Mini Boss.
+
+```text
+Wave 10  → Mini Boss
+Wave 20  → Mini Boss
+Wave 30  → Mini Boss
+Wave 40  → Mini Boss
+Wave 50  → Major Boss
+```
+
+Mini Bosses should be noticeably stronger than normal enemies and can have:
+
+- Increased health
+- Increased damage
+- Special abilities
+- Unique appearances
+- Larger rewards
+
+Boss encounters should feel like meaningful milestones in the run.
+
+---
+
+# 💀 Major Bosses
+
+Every **50 waves**, a Major Boss appears.
+
+```text
+Wave 50   → Major Boss
+Wave 100  → Major Boss
+Wave 150  → Major Boss
+Wave 200  → Major Boss
+...
+```
+
+Major Bosses should be substantially stronger than Mini Bosses.
+
+Possible mechanics include:
+
+- Multiple phases
+- Special attacks
+- Enemy summoning
+- Temporary shields
+- Regeneration
+- Enrage mechanics
+
+Defeating a Major Boss should provide a substantial reward and clearly mark progression.
+
+---
+
+# 🏰 Castle Defense
+
+The castle is the player's main objective.
+
+Enemies must be stopped before they reach the walls.
+
+If enemies reach the castle, they deal damage.
+
+If castle health reaches zero, the current run ends.
+
+Initial castle upgrades can include:
+
+- Maximum Health
+- Armor
+- Health Regeneration
+- Damage Reduction
+- Starting Health
+
+The castle should remain visually simple and readable. The combat should be the star of the show.
+
+---
+
+# 💰 Coins
+
+Coins are the primary currency.
+
+Players earn coins by defeating enemies and completing waves.
+
+Coins are spent on upgrades such as:
+
+- Archer Damage
+- Attack Speed
+- Critical Chance
+- Critical Damage
+- Arrow Speed
+- Range
+- Castle Health
+- Castle Defense
+- Skills
+- Additional Archers
+- Automation
+
+The economy should remain easy to understand:
+
+> **Kill enemies → earn coins → buy upgrades → kill stronger enemies.**
+
+Cost scaling should be added only where it improves progression. There should be no arbitrary complexity for the sake of having more numbers.
+
+---
+
+# ☠️ Defeat
+
+If the castle's health reaches zero, the player loses the current run.
+
+The exact long-term reset/prestige system is intentionally undecided.
+
+Potential future systems include:
+
+- Permanent upgrades
+- Prestige
+- Hero levels
+- Relics
+- Achievements
+- Long-term progression
+
+These should **not** be implemented until the core wave loop is fun.
+
+---
+
+# 🏆 Achievements
+
+Achievements can reward progression milestones.
+
+Possible achievements:
+
+- Reach Wave 10
+- Reach Wave 50
+- Reach Wave 100
+- Defeat your first Mini Boss
+- Defeat your first Major Boss
+- Unlock Auto Aim
+- Recruit 5 Archers
+- Fire 10,000 arrows
+- Defeat 1,000 enemies
+- Land a huge critical hit
+
+Achievements are secondary to the core gameplay.
+
+---
+
+# 🎨 Art Direction
+
+The visual style should be simple, readable, and achievable for a small project.
+
+The screen should clearly communicate:
+
+- Castle
+- Archer
+- Incoming enemies
+- Arrows
+- Enemy health
+- Current wave
+- Coins
+- Skills
+- Upgrades
+- Castle health
+
+Useful combat effects include:
+
+- Arrow trails
+- Hit effects
+- Critical hit effects
+- Enemy death effects
+- Boss entrances
+- Boss attacks
+- Skill effects
+- Coin feedback
+
+Prioritize **clarity, responsiveness, and satisfying feedback over graphical complexity**.
+
+---
+
+# 🖥️ Target Platforms
+
+Initial targets:
+
+- **Kongregate**
+- **itch.io**
+
+The game should be browser-friendly and perform well on modest hardware.
+
+Input should primarily support:
+
+- Mouse
+- Keyboard where useful
+
+The interface should remain usable at common browser resolutions.
 
 ---
 
 # 🚀 DEVELOPMENT ROADMAP
 
-This section intentionally lives near the top of the README so it can be used as the project's working checklist without scrolling through the full design document.
+Development should remain deliberately small and sequential.
 
-## 🏁 Milestone 0 - Project Foundation
+## 🏁 Milestone 0 - Foundation
 
-**Goal:** A clean Godot project with the architecture needed to build the game without creating technical debt immediately.
+**Goal:** Establish a clean Godot project and the minimum architecture required to build the game.
 
-- [x] Establish the main scene and application structure
-- [x] Create a basic 2D UI layout
-- [x] Establish a reusable resource/data model
-- [x] Create a central game state/autoload
-- [x] Create a basic game clock/tick system
-- [x] Add save/load support
-- [x] Add basic number formatting for large idle-game values
-- [x] Establish a simple folder/script naming convention
-- [x] Confirm the project runs cleanly in a fresh Godot session
+- [ ] Confirm Godot project opens and runs
+- [ ] Establish main scene
+- [ ] Establish basic game controller/state
+- [ ] Establish simple folder/script structure
+- [ ] Create basic UI layout
+- [ ] Create game loop/tick where required
+- [ ] Establish save/load foundation
+- [ ] Confirm clean project startup
 
-**Milestone complete when:** The project can start, maintain game state, tick reliably, save, load, and display a basic UI.
-
----
-
-## ⛏️ Milestone 1 - The First Scrap Yard
-
-**Goal:** Prove that the basic idle loop is fun.
-
-- [x] Create the Scrap Yard production model
-- [x] Add Materials as the first resource
-- [x] Add Scrap Yard production per second
-- [x] Add **Level Up** button
-- [x] Make Level Up increase Scrap Yard productivity
-- [x] Add production cost scaling
-- [x] Add a manual production/click action
-- [x] Make clicking contribute to Scrap Yard productivity
-- [x] Add basic production display
-- [x] Add basic cost display
-- [x] Add a simple feedback animation when production occurs
-
-**Milestone complete when:** The player can start with one Scrap Yard, click it, level it up, watch Materials increase, and immediately understand what to do.
+**Milestone complete when:** The project runs cleanly and provides a stable foundation for combat.
 
 ---
 
-## 📈 Milestone 2 - Idle Scaling & Scrap Yard Expansion
+## 🏹 Milestone 1 - First Arrow
 
-**Goal:** Establish the game's distinctive idle-building model.
+**Goal:** Make shooting an enemy fun.
 
-- [x] Implement Scrap Yard levels
-- [x] Implement automatic milestone expansions
-- [x] Add milestone multipliers at selected levels
-- [x] Add **Build New** button
-- [x] Make Scrap Yard count a cumulative multiplier
-- [x] Confirm 1 Scrap Yard = ×1, 2 = ×2, 3 = ×3, etc.
-- [x] Ensure new Scrap Yards share the same level
-- [x] Ensure there is only one Scrap Yard upgrade tree
-- [x] Implement exponential/idle-style cost scaling
-- [x] Display Level, Scrap Yard count, milestone multiplier, and total production clearly
-- [x] Test large numbers and high levels
+- [ ] Create castle
+- [ ] Create player archer
+- [ ] Implement mouse aiming
+- [ ] Implement arrow firing
+- [ ] Implement arrow movement
+- [ ] Create first enemy
+- [ ] Implement enemy health
+- [ ] Implement enemy movement toward castle
+- [ ] Implement enemy death
+- [ ] Implement castle health
+- [ ] Implement enemy damage to castle
+- [ ] Add basic hit/death feedback
 
-**Core rule:**
-
-> **Level Up makes the operation better. Build New increases the number of operations.**
-
-**Milestone complete when:** The player can grow one Scrap Yard operation from a tiny starting facility into a rapidly scaling industrial operation without managing individual copies.
+**Milestone complete when:** A player can open the game, aim at an enemy, shoot it, kill it, and understand the objective immediately.
 
 ---
 
-## 👥 Milestone 3 - Population & Workforce
+## 🌊 Milestone 2 - Waves
 
-**Goal:** Introduce the game's first civilization-level system without turning it into a survival simulator.
+**Goal:** Turn individual enemies into an actual game loop.
 
-- [x] Add Population
-- [x] Add Workforce calculation
-- [x] Implement percentage-based workforce allocation
-- [x] Add allocation sliders
-- [x] Make workforce counts automatically follow Population changes
-- [x] Add allocation efficiency calculation
-- [x] Implement Red → Orange → Green → Orange → Red allocation feedback
-- [x] Make efficient allocation ranges dynamic
-- [x] Connect Industrial Authority allocation to Scrap Yard productivity
-- [x] Test Population growth changing workforce without requiring reassignment
+- [ ] Implement wave system
+- [ ] Spawn multiple enemies per wave
+- [ ] Complete waves when all enemies are defeated
+- [ ] Increase enemy difficulty between waves
+- [ ] Add wave display
+- [ ] Add wave completion feedback
+- [ ] Add coin rewards
+- [ ] Start the next wave
+- [ ] Handle defeat when castle health reaches zero
 
-**Core rule:**
-
-> The player manages **percentages**, not individual worker counts.
-
-No Food, Housing, Healthcare, or Education survival meters.
-
-**Milestone complete when:** Population growth naturally changes the economy and the player can make meaningful workforce decisions without spreadsheet-style micromanagement.
+**Milestone complete when:** The player can survive multiple waves and clearly understands that each wave is harder than the last.
 
 ---
 
-## 🏭 Milestone 4 - Production Chains
+## 💰 Milestone 3 - Upgrades
 
-**Goal:** Capture the layered idle-game progression of the inspiration games.
+**Goal:** Establish satisfying progression.
 
-- [x] Add Reclamation Depot
-- [x] Add Workshop
-- [x] Add Factory
-- [x] Create the first production chain
-- [x] Make higher-tier operations accelerate lower-tier production
-- [x] Apply the Level Up / Build New model to production operations where appropriate
-- [x] Add production automation rules
-- [x] Add increasingly large number scaling
-- [x] Add simple production statistics
-- [x] Add unlock requirements between tiers
+- [ ] Create coin currency
+- [ ] Create upgrade system
+- [ ] Add Damage upgrade
+- [ ] Add Attack Speed upgrade
+- [ ] Add Critical Chance upgrade
+- [ ] Add Critical Damage upgrade
+- [ ] Add Arrow Speed upgrade
+- [ ] Add Range upgrade
+- [ ] Add Castle Health upgrade
+- [ ] Display upgrade costs
+- [ ] Implement upgrade cost scaling
+- [ ] Add clear upgrade feedback
 
-**Production-chain automation rates:**
-
-- Reclamation Depot: **0.10 Scrap Yard Levels/sec** per operation effectiveness
-- Workshop: **0.05 Reclamation Depot Levels/sec** per operation effectiveness
-- Factory: **0.025 Workshop Levels/sec** per operation effectiveness
-
-Automation grants lower-tier levels without spending Materials. Fractional progress is retained until it reaches one complete level.
-
-Initial chain:
-
-```text
-Scrap Yard
-    ↓
-Reclamation Depot
-    ↓
-Workshop
-    ↓
-Factory
-    ↓
-Industrial Plant
-    ↓
-Manufacturing Complex
-```
-
-**Milestone complete when:** The player has the satisfying feeling of building an interconnected idle production machine rather than repeatedly clicking one button.
+**Milestone complete when:** Players have a reason to spend their coins and can immediately feel the effect of upgrades.
 
 ---
 
-## ⚡ Milestone 5 - Energy & Department Allocation
+## 👹 Milestone 4 - Bosses
 
-**Goal:** Introduce Energy and department allocation as an active part of the existing idle loop.
+**Goal:** Add major wave milestones.
 
-- [x] Add Energy
-- [x] Create basic Energy production
-- [x] Add Energy consumption
-- [x] Connect Energy consumption to production systems
-- [ ] Add Energy shortage states
-- [ ] Add load-shedding behaviour
-- [ ] Add Industrial / Civilian / Security / Scientific priority options
-- [x] Add Central Government workforce allocation
-- [x] Add basic department UI
-- [x] Make Energy interact with the existing idle loop
+- [ ] Add Mini Boss system
+- [ ] Spawn Mini Boss every 10 waves
+- [ ] Add Mini Boss health bars
+- [ ] Add Mini Boss rewards
+- [ ] Add Major Boss system
+- [ ] Spawn Major Boss every 50 waves
+- [ ] Add Major Boss health bars
+- [ ] Add Major Boss rewards
+- [ ] Add at least one unique boss mechanic
+- [ ] Add boss entrance/death feedback
 
-**Deferred:** Energy shortage states, load shedding, and priority management are intentionally moved to a later milestone. They do not currently affect the core loop and will be added once there are meaningful systems for them to control.
-
-**Milestone complete when:** Energy exists as a working production/consumption constraint and interacts with the existing production and workforce systems.
+**Milestone complete when:** Wave 10 and Wave 50 feel like genuine events rather than ordinary waves with more health.
 
 ---
 
-## 🛡️ Milestone 6 - Security & Unrest Prototype
+## ⚡ Milestone 5 - Skills
 
-**Goal:** Build the system that makes The Last City different from a conventional idle game.
+**Goal:** Give the player active combat tools beyond ordinary arrows.
 
-- [ ] Add Security
-- [ ] Add Threat
-- [ ] Compare Security Capacity against Threat
-- [ ] Add basic Unrest generation
-- [ ] Add Unrest recovery
-- [ ] Add Unrest states
-- [ ] Connect Unrest to productivity
-- [ ] Connect Unrest to workforce efficiency
-- [ ] Add basic strikes/sabotage events
-- [ ] Add Security workforce allocation
-- [ ] Make high Security powerful but socially costly
+- [ ] Create skill system
+- [ ] Create cooldown system
+- [ ] Add Power Shot
+- [ ] Add Multi Shot
+- [ ] Add Piercing Arrow
+- [ ] Add Explosive Arrow
+- [ ] Add Rapid Fire
+- [ ] Add Rain of Arrows
+- [ ] Add skill UI
+- [ ] Add skill feedback
 
-Unrest states:
-
-```text
-0–10    Stable
-10–25   Discontent
-25–50   Tension
-50–75   Unrest
-75–100  Crisis
-```
-
-**Milestone complete when:** The player can create a highly productive civilization and then discover that the way they achieved it has consequences.
+**Milestone complete when:** Using a skill at the right moment feels powerful and useful.
 
 ---
 
-## 🏛️ Milestone 7 - Government Decisions
+## 🤖 Milestone 6 - Automation
 
-**Goal:** Let the player actively govern the problems their economy creates.
+**Goal:** Introduce the incremental/idle side of the game.
 
-- [ ] Add Trust
-- [ ] Add Compliance
-- [ ] Keep Trust and Compliance as separate systems
-- [ ] Add basic Government Directives
-- [ ] Add meaningful positive/negative trade-offs
-- [ ] Add Negotiate response
-- [ ] Add Suppress response
-- [ ] Add Manipulate response
-- [ ] Add Ignore response
-- [ ] Connect government choices to Unrest
-- [ ] Connect government choices to productivity
-- [ ] Connect government choices to Security
-- [ ] Add the first civilization identity/archetype signals
+- [ ] Add Auto Aim unlock
+- [ ] Implement automatic target selection
+- [ ] Add target priority rules
+- [ ] Add automatic firing
+- [ ] Add Auto Aim upgrades
+- [ ] Add additional archers
+- [ ] Add archer recruitment costs
+- [ ] Add archer upgrades
+- [ ] Balance active and automated play
 
-**Milestone complete when:** The player is making government choices because the economy created a problem, not because the game presented another upgrade tree.
+**Milestone complete when:** The player can transition naturally from active aiming into automated castle defense.
 
 ---
 
-## 🧨 Milestone 8 - Crises
+## 💾 Milestone 7 - Persistence & Polish
 
-**Goal:** Turn civilization pressures into readable, consequential events.
+**Goal:** Make the game feel like a finished small game.
 
-- [ ] Add crisis risk calculations
-- [ ] Add visible risk/warning indicators
-- [ ] Add Power Grid Failure
-- [ ] Add Worker Strike
-- [ ] Add Sabotage
-- [ ] Add Infrastructure Failure
-- [ ] Add Security Incident
-- [ ] Make crisis probability respond to player decisions
-- [ ] Add crisis outcomes and recovery
-- [ ] Add civilization report after major events
+- [ ] Add reliable save system
+- [ ] Add settings
+- [ ] Add sound effects
+- [ ] Add music
+- [ ] Improve combat animations
+- [ ] Improve UI feedback
+- [ ] Add achievements
+- [ ] Add basic menus
+- [ ] Add pause functionality where appropriate
+- [ ] Test browser resolutions
+- [ ] Test performance
+- [ ] Fix gameplay bugs
+- [ ] Balance progression
 
-**Core rule:**
-
-> Crises should feel like consequences, not random punishment.
-
-**Milestone complete when:** The player can see a problem developing, understand why it is dangerous, and choose whether to intervene or accept the risk.
-
----
-
-## 🔬 Milestone 9 - Research & Technology
-
-**Goal:** Introduce technologies that change the rules rather than simply adding percentage bonuses.
-
-- [ ] Add Research
-- [ ] Add Scientific Directorate
-- [ ] Create technology tree/data structure
-- [ ] Add Automation technology
-- [ ] Add Robotics
-- [ ] Add AI
-- [ ] Add advanced Energy technology
-- [ ] Make technology alter existing systems
-- [ ] Add technology prerequisites
-- [ ] Add technology discovery UI
-
-Example principle:
-
-> Automation should reduce Labour requirements, not simply say “+10% production.”
-
-**Milestone complete when:** Research changes what the player can do, not just how large the numbers become.
+**Milestone complete when:** The game feels polished enough to hand to someone who has never seen the project before.
 
 ---
 
-## 🤖 Milestone 10 - Automation & Offline Progress
+## 🌐 Milestone 8 - Release
 
-**Goal:** Make the game properly idle.
+**Goal:** Publish the game.
 
-- [ ] Add automatic purchasing where appropriate
-- [ ] Add automatic production allocation
-- [ ] Add department automation
-- [ ] Add offline progress calculation
-- [ ] Add offline civilization report
-- [ ] Handle Energy conditions during offline time
-- [ ] Handle Unrest during offline time
-- [ ] Handle crises during offline time
-- [ ] Add automation upgrades
-- [ ] Add AI-directed systems as a later automation tier
+- [ ] Final gameplay balance
+- [ ] Final UI pass
+- [ ] Final audio pass
+- [ ] Browser testing
+- [ ] Kongregate build
+- [ ] itch.io build
+- [ ] Create store/page artwork
+- [ ] Write game description
+- [ ] Create screenshots
+- [ ] Create short gameplay video/GIF
+- [ ] Publish
+- [ ] Collect player feedback
+- [ ] Fix critical launch issues
 
-**Milestone complete when:** The civilization continues meaningfully while the player is away.
-
----
-
-## ⚡ Milestone 11 - Emergency Allocation
-
-**Goal:** Add the game's active “push the big red button” mechanic.
-
-- [ ] Add Emergency Allocation system
-- [ ] Add Industrial Surge
-- [ ] Add Labour Mobilization
-- [ ] Add Power Priority
-- [ ] Add Security Lockdown
-- [ ] Add Scientific Emergency
-- [ ] Add Energy/resource costs
-- [ ] Add Worker fatigue
-- [ ] Add Infrastructure wear
-- [ ] Add Unrest consequences
-- [ ] Add cooldown/duration rules
-
-**Milestone complete when:** Emergency actions feel powerful enough to tempt the player and dangerous enough that they cannot be spammed without consequence.
-
----
-
-## ☠️ Milestone 12 - Collapse & Legacy
-
-**Goal:** Create the long-term incremental loop.
-
-- [ ] Define Collapse conditions
-- [ ] Add deliberate Collapse option
-- [ ] Reset current civilization state
-- [ ] Calculate Legacy earned
-- [ ] Add Industrial Legacy
-- [ ] Add Scientific Legacy
-- [ ] Add Institutional Legacy
-- [ ] Add Cultural Legacy
-- [ ] Add Historical Legacy
-- [ ] Apply Legacy to the next civilization
-- [ ] Add new starting options from Legacy
-
-**Milestone complete when:** Resetting a civilization feels like ending a chapter of history rather than pressing a generic prestige button.
-
----
-
-## 🌍 Milestone 13 - First Vertical Slice
-
-**Goal:** A complete small version of The Last City that can be played from beginning to Collapse.
-
-The vertical slice should contain only enough content to prove the game works.
-
-- [ ] Scrap Yard
-- [ ] Population
-- [ ] Workforce allocation
-- [ ] Materials
-- [ ] Energy
-- [ ] Security
-- [ ] Unrest
-- [ ] One or two crises
-- [ ] A few Government Directives
-- [ ] A small Technology tree
-- [ ] Offline progress
-- [ ] Collapse
-- [ ] Legacy
-- [ ] Save/load
-- [ ] Basic 2D presentation
-- [ ] Basic sound/UI feedback
-
-**Milestone complete when:** A new player can start a civilization, build it, encounter problems, govern those problems, Collapse, and understand why they would want to play again.
-
----
-
-## ⚡ Milestone 14 - Advanced Energy Management
-
-**Goal:** Add meaningful energy scarcity, prioritization, and load shedding once the civilization has enough systems for those mechanics to matter.
-
-- [ ] Add Energy shortage states
-- [ ] Define Powered / Strained / Shortage / Critical or Blackout states
-- [ ] Add Industrial / Civilian / Security / Scientific priority options
-- [ ] Add priority-based load shedding
-- [ ] Make Energy priorities affect which systems continue operating during shortages
-- [ ] Add clear player-facing Energy status feedback
-- [ ] Ensure shortage behaviour works consistently during normal and offline simulation
-- [ ] Balance Energy production and consumption around meaningful trade-offs
-
-**Core rule:**
-
-> Energy shortages should force the player to decide what keeps running, not simply punish the player by stopping everything.
-
-**Milestone complete when:** The player can intentionally manage a constrained power grid and make meaningful choices about which parts of the civilization receive power.
+**Milestone complete when:** The game is publicly playable and stable on the target platforms.
 
 ---
 
 # 📋 IMMEDIATE TASK LIST
 
-These are the tasks to work on **now**. Do not jump ahead to the full civilization system.
+Work on these tasks **now** and ignore later systems until they are needed.
 
 ### First Build
 
-- [ ] Open the Godot project and confirm the project runs
-- [ ] Create the main 2D scene
-- [ ] Create the main game controller/autoload
-- [ ] Create a simple resource state for Materials
-- [ ] Create the game tick
-- [ ] Create the Scrap Yard data/model
-- [ ] Display Materials on screen
-- [ ] Display Scrap Yard level
-- [ ] Add **LEVEL UP** button
-- [ ] Make Level Up spend Materials
-- [ ] Make Level Up increase production
-- [ ] Add Materials-per-second display
-- [ ] Add a simple manual Scrap Yard click
-- [ ] Make the game save and load
+- [ ] Confirm Godot project runs
+- [ ] Create main 2D scene
+- [ ] Create castle
+- [ ] Create archer
+- [ ] Create first enemy
+- [ ] Add enemy movement
+- [ ] Add mouse aiming
+- [ ] Add arrow firing
+- [ ] Add arrow collision
+- [ ] Add enemy health
+- [ ] Add enemy death
+- [ ] Add castle health
+- [ ] Add basic combat UI
 
 ### Then
 
-- [ ] Add Scrap Yard milestone levels
-- [ ] Add automatic milestone multipliers
-- [ ] Add **BUILD NEW** button
-- [ ] Add Scrap Yard count multiplier
-- [ ] Add large-number formatting
-- [ ] Add basic production feedback
-- [ ] Playtest the first 10 minutes
-- [ ] Adjust costs and production based on feel
+- [ ] Add waves
+- [ ] Add coins
+- [ ] Add upgrades
+- [ ] Add Mini Bosses
+- [ ] Add Major Bosses
+- [ ] Add skills
+- [ ] Add Auto Aim
+- [ ] Add additional archers
 
-**Do not build the full six-department system yet.**
+**Do not build prestige, complex meta-progression, large skill trees, or complicated economy systems yet.**
 
-The first goal is to prove that the Scrap Yard itself is fun.
+The first goal is to prove that **shooting enemies and surviving waves is fun**.
 
 ---
 
-# 🧭 RULE FOR IMPLEMENTATION
+# 🧭 Design Rules
 
-When deciding whether to build a new feature, ask:
+## 1. Keep It Small
 
-> **Does this make the core idle loop better, or are we building complexity because the design document says we can?**
+This is intentionally a small game.
 
-The correct order is:
+Do not turn it into an RPG, city builder, tower-defense spreadsheet, or MMORPG wearing a castle hat.
+
+If a feature does not make the core loop better, it probably does not belong in the first release.
+
+## 2. Make Every Upgrade Feel Useful
+
+Players should understand what an upgrade does and feel its impact.
+
+Avoid meaningless +0.3% bonuses unless they serve a clear progression purpose.
+
+## 3. Bosses Must Be Events
+
+A boss should change the player's behaviour or require a meaningful response.
+
+Simply giving an enemy 100x health is not a boss mechanic.
+
+## 4. Automation Is Progression
+
+Auto Aim and additional archers should feel like major achievements.
+
+The player starts actively defending one castle wall and gradually builds a self-sustaining defensive machine.
+
+## 5. Do Not Build Complexity Before Fun
+
+The development order is:
 
 ```text
-Fun Core Loop
-	  ↓
-Reliable Systems
-	  ↓
-Production Scaling
-	  ↓
-Workforce
-	  ↓
-Civilization Problems
-	  ↓
-Government Decisions
-	  ↓
-Technology
-	  ↓
-Collapse / Legacy
-	  ↓
-More Content
+Fun Shooting
+    ↓
+Fun Waves
+    ↓
+Fun Upgrades
+    ↓
+Bosses
+    ↓
+Skills
+    ↓
+Automation
+    ↓
+Polish
+    ↓
+Release
 ```
 
-Do not build late-game systems before the early game is fun.
+Only after the core game works should additional systems be considered.
 
 ---
 
-# 🧭 THE CORE IDEA
+# ⭐ The Goal
 
-The Last City takes inspiration from idle and incremental games such as:
+The first version should be a small, polished game that can be understood almost immediately.
 
-- **AdVenture Capitalist** - simple production, automation, exponential growth, and prestige
-- **Underworld Idle** - interconnected production chains and layered progression
-- **Idle Research** - technology-driven progression and increasingly complex systems
-- **Unnamed Space Idle** - deep automation, optimization, and long-term system interaction
+A player opens the game.
 
-But The Last City needs to be more than a combination of familiar idle mechanics.
+They see enemies approaching.
 
-### The unique layer is civilization.
+They shoot.
 
-The player is not simply optimizing numbers. They are governing a civilization while those numbers grow.
+They earn coins.
 
-Economic decisions create social consequences.
+They buy an upgrade.
 
-Government decisions create economic consequences.
+They survive the next wave.
 
-Technology changes the rules of the economy.
+Then Wave 10 arrives.
 
-Security can suppress unrest while creating other problems.
+**Boss.**
 
-Automation can increase production while reducing the need for workers.
+They survive.
 
-Population growth creates a larger workforce, but also changes the social and political balance of the civilization.
+The numbers get bigger.
 
-The player is constantly balancing three overlapping games:
+They unlock Auto Aim.
 
-### 1. The Idle Machine
+Then another archer.
 
-Production chains, automation, multipliers, exponential growth, offline progress, upgrades, and prestige.
+Then another.
 
-### 2. The Civilization
+Eventually the screen becomes an increasingly ridiculous storm of arrows, enemies, explosions, critical hits, and boss health bars.
 
-Population, Labour, Energy, Security, Research, Compliance, unrest, morale, inequality, trust, and other social pressures.
+That is the game.
 
-### 3. The Government
-
-Directives, emergency measures, crises, political choices, and long-term consequences.
-
-The game becomes interesting when these three layers interfere with one another.
+**Shoot. Earn. Upgrade. Defend. Repeat.**
 
 ---
 
-# 🧱 DESIGN PRINCIPLES
+# 📌 Current Project Status
 
-## Start Simple, Become Complex
+**Planning reset complete. Ready to begin implementation.**
 
-The player should understand the first production loop within minutes.
+The previous game concept has been discarded.
 
-## Build an Idle Game First
+The README is now the primary design document and source of truth for the new project.
 
-Numbers grow, production chains expand, automation becomes powerful, offline progress matters, and prestige creates long-term progression.
+The next development target is **Milestone 0 - Foundation**, followed immediately by **Milestone 1 - First Arrow**.
 
-## Percentage-Based Workforce
-
-The player allocates percentages of the available workforce rather than manually assigning fixed worker counts.
-
-## Operation Scaling
-
-> **Level Up makes an operation better. Build New increases the number of operations.**
-
-Additional operations use a cumulative multiplier: 1 = ×1, 2 = ×2, 3 = ×3, etc.
-
-Major level milestones can automatically expand an operation and provide large productivity multipliers.
-
-## No Survival Simulation
-
-The game does not require individual management of Food, Housing, Healthcare, or Education.
-
-The civilization layer should remain broad and strategic rather than becoming a city survival simulator.
-
-## More Is Not Always Better
-
-Higher Security, Automation, Population, and Compliance should all create trade-offs.
-
-## Social Systems Are Consequences
-
-Unrest, Morale, Trust, Compliance, Crime, and Inequality are not just currencies. They represent what the player's economic and government choices have done to the civilization.
-
----
-
-# 👥 CORE SYSTEMS
-
-## Population
-
-Population provides potential workforce and grows through broad civilization conditions.
-
-## Workforce
-
-```text
-Available Workforce
-= Population × Workforce Rate × Workforce Efficiency
-```
-
-Workforce is allocated through percentage sliders.
-
-Allocation feedback uses:
-
-**Red → Orange → Green → Orange → Red**
-
-The green zone represents the current efficient range and can move as the civilization changes.
-
-## Energy
-
-Energy is a universal infrastructure resource. Shortages create load-shedding and priority decisions rather than instant death.
-
-## Security
-
-Security is measured against Threat. High Security can reduce crime, unrest, sabotage, and crisis risk, but consumes Labour and Energy and can damage Trust.
-
-## Unrest
-
-Unrest is the game's primary social pressure and a key differentiator from traditional idle games.
-
-## Trust & Compliance
-
-Trust measures legitimacy. Compliance measures obedience. They are deliberately separate.
-
-## Morale
-
-Morale modifies productivity and social stability rather than acting as a resource.
-
-## Inequality
-
-Inequality becomes more important later and creates economic advantages alongside social costs.
-
----
-
-# 🏭 PRODUCTION MODEL
-
-Production should preserve the satisfying exponential feel of classic idle games while making the physical growth of the civilization understandable.
-
-For an operation such as the Scrap Yard:
-
-```text
-Production
-= Base Production
-× Level / Milestone Multipliers
-× Number of Operations
-× Technology
-× Government / Other Modifiers
-```
-
-The exact formula will be tuned during prototyping.
-
-### Scrap Yard
-
-The Scrap Yard is the first production operation.
-
-It has exactly two buttons:
-
-**LEVEL UP**
-
-- Improves the existing Scrap Yard operation.
-- Increases its productivity.
-- At selected levels, automatically doubles the operation's productivity through a milestone multiplier.
-- Does not add a Scrap Yard building.
-
-**BUILD NEW**
-
-- Adds another Scrap Yard to the operation.
-- Uses the same shared upgrade level.
-- Increases the operation multiplier linearly.
-- Is the only action that increases the Scrap Yard building count.
-
-```text
-1 Scrap Yard = ×1
-2 Scrap Yards = ×2
-3 Scrap Yards = ×3
-4 Scrap Yards = ×4
-```
-
-New Scrap Yards do **not** each require their own upgrade tree.
-
----
-
-# 🏭 DEPARTMENTS
-
-The six departments unlock gradually.
-
-| Department | Primary Resource | Purpose |
-|---|---|---|
-| Industrial Authority | Materials | Manufacturing and construction |
-| Ministry of Labour | Labour | Workforce and population |
-| Central Government | Energy | Power and infrastructure |
-| Security Directorate | Security | Order and protection |
-| Scientific Directorate | Research | Technology and advancement |
-| Ministry of Information | Compliance | Information and social control |
-
-Departments should never feel like six separate idle games. They feed one interconnected civilization.
-
----
-
-# 🧨 CRISES
-
-Crises should be partially predictable and tied to the conditions the player creates.
-
-Examples:
-
-- Worker strikes
-- Power failures
-- Sabotage
-- Infrastructure failures
-- Research accidents
-- Information leaks
-- Security incidents
-- Riots
-
-The player should be able to see warning signs and decide whether to intervene.
-
----
-
-# ⚡ EMERGENCY ALLOCATION
-
-Emergency Allocation provides temporary, powerful boosts.
-
-Examples:
-
-- Industrial Surge
-- Labour Mobilization
-- Power Priority
-- Security Lockdown
-- Scientific Emergency
-
-Emergency actions can cause Energy costs, Worker fatigue, Infrastructure wear, Unrest, and increased Crisis risk.
-
----
-
-# 📜 GOVERNMENT DIRECTIVES
-
-Directives are permanent policies with meaningful trade-offs.
-
-Examples:
-
-```text
-MANDATORY LABOUR
-Industrial Production +25%
-Morale -10%
-Unrest Pressure +15%
-Security Demand +10%
-```
-
-The goal is not Good vs Evil. The goal is choosing what the civilization gains and what it sacrifices.
-
-Government identity should emerge from accumulated decisions rather than being selected as a starting class.
-
----
-
-# 🔬 TECHNOLOGY
-
-Technology should change rules rather than simply add percentage bonuses.
-
-Examples:
-
-- Automation reduces Labour requirements.
-- Robotics changes how industrial systems operate.
-- AI can automate workforce allocation.
-- Nuclear and Fusion change Energy constraints.
-- Synthetic Workforce replaces human Labour.
-- Nanotechnology changes Materials production.
-- Quantum Computing changes Research.
-- Matter Manipulation changes endgame production.
-
----
-
-# ☠️ COLLAPSE & LEGACY
-
-Collapse is the major prestige/reset system.
-
-The player ends or survives a civilization and carries knowledge, technology, institutions, discoveries, and new possibilities into the next civilization.
-
-Legacy should create new options rather than simply becoming another permanent multiplier.
-
----
-
-# 🚫 THINGS TO AVOID
-
-### Six Separate Idle Games
-
-Departments must feed one another.
-
-### Spreadsheet Simulator
-
-Complexity must remain readable.
-
-### Traditional 4X Strategy Game
-
-The core experience remains idle/incremental.
-
-### Survival Simulator
-
-No individual Food, Housing, Healthcare, or Education management in the core loop.
-
-### Endless Currency Bloat
-
-Prefer existing systems interacting over adding another resource for every mechanic.
-
-### Generic Prestige
-
-Collapse should feel like the end of a civilization and the beginning of another, not simply a reset button.
-
----
-
-# 📌 ONE-SENTENCE VISION
-
-> **The Last City is an idle civilization builder where exponential economic growth creates social and political problems that the player must solve, exploit, or suppress.**
-
-# 📌 THE LONG-TERM FANTASY
-
-> **I started with a scrap yard.**
->
-> **Now I control the last functioning civilization on Earth.**
->
-> **And somehow, keeping it alive is harder than building it.**
+The project should remain focused on producing a small, playable, publishable game rather than expanding into an unnecessarily large system.
