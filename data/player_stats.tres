@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Stats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/stats.gd" id="1_stats"]
+
+[resource]
+resource_name = "PlayerStats"
+script = ExtResource("1_stats")
+max_health = 100.0
+health = 100.0
+damage = 10.0
+attack_speed = 1.0
+arrow_speed = 800.0
+range = 1000.0
+critical_chance = 0.05
+critical_damage = 2.0
