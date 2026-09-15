@@ -61,7 +61,7 @@ func fire_arrow(target_position: Vector2) -> void:
 	var arrow_damage := stats.damage
 	if skill_manager and skill_manager.consume_power_shot():
 		arrow_damage *= SkillManager.POWER_SHOT_DAMAGE_MULTIPLIER
-	elif randf() < stats.critical_chance:
+	if randf() < stats.critical_chance:
 		arrow_damage *= stats.critical_damage
 	var ground_y: float = castle.get_ground_y() if castle else global_position.y + 300.0
 	arrow.setup(
