@@ -11,7 +11,6 @@ const MINI_BOSS_HEALTH_MULTIPLIER: float = 10.0
 const MINI_BOSS_REWARD: int = 10
 const MINI_BOSS_MOVEMENT_SPEED: float = 45.0
 const MINI_BOSS_CASTLE_DAMAGE: float = 25.0
-const MINI_BOSS_SCALE: float = 1.6
 
 @export var enemy_scene: PackedScene = preload("res://scenes/enemy.tscn")
 @export var starting_wave: int = 1
@@ -62,7 +61,7 @@ func start_next_wave() -> void:
 		_spawn_enemy(i, enemy_count)
 
 	if is_mini_boss_wave(current_wave):
-		_spawn_mini_boss(enemy_count)
+		_spawn_mini_boss()
 
 func enemies_for_wave(wave: int) -> int:
 	return max(enemies_per_wave + ((wave - 1) * enemy_count_growth), 1)
@@ -91,7 +90,7 @@ func _spawn_enemy(index: int, total: int) -> void:
 	enemy.setup(target_castle, enemy_stats)
 	active_enemies += 1
 
-func _spawn_mini_boss(enemy_count: int) -> void:
+func _spawn_mini_boss() -> void:
 	var boss := enemy_scene.instantiate() as Enemy
 	if boss == null:
 		return
@@ -104,14 +103,12 @@ func _spawn_mini_boss(enemy_count: int) -> void:
 	boss.coin_reward = MINI_BOSS_REWARD
 	boss.movement_speed = MINI_BOSS_MOVEMENT_SPEED
 	boss.castle_damage = MINI_BOSS_CASTLE_DAMAGE
-	boss.scale = Vector2.ONE * MINI_BOSS_SCALE
 
 	var boss_stats := Stats.new()
 	var health_scale := 1.0 + ((current_wave - 1) * 0.15)
 	boss_stats.max_health = 3.0 * health_scale * MINI_BOSS_HEALTH_MULTIPLIER
 	boss_stats.health = boss_stats.max_health
 	boss.setup(target_castle, boss_stats)
-	boss.scale = Vector2.ONE * MINI_BOSS_SCALE
 	active_enemies += 1
 	boss_spawned.emit(boss)
 
