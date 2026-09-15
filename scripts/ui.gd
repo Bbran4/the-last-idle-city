@@ -6,10 +6,10 @@ extends Control
 @onready var castle_health_label: Label = get_node_or_null("CastleHealthLabel")
 
 func _ready() -> void:
-	if Engine.has_singleton("GameState"):
-		GameState.wave_changed.connect(_on_wave_changed)
-	if Engine.has_singleton("Economy"):
-		Economy.coins_changed.connect(_on_coins_changed)
+	GameState.wave_changed.connect(_on_wave_changed)
+	Economy.coins_changed.connect(_on_coins_changed)
+	_on_wave_changed(GameState.current_wave)
+	_on_coins_changed(Economy.get_coins())
 
 func _on_wave_changed(wave: int) -> void:
 	if wave_label:
