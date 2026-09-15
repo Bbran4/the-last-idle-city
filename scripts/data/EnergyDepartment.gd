@@ -29,7 +29,7 @@ var generator: ProductionOperation
 func _init_buildings() -> void:
 	department_name = "Energy"
 	department_unlocked = true   # was false — Energy is now unlocked
-	generator = ProductionOperation.new("Generator", 0.0, generator_level_up_cost, generator_build_cost, 0.0, 1.0, 1.0)
+	generator = ProductionOperation.new("Generator", 0.0, generator_level_up_cost, generator_build_cost, 0.0, 1.0)
 	generator.unlocked = true
 	generator.count = 1
 	generator.level = MIN_GENERATOR_LEVEL

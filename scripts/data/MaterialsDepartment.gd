@@ -57,7 +57,7 @@ var factory_production_progress: float = 0.0
 func _init_buildings() -> void:
 	department_name = "Materials"
 
-	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, scrap_yard_level_up_cost, scrap_yard_build_cost, scrap_yard_build_energy_cost, 1.0, 1.0)
+	scrap_yard = ProductionOperation.new("Scrap Yard", 0.0, scrap_yard_level_up_cost, scrap_yard_build_cost, scrap_yard_build_energy_cost, 1.0)
 	scrap_yard.level_up_energy_cost = scrap_yard_level_up_energy_cost
 	scrap_yard.unlocked = true
 	scrap_yard.count = 1

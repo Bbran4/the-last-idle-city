@@ -2,7 +2,6 @@ class_name GameData
 extends Resource
 
 const STARTING_ENERGY: float = 0.0
-const BASE_ENERGY_PRODUCTION_PER_SECOND: float = 1.0
 
 ## --- Population & Workforce ---
 const STARTING_POPULATION: float = 100.0
@@ -101,7 +100,7 @@ func energy_consumption_per_second() -> float:
 	return total
 
 func energy_production_per_second() -> float:
-	var total := BASE_ENERGY_PRODUCTION_PER_SECOND
+	var total := 0.0
 	for department in GameState.departments:
 		total += department.energy_production_per_second()
 	return total
