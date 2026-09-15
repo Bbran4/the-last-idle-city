@@ -9,6 +9,9 @@ var current_wave: int = 0
 var running: bool = false
 var defeated: bool = false
 
+func _ready() -> void:
+	start_game()
+
 func start_game() -> void:
 	current_wave = 0
 	running = true
