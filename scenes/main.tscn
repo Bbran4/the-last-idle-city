@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/castle.gd" id="1_castle"]
+[ext_resource type="Script" path="res://scripts/player.gd" id="2_player"]
+[ext_resource type="Script" path="res://scripts/ui.gd" id="3_ui"]
+
+[sub_resource type="Resource" id="Resource_player_stats"]
+resource_name = "PlayerStats"
+script = ExtResource("4_stats")
+max_health = 100.0
+health = 100.0
+damage = 10.0
+attack_speed = 1.0
+arrow_speed = 800.0
+range = 1000.0
+critical_chance = 0.05
+critical_damage = 2.0
+
+[ext_resource type="Script" path="res://scripts/stats.gd" id="4_stats"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Castle" type="Node2D" parent="."]
+position = Vector2(1700, 540)
+script = ExtResource("1_castle")
+
+[node name="Player" type="Node2D" parent="."]
+position = Vector2(300, 540)
+script = ExtResource("2_player")
+stats = SubResource("Resource_player_stats")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_ui")
+
+[node name="WaveLabel" type="Label" parent="UI"]
+offset_left = 40.0
+offset_top = 30.0
+offset_right = 300.0
+offset_bottom = 70.0
+text = "Wave: 0"
+theme_override_font_sizes/font_size = 28
+
+[node name="CoinsLabel" type="Label" parent="UI"]
+offset_left = 40.0
+offset_top = 75.0
+offset_right = 300.0
+offset_bottom = 115.0
+text = "Coins: 0"
+theme_override_font_sizes/font_size = 28
+
+[node name="CastleHealthLabel" type="Label" parent="UI"]
+offset_left = 1580.0
+offset_top = 30.0
+offset_right = 1880.0
+offset_bottom = 70.0
+text = "Castle: 1000 / 1000"
+theme_override_font_sizes/font_size = 28
