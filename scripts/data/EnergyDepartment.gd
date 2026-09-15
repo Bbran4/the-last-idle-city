@@ -1,21 +1,16 @@
 class_name EnergyDepartment
 extends Department
 
-## The Energy chain. Currently a single Generator tier, built with the
-## exact same Level Up / Build New / Milestone model as Scrap Yard, so
-## it can grow into its own multi-tier chain later the same way the
-## Materials chain grew past Scrap Yard.
-##
-## Energy is currently available from the start. The Generator can be
-## upgraded to increase the output of every generator level, additional
-## generators can be built to increase total capacity, and milestones
-## can double generator production.
+## The Energy chain. Generators use the same Level Up / Build New model
+## as the other production chains, but additional generators become
+## substantially more expensive as the city expands its power grid.
 
 const MIN_GENERATOR_LEVEL: int = 1
+const GENERATOR_BUILD_COST_GROWTH: float = 1.5
 
 @export_group("Generator")
 @export var generator_level_up_cost: float = 8.0
-@export var generator_build_cost: float = 40.0
+@export var generator_build_cost: float = 30_000_000.0
 @export var generator_energy_per_effective_unit: float = 1.0
 
 var generator: ProductionOperation
@@ -24,7 +19,14 @@ var generator: ProductionOperation
 func _init_buildings() -> void:
 	department_name = "Energy"
 	department_unlocked = true
-	generator = ProductionOperation.new("Generator", 0.0, generator_level_up_cost, generator_build_cost, 0.0, 1.0)
+	generator = ProductionOperation.new(
+		"Generator",
+		0.0,
+		generator_level_up_cost,
+		generator_build_cost,
+		0.0,
+		GENERATOR_BUILD_COST_GROWTH
+	)
 	generator.unlocked = true
 	generator.count = 1
 	generator.level = MIN_GENERATOR_LEVEL
@@ -33,8 +35,8 @@ func _init_buildings() -> void:
 
 ## Generator upgrades use the standard Department purchase flow.
 ## Each level costs Materials and increases the output of every
-## generator. Build New adds another generator and its cost scales
-## with the number already owned.
+## generator. Build New adds another generator and its cost scales by
+## 1.5x for each generator already owned.
 func can_level_up(operation: ProductionOperation) -> bool:
 	return super.can_level_up(operation)
 
