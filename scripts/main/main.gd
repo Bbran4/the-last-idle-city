@@ -40,8 +40,6 @@ extends Control
 @onready var top_production_label: Label = $Layout/VBox/TopBar/HBox/TopProductionLabel
 @onready var top_population_label: Label = $Layout/VBox/TopBar/HBox/TopPopulationLabel
 
-# Workforce/allocation panel - wired to real GameData instead of static
-# mockup text.
 @onready var workforce_panel: Control = $Layout/VBox/Body/Center/WorkforcePanel
 @onready var industrial_allocation_label: Label = $Layout/VBox/Body/Center/WorkforcePanel/VBox/IndustrialAllocationLabel
 @onready var industrial_allocation_slider: HSlider = $Layout/VBox/Body/Center/WorkforcePanel/VBox/IndustrialAllocationSlider
@@ -61,7 +59,6 @@ var level_up_mode_container: HBoxContainer
 var level_up_mode: String = "x1"
 var production_feedback_tween: Tween
 
-# --- Energy chain (new) ---
 var energy_cards_container: HBoxContainer
 var generator_level_label: Label
 var generator_count_label: Label
@@ -71,7 +68,6 @@ var generator_build_new_button: Button
 var generator_milestone_button: Button
 var energy_stats_label: Label
 
-# --- Materials/Energy chain tab switch (OperationsPanel + RightRail) ---
 var selected_chain: String = "materials"
 var operations_materials_button: Button
 var operations_energy_button: Button
@@ -93,10 +89,8 @@ func _ready() -> void:
 	reclamation_depot_milestone_button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ReclamationCard/VBox/ReclamationDepotMilestoneButton
 	workshop_milestone_button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/WorkshopCard/VBox/WorkshopMilestoneButton
 	factory_milestone_button = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/FactoryCard/VBox/FactoryMilestoneButton
-
 	_create_energy_chain_ui()
 	_create_chain_tab_bars()
-
 	game_clock.tick.connect(_on_game_tick)
 	save_button.pressed.connect(_on_save_pressed)
 	load_button.pressed.connect(_on_load_pressed)
@@ -112,7 +106,6 @@ func _ready() -> void:
 	factory_level_up_button.pressed.connect(_on_factory_level_up_pressed)
 	factory_build_new_button.pressed.connect(_on_factory_build_new_pressed)
 	industrial_allocation_slider.value_changed.connect(_on_industrial_allocation_changed)
-
 	_update_chain_visibility()
 	_update_ui()
 
@@ -124,7 +117,6 @@ func _create_level_up_mode_controls() -> void:
 	level_up_mode_container.position = Vector2(-230, 8)
 	level_up_mode_container.size = Vector2(220, 36)
 	$Layout/VBox/TopBar.add_child(level_up_mode_container)
-
 	var button_group := ButtonGroup.new()
 	_create_level_up_mode_button("Max", "max", button_group)
 	_create_level_up_mode_button("Next", "next", button_group)
@@ -160,35 +152,27 @@ func _create_energy_chain_ui() -> void:
 	energy_cards_container.add_theme_constant_override("separation", 10)
 	energy_cards_container.visible = false
 	card_scroll.add_child(energy_cards_container)
-
 	var scrap_card: PanelContainer = $Layout/VBox/OperationsPanel/VBox/CardScroll/Cards/ScrapCard
 	var panel_style: StyleBox = scrap_card.get_theme_stylebox("panel")
 	var normal_style: StyleBox = level_up_button.get_theme_stylebox("normal")
 	var disabled_style: StyleBox = level_up_button.get_theme_stylebox("disabled")
-
 	var card := PanelContainer.new()
 	card.name = "GeneratorCard"
 	card.custom_minimum_size = Vector2(240, 0)
 	if panel_style != null:
 		card.add_theme_stylebox_override("panel", panel_style)
-
 	var vbox := VBoxContainer.new()
 	card.add_child(vbox)
-
 	var title := Label.new()
 	title.text = "GENERATOR"
 	vbox.add_child(title)
-
 	generator_level_label = Label.new()
 	vbox.add_child(generator_level_label)
-
 	generator_count_label = Label.new()
 	vbox.add_child(generator_count_label)
-
 	generator_milestone_label = Label.new()
 	generator_milestone_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	vbox.add_child(generator_milestone_label)
-
 	generator_level_up_button = Button.new()
 	generator_level_up_button.text = "LEVEL UP"
 	if normal_style != null:
@@ -197,7 +181,6 @@ func _create_energy_chain_ui() -> void:
 		generator_level_up_button.add_theme_stylebox_override("disabled", disabled_style)
 	generator_level_up_button.pressed.connect(_on_generator_level_up_pressed)
 	vbox.add_child(generator_level_up_button)
-
 	generator_build_new_button = Button.new()
 	generator_build_new_button.text = "BUILD NEW"
 	if normal_style != null:
@@ -206,12 +189,9 @@ func _create_energy_chain_ui() -> void:
 		generator_build_new_button.add_theme_stylebox_override("disabled", disabled_style)
 	generator_build_new_button.pressed.connect(_on_generator_build_new_pressed)
 	vbox.add_child(generator_build_new_button)
-
 	energy_cards_container.add_child(card)
-
 	_create_milestone_button(vbox, "GeneratorMilestoneButton", energy_department, energy_department.generator)
 	generator_milestone_button = vbox.get_node("GeneratorMilestoneButton")
-
 	energy_stats_label = Label.new()
 	energy_stats_label.name = "EnergyStatsLabel"
 	energy_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -223,11 +203,9 @@ func _create_chain_tab_bars() -> void:
 	var operations_buttons := _create_chain_tab_bar(operations_panel_vbox, card_scroll)
 	operations_materials_button = operations_buttons["materials"]
 	operations_energy_button = operations_buttons["energy"]
-
 	var rightrail_buttons := _create_chain_tab_bar(rightrail_vbox, rightrail_header)
 	rightrail_materials_button = rightrail_buttons["materials"]
 	rightrail_energy_button = rightrail_buttons["energy"]
-
 	if not energy_department.department_unlocked:
 		selected_chain = "materials"
 		operations_energy_button.get_parent().visible = false
@@ -239,9 +217,7 @@ func _create_chain_tab_bar(parent: Control, insert_before: Node) -> Dictionary:
 	var container := HBoxContainer.new()
 	container.name = "ChainTabs"
 	container.add_theme_constant_override("separation", 4)
-
 	var group := ButtonGroup.new()
-
 	var materials_button := Button.new()
 	materials_button.text = "MATERIALS"
 	materials_button.toggle_mode = true
@@ -249,7 +225,6 @@ func _create_chain_tab_bar(parent: Control, insert_before: Node) -> Dictionary:
 	materials_button.button_pressed = selected_chain == "materials"
 	materials_button.pressed.connect(func(): _set_selected_chain("materials"))
 	container.add_child(materials_button)
-
 	var energy_button := Button.new()
 	energy_button.text = "ENERGY"
 	energy_button.toggle_mode = true
@@ -257,10 +232,8 @@ func _create_chain_tab_bar(parent: Control, insert_before: Node) -> Dictionary:
 	energy_button.button_pressed = selected_chain == "energy"
 	energy_button.pressed.connect(func(): _set_selected_chain("energy"))
 	container.add_child(energy_button)
-
 	parent.add_child(container)
 	parent.move_child(container, insert_before.get_index())
-
 	return {"materials": materials_button, "energy": energy_button}
 
 func _set_selected_chain(chain: String) -> void:
@@ -291,32 +264,17 @@ func _update_ui() -> void:
 	production_label.text = "Scrap Yard production: %s Materials/sec" % NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())
 	top_production_label.text = "Production: %s/sec" % NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())
 	chain_status_label.text = "Factory: %s Workshops/sec  →  Workshop: %s Depots/sec  →  Depot: %s Scrap Yards/sec" % [NumberFormatter.format_rate(materials_department.factory_workshop_rate()), NumberFormatter.format_rate(materials_department.workshop_reclamation_depot_rate()), NumberFormatter.format_rate(materials_department.reclamation_depot_scrap_yard_rate())]
-	production_stats_label.text = "Lifetime Materials: %s | Energy: %s (+%s/sec)" % [NumberFormatter.format_number(data.total_materials_produced),NumberFormatter.format_number(data.energy),NumberFormatter.format_number(data.energy_balance_per_second())]
+	production_stats_label.text = "Lifetime Materials: %s | Energy: %s (+%s/sec)" % [NumberFormatter.format_number(data.total_materials_produced), NumberFormatter.format_number(data.energy), NumberFormatter.format_number(data.energy_balance_per_second())]
 	tick_label.text = "Game Time: %.0fs | Ticks: %d" % [data.game_time, data.total_ticks]
-
 	top_population_label.text = "POPULATION\n%d  +%.1f/sec" % [int(data.population), GameData.POPULATION_GROWTH_PER_SECOND]
 	population_label.text = "Population: %d (+%.1f/sec)" % [int(data.population), GameData.POPULATION_GROWTH_PER_SECOND]
 	workforce_label.text = "Available workforce: %d | Industrial: %d | Central Gov: %d" % [int(data.available_workforce()), int(data.industrial_authority_workforce()), int(data.central_government_workforce())]
-
 	industrial_allocation_label.text = "Industrial Authority allocation: %d%%" % int(round(data.industrial_authority_allocation))
 	var zone: String = data.allocation_zone_name(data.industrial_authority_allocation)
-	allocation_feedback_label.text = "%s allocation efficiency: %d%% | Efficient range: %d%%–%d%% | Scrap Yard: ×%.2f" % [
-		zone,
-		int(round(data.industrial_authority_efficiency() * 100.0)),
-		int(GameData.ALLOCATION_EFFICIENT_MIN),
-		int(GameData.ALLOCATION_EFFICIENT_MAX),
-		data.industrial_authority_efficiency()
-	]
+	allocation_feedback_label.text = "%s allocation efficiency: %d%% | Efficient range: %d%%–%d%% | Scrap Yard: ×%.2f" % [zone, int(round(data.industrial_authority_efficiency() * 100.0)), int(GameData.ALLOCATION_EFFICIENT_MIN), int(GameData.ALLOCATION_EFFICIENT_MAX), data.industrial_authority_efficiency()]
 	allocation_feedback_label.modulate = _zone_color(zone)
-
 	if energy_department.department_unlocked:
-		energy_stats_label.text = "Generator: %s Energy/s | Consumption: %.2f/s | Supply met: %d%%%s" % [
-			NumberFormatter.format_number(energy_department.generator_production_per_second()),
-			data.energy_consumption_per_second(),
-			int(round(data.power_supply_ratio() * 100.0)),
-			"  (LOAD SHEDDING)" if data.is_energy_shortage() else ""
-		]
-
+		energy_stats_label.text = "Generator: %s Energy/s | Consumption: %.2f/s | Supply met: %d%%%s" % [NumberFormatter.format_number(energy_department.generator_production_per_second()), data.energy_consumption_per_second(), int(round(data.power_supply_ratio() * 100.0)), "  (LOAD SHEDDING)" if data.is_energy_shortage() else ""]
 	_update_scrap_yard_ui()
 	_update_generator_ui()
 	_update_operation_ui(materials_department, materials_department.reclamation_depot, reclamation_depot_card, reclamation_depot_label, reclamation_depot_unlock_button, reclamation_depot_level_up_button, reclamation_depot_build_new_button, reclamation_depot_milestone_button)
@@ -360,7 +318,6 @@ func _update_scrap_yard_milestone_ui() -> void:
 	var scrap_yard: ProductionOperation = materials_department.scrap_yard
 	var next_level: int = scrap_yard.next_milestone_level()
 	var reached_milestone: bool = scrap_yard.level >= next_level
-
 	milestone_label.visible = true
 	milestone_label.text = _milestone_description(scrap_yard)
 	scrap_yard_milestone_button.visible = reached_milestone
@@ -405,7 +362,6 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 	card.visible = visible_now
 	if not visible_now:
 		return
-
 	if not operation.unlocked:
 		status_label.text = "%s\nRequires %s %s to establish." % [operation.display_name.to_upper(), NumberFormatter.format_number(operation.unlock_cost()), _currency_label(operation)]
 		unlock_button.visible = true
@@ -415,8 +371,7 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 		build_new_button_ref.visible = false
 		milestone_button.visible = false
 		return
-
-	status_label.text = "%s (%s)\nYou have %s %s level %s\nEach level produces %s %s\nAll produce %s %s" % [
+	status_label.text = "%s (%s)\nYou have %s %s level %s\nEach level produces %s %s\nAll produce %s %s\n%s" % [
 		operation.display_name.to_upper(),
 		NumberFormatter.format_number(operation.count),
 		NumberFormatter.format_number(operation.count),
@@ -425,7 +380,8 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 		NumberFormatter.format_number(operation.milestone_multiplier()),
 		_operation_production_unit(operation),
 		NumberFormatter.format_number(operation.total_effectiveness()),
-		_operation_production_unit(operation)
+		_operation_production_unit(operation),
+		_milestone_description(operation)
 	]
 	unlock_button.visible = false
 	level_up_button_ref.visible = true
