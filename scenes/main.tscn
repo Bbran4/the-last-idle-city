@@ -4,14 +4,16 @@
 [ext_resource type="PackedScene" path="res://scenes/castle.tscn" id="2_castle"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="Script" uid="uid://jdbie8mvcd6a" path="res://scripts/wave_manager.gd" id="5_wave"]
-[ext_resource type="Script" uid="uid://boryseoaxbyn6" path="res://scripts/ui.gd" id="6_ui"]
+[ext_resource type="Script" uid="uid:boryseoaxbyn6" path="res://scripts/ui.gd" id="6_ui"]
 [ext_resource type="Resource" path="res://data/player_stats.tres" id="7_stats"]
+[ext_resource type="Script" path="res://scripts/upgrade_manager.gd" id="8_upgrade"]
 
 [node name="Main" type="Node2D" unique_id=852949483]
 script = ExtResource("1_controller")
 
 [node name="Castle" parent="." unique_id=2126418533 instance=ExtResource("2_castle")]
 position = Vector2(960, 540)
+max_health = 100.0
 
 [node name="Player" parent="." unique_id=932988793 instance=ExtResource("3_player")]
 position = Vector2(960, 540)
@@ -20,6 +22,10 @@ stats = ExtResource("7_stats")
 
 [node name="WaveManager" type="Node" parent="." unique_id=102710928]
 script = ExtResource("5_wave")
+spawn_distance = 850.0
+
+[node name="UpgradeManager" type="Node" parent="." unique_id=114245918]
+script = ExtResource("8_upgrade")
 
 [node name="UI" type="Control" parent="." unique_id=1073039679]
 layout_mode = 3
@@ -49,6 +55,24 @@ offset_bottom = 115.0
 theme_override_font_sizes/font_size = 28
 text = "Coins: 0"
 
+[node name="PassiveLabel" type="Label" parent="UI" unique_id=1984751033]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 120.0
+offset_right = 700.0
+offset_bottom = 155.0
+theme_override_font_sizes/font_size = 20
+text = "Passive: Locked (earn 6 coins)"
+
+[node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 160.0
+offset_right = 800.0
+offset_bottom = 195.0
+theme_override_font_sizes/font_size = 20
+text = "Wave in progress"
+
 [node name="CastleHealthLabel" type="Label" parent="UI" unique_id=1102472216]
 layout_mode = 0
 offset_left = 1450.0
@@ -56,13 +80,4 @@ offset_top = 30.0
 offset_right = 1880.0
 offset_bottom = 70.0
 theme_override_font_sizes/font_size = 28
-text = "Castle: 1000 / 1000"
-
-[node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
-layout_mode = 0
-offset_left = 40.0
-offset_top = 120.0
-offset_right = 600.0
-offset_bottom = 155.0
-theme_override_font_sizes/font_size = 20
-text = "Wave in progress"
+text = "Castle: 100 / 100"
