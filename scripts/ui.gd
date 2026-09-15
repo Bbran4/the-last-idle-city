@@ -15,6 +15,7 @@ extends Control
 @onready var range_upgrade_button: Button = get_node_or_null("RangeUpgradeButton")
 @onready var castle_health_upgrade_button: Button = get_node_or_null("CastleHealthUpgradeButton")
 @onready var power_shot_button: Button = get_node_or_null("PowerShotButton")
+@onready var multi_shot_button: Button = get_node_or_null("MultiShotButton")
 @onready var skill_panel: Control = get_node_or_null("SkillPanel")
 @onready var skill_title_label: Label = get_node_or_null("SkillPanel/SkillTitleLabel")
 @onready var skill_card_buttons: Array[Button] = [
@@ -54,6 +55,7 @@ func _ready() -> void:
 		skill_manager.skill_choices_ready.connect(_on_skill_choices_ready)
 		skill_manager.skill_acquired.connect(_on_skill_acquired)
 		skill_manager.power_shot_state_changed.connect(_on_power_shot_state_changed)
+		skill_manager.multi_shot_state_changed.connect(_on_multi_shot_state_changed)
 
 	upgrade_buttons = [
 		damage_upgrade_button,
@@ -67,6 +69,7 @@ func _ready() -> void:
 	_set_upgrades_visible(false)
 	_set_skill_panel_visible(false)
 	_set_power_shot_visible(false)
+	_set_multi_shot_visible(false)
 
 	if damage_upgrade_button:
 		damage_upgrade_button.pressed.connect(_on_damage_upgrade_pressed)
@@ -84,6 +87,8 @@ func _ready() -> void:
 		castle_health_upgrade_button.pressed.connect(_on_castle_health_upgrade_pressed)
 	if power_shot_button:
 		power_shot_button.pressed.connect(_on_power_shot_pressed)
+	if multi_shot_button:
+		multi_shot_button.pressed.connect(_on_multi_shot_pressed)
 	for index in skill_card_buttons.size():
 		var button := skill_card_buttons[index]
 		if button:
@@ -92,6 +97,7 @@ func _ready() -> void:
 	_on_coins_changed(Economy.get_coins())
 	if skill_manager:
 		_on_power_shot_state_changed(skill_manager.is_power_shot_available(), skill_manager.get_power_shot_cooldown())
+		_on_multi_shot_state_changed(skill_manager.is_multi_shot_available(), skill_manager.get_multi_shot_cooldown())
 
 func _on_wave_changed(wave: int) -> void:
 	if wave_label:
@@ -162,13 +168,15 @@ func _on_skill_acquired(skill_name: String) -> void:
 		wave_status_label.text = "Skill acquired: %s" % skill_name
 	if skill_name == "Power Shot":
 		_set_power_shot_visible(true)
+	elif skill_name == "Multi Shot":
+		_set_multi_shot_visible(true)
 
 func _on_power_shot_pressed() -> void:
 	if skill_manager and skill_manager.activate_power_shot():
 		if wave_status_label:
 			wave_status_label.text = "Power Shot armed: next arrow deals 3x damage!"
 
-func _on_power_shot_state_changed(available: bool, cooldown_remaining: float) -> void:
+func _on_power_shot_state_changed(_available: bool, cooldown_remaining: float) -> void:
 	if power_shot_button == null:
 		return
 	if skill_manager == null or not skill_manager.has_skill("Power Shot"):
@@ -189,6 +197,33 @@ func _on_power_shot_state_changed(available: bool, cooldown_remaining: float) ->
 func _set_power_shot_visible(visible: bool) -> void:
 	if power_shot_button:
 		power_shot_button.visible = visible
+
+func _on_multi_shot_pressed() -> void:
+	if skill_manager and skill_manager.activate_multi_shot():
+		if wave_status_label:
+			wave_status_label.text = "Multi Shot armed: next attack fires 3 arrows!"
+
+func _on_multi_shot_state_changed(_available: bool, cooldown_remaining: float) -> void:
+	if multi_shot_button == null:
+		return
+	if skill_manager == null or not skill_manager.has_skill("Multi Shot"):
+		_set_multi_shot_visible(false)
+		return
+
+	_set_multi_shot_visible(true)
+	if skill_manager.has_multi_shot_armed():
+		multi_shot_button.text = "Multi Shot: ARMED"
+		multi_shot_button.disabled = true
+	elif cooldown_remaining > 0.0:
+		multi_shot_button.text = "Multi Shot: %.1fs" % cooldown_remaining
+		multi_shot_button.disabled = true
+	else:
+		multi_shot_button.text = "Multi Shot: READY"
+		multi_shot_button.disabled = false
+
+func _set_multi_shot_visible(visible: bool) -> void:
+	if multi_shot_button:
+		multi_shot_button.visible = visible
 
 func _set_skill_panel_visible(visible: bool) -> void:
 	if skill_panel:
