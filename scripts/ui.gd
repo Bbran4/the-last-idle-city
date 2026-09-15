@@ -14,8 +14,16 @@ extends Control
 @onready var arrow_speed_upgrade_button: Button = get_node_or_null("ArrowSpeedUpgradeButton")
 @onready var range_upgrade_button: Button = get_node_or_null("RangeUpgradeButton")
 @onready var castle_health_upgrade_button: Button = get_node_or_null("CastleHealthUpgradeButton")
+@onready var skill_panel: Control = get_node_or_null("SkillPanel")
+@onready var skill_title_label: Label = get_node_or_null("SkillPanel/SkillTitleLabel")
+@onready var skill_card_buttons: Array[Button] = [
+	get_node_or_null("SkillPanel/SkillCard1"),
+	get_node_or_null("SkillPanel/SkillCard2"),
+	get_node_or_null("SkillPanel/SkillCard3")
+]
 
 var upgrade_manager: UpgradeManager
+var skill_manager: SkillManager
 var active_boss: Enemy
 var upgrade_buttons: Array[Button] = []
 
@@ -40,6 +48,10 @@ func _ready() -> void:
 		upgrade_manager.upgrades_changed.connect(_on_upgrades_changed)
 		set_passive_text(upgrade_manager.get_first_passive_text())
 		_update_upgrade_buttons()
+	skill_manager = get_node_or_null("../SkillManager") as SkillManager
+	if skill_manager:
+		skill_manager.skill_choices_ready.connect(_on_skill_choices_ready)
+		skill_manager.skill_acquired.connect(_on_skill_acquired)
 
 	upgrade_buttons = [
 		damage_upgrade_button,
@@ -51,6 +63,7 @@ func _ready() -> void:
 		castle_health_upgrade_button
 	]
 	_set_upgrades_visible(false)
+	_set_skill_panel_visible(false)
 
 	if damage_upgrade_button:
 		damage_upgrade_button.pressed.connect(_on_damage_upgrade_pressed)
@@ -66,6 +79,10 @@ func _ready() -> void:
 		range_upgrade_button.pressed.connect(_on_range_upgrade_pressed)
 	if castle_health_upgrade_button:
 		castle_health_upgrade_button.pressed.connect(_on_castle_health_upgrade_pressed)
+	for index in skill_card_buttons.size():
+		var button := skill_card_buttons[index]
+		if button:
+			button.pressed.connect(_on_skill_card_pressed.bind(index))
 	_on_wave_changed(GameState.current_wave)
 	_on_coins_changed(Economy.get_coins())
 
@@ -80,6 +97,7 @@ func _on_coins_changed(amount: int) -> void:
 
 func _on_wave_started(wave: int) -> void:
 	_set_upgrades_visible(false)
+	_set_skill_panel_visible(false)
 	if wave_status_label:
 		if wave % WaveManager.MAJOR_BOSS_INTERVAL == 0:
 			wave_status_label.text = "Wave %d: MAJOR BOSS INCOMING" % wave
@@ -99,11 +117,46 @@ func _on_intermission_started(wave: int, duration: float) -> void:
 
 func _on_intermission_ended(_wave: int) -> void:
 	_set_upgrades_visible(false)
+	_set_skill_panel_visible(false)
 
 func _set_upgrades_visible(visible: bool) -> void:
 	for button in upgrade_buttons:
 		if button:
 			button.visible = visible
+
+func _on_skill_choices_ready(skill_names: Array[String]) -> void:
+	_set_skill_panel_visible(true)
+	for index in skill_card_buttons.size():
+		var button := skill_card_buttons[index]
+		if button == null:
+			continue
+		if index < skill_names.size():
+			button.text = skill_names[index]
+			button.visible = true
+			button.disabled = false
+		else:
+			button.visible = false
+	if skill_title_label:
+		skill_title_label.text = "Choose a Skill"
+	if wave_status_label:
+		wave_status_label.text = "Skill reward available: choose one card."
+
+func _on_skill_card_pressed(index: int) -> void:
+	if skill_manager == null or index < 0 or index >= skill_card_buttons.size():
+		return
+	var button := skill_card_buttons[index]
+	if button == null or not button.visible:
+		return
+	if skill_manager.choose_skill(button.text):
+		_set_skill_panel_visible(false)
+
+func _on_skill_acquired(skill_name: String) -> void:
+	if wave_status_label:
+		wave_status_label.text = "Skill acquired: %s" % skill_name
+
+func _set_skill_panel_visible(visible: bool) -> void:
+	if skill_panel:
+		skill_panel.visible = visible
 
 func _on_boss_spawned(boss: Enemy) -> void:
 	active_boss = boss
