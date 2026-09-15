@@ -143,15 +143,27 @@ func level_up(materials: BigNumber) -> BigNumber:
 func _spend_cost_source(cost: BigNumber) -> void:
 	if cost_source == null:
 		return
-	var available: BigNumber = BigNumber.from_float(float(cost_source.level))
-	var remaining: BigNumber = available.subtract(cost)
-	cost_source.level = max(1, int(round(remaining.to_float())))
+	var cost_value: int = int(floor(cost.to_float()))
+	if cost_value <= 0:
+		return
+	cost_source.level = max(1, cost_source.level - cost_value)
+
+func source_levels_required_for_level_ups(level_count: int) -> int:
+	if cost_source == null or level_count <= 0 or level_up_base_cost <= 0.0:
+		return 0
+	return int(ceil(level_up_base_cost * float(level_count)))
 
 func can_afford_unlock_from_source() -> bool:
-	return cost_source != null and BigNumber.from_float(float(cost_source.level)).is_greater_or_equal(unlock_cost())
+	if cost_source == null:
+		return false
+	var required: int = int(ceil(unlock_cost_base))
+	return required > 0 and cost_source.level >= required
 
 func can_afford_level_up_from_source() -> bool:
-	return cost_source != null and BigNumber.from_float(float(cost_source.level)).is_greater_or_equal(level_up_cost())
+	if cost_source == null:
+		return false
+	var required: int = int(ceil(level_up_base_cost))
+	return required > 0 and cost_source.level >= required
 
 func max_purchasable_levels(currency: BigNumber, available_energy: float, max_levels: int = -1) -> int:
 	if not unlocked:
@@ -165,6 +177,9 @@ func max_purchasable_levels(currency: BigNumber, available_energy: float, max_le
 	if level_up_energy_cost > 0.0:
 		var energy_limit: int = int(floor(max(0.0, available_energy) / level_up_energy_cost))
 		affordable = min(affordable, max(0, energy_limit))
+
+	if cost_source != null:
+		affordable = min(affordable, int(floor(float(cost_source.level) / level_up_base_cost)))
 
 	if max_levels >= 0:
 		affordable = min(affordable, max_levels)
