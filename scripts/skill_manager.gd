@@ -22,24 +22,25 @@ var owned_skills: Array[String] = []
 var current_choices: Array[String] = []
 var power_shot_cooldown: float = 0.0
 var power_shot_armed: bool = false
+var wave_manager: WaveManager
 
-func setup(wave_manager: WaveManager) -> void:
+func setup(manager: WaveManager) -> void:
+	wave_manager = manager
 	owned_skills.clear()
 	current_choices.clear()
 	power_shot_cooldown = 0.0
 	power_shot_armed = false
 	if wave_manager and not wave_manager.intermission_started.is_connected(_on_intermission_started):
 		wave_manager.intermission_started.connect(_on_intermission_started)
-	power_shot_state_changed.emit(_is_power_shot_available(), power_shot_cooldown)
+	power_shot_state_changed.emit(is_power_shot_available(), power_shot_cooldown)
 
 func _process(delta: float) -> void:
 	if power_shot_cooldown > 0.0:
 		power_shot_cooldown = maxf(power_shot_cooldown - delta, 0.0)
 		if power_shot_cooldown <= 0.0:
-			power_shot_state_changed.emit(_is_power_shot_available(), 0.0)
+			power_shot_state_changed.emit(is_power_shot_available(), 0.0)
 
 func _exit_tree() -> void:
-	var wave_manager := get_node_or_null("../WaveManager") as WaveManager
 	if wave_manager and wave_manager.intermission_started.is_connected(_on_intermission_started):
 		wave_manager.intermission_started.disconnect(_on_intermission_started)
 
@@ -79,7 +80,9 @@ func choose_skill(skill_name: String) -> bool:
 	return true
 
 func activate_power_shot() -> bool:
-	if not has_skill("Power Shot") or power_shot_armed or power_shot_cooldown > 0.0 or not GameState.is_game_active():
+	if not has_skill("Power Shot") or power_shot_armed or power_shot_cooldown > 0.0:
+		return false
+	if not GameState.is_game_active() or wave_manager == null or wave_manager.is_intermission():
 		return false
 
 	power_shot_armed = true
@@ -100,7 +103,7 @@ func has_power_shot_armed() -> bool:
 func get_power_shot_cooldown() -> float:
 	return power_shot_cooldown
 
-func _is_power_shot_available() -> bool:
+func is_power_shot_available() -> bool:
 	return has_skill("Power Shot") and not power_shot_armed and power_shot_cooldown <= 0.0
 
 func has_skill(skill_name: String) -> bool:
