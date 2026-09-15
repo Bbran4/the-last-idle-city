@@ -154,13 +154,6 @@ func _create_milestone_button(card: VBoxContainer, button_name: String, departme
 	)
 	card.add_child(button)
 
-## Builds the Energy chain's OperationsPanel card (Generator) and the
-## RightRail's Energy stats readout. Built at runtime, reusing the
-## existing card/button stylebox resources from the Scrap Yard card so
-## it matches the rest of the UI without needing scene edits. The card
-## and tab exist regardless of whether the Energy department is
-## unlocked - _create_chain_tab_bars() hides the tab entirely while
-## energy_department.department_unlocked is false.
 func _create_energy_chain_ui() -> void:
 	energy_cards_container = HBoxContainer.new()
 	energy_cards_container.name = "EnergyCards"
@@ -219,8 +212,6 @@ func _create_energy_chain_ui() -> void:
 	_create_milestone_button(vbox, "GeneratorMilestoneButton", energy_department, energy_department.generator)
 	generator_milestone_button = vbox.get_node("GeneratorMilestoneButton")
 
-	# RightRail Energy readout, inserted right after the Materials chain
-	# status label so the two chains occupy the same visual slot.
 	energy_stats_label = Label.new()
 	energy_stats_label.name = "EnergyStatsLabel"
 	energy_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -228,11 +219,6 @@ func _create_energy_chain_ui() -> void:
 	rightrail_vbox.add_child(energy_stats_label)
 	rightrail_vbox.move_child(energy_stats_label, chain_status_label.get_index() + 1)
 
-## Adds a small "MATERIALS / ENERGY" tab bar to both the OperationsPanel
-## and the RightRail, kept in sync so switching either one switches
-## both. If the Energy department isn't unlocked yet, both tab bars are
-## hidden entirely and the UI just always shows the Materials chain -
-## Energy "comes a bit later" per the design doc.
 func _create_chain_tab_bars() -> void:
 	var operations_buttons := _create_chain_tab_bar(operations_panel_vbox, card_scroll)
 	operations_materials_button = operations_buttons["materials"]
@@ -348,8 +334,8 @@ func _zone_color(zone: String) -> Color:
 
 func _update_scrap_yard_ui() -> void:
 	var scrap_yard: ProductionOperation = materials_department.scrap_yard
-	scrap_yard_level_label.text = "SCRAP YARD (%d)" % scrap_yard.count
-	scrap_yard_count_label.text = "You have %d Scrap Yard level %d\nEach level produces %s Material/s\nAll produce %s Material/s" % [scrap_yard.count, scrap_yard.level, NumberFormatter.format_number(scrap_yard.milestone_multiplier()), NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())]
+	scrap_yard_level_label.text = "SCRAP YARD (%s)" % NumberFormatter.format_number(scrap_yard.count)
+	scrap_yard_count_label.text = "You have %s Scrap Yard level %s\nEach level produces %s Material/s\nAll produce %s Material/s" % [NumberFormatter.format_number(scrap_yard.count), NumberFormatter.format_number(scrap_yard.level), NumberFormatter.format_number(scrap_yard.milestone_multiplier()), NumberFormatter.format_number(materials_department.scrap_yard_production_per_second())]
 	_format_level_up_button(materials_department, scrap_yard, level_up_button)
 	build_new_button.text = "BUILD SCRAP YARD"
 	build_new_button.visible = materials_department.can_build_new(scrap_yard)
@@ -357,8 +343,8 @@ func _update_scrap_yard_ui() -> void:
 
 func _update_generator_ui() -> void:
 	var generator: ProductionOperation = energy_department.generator
-	generator_level_label.text = "GENERATOR (%d)" % generator.count
-	generator_count_label.text = "You have %d Generator level %d\nEach level produces %s Energy/s\nAll produce %s Energy/s" % [generator.count, generator.level, NumberFormatter.format_number(generator.milestone_multiplier()), NumberFormatter.format_number(energy_department.generator_production_per_second())]
+	generator_level_label.text = "GENERATOR (%s)" % NumberFormatter.format_number(generator.count)
+	generator_count_label.text = "You have %s Generator level %s\nEach level produces %s Energy/s\nAll produce %s Energy/s" % [NumberFormatter.format_number(generator.count), NumberFormatter.format_number(generator.level), NumberFormatter.format_number(generator.milestone_multiplier()), NumberFormatter.format_number(energy_department.generator_production_per_second())]
 	generator_milestone_label.text = _milestone_description(generator)
 	_format_level_up_button(energy_department, generator, generator_level_up_button)
 	generator_build_new_button.text = "BUILD NEW (%s Materials)" % NumberFormatter.format_number(generator.build_new_cost())
@@ -368,7 +354,7 @@ func _update_generator_ui() -> void:
 	generator_milestone_button.visible = generator.level >= generator.next_milestone_level()
 
 func _milestone_description(operation: ProductionOperation) -> String:
-	return "To upgrade %s you need %s Level %d\nEach doubles %s production\nUpgrade x%d (Production x%s)" % [operation.display_name, operation.display_name, operation.next_milestone_level(), operation.display_name, operation.milestones_triggered, NumberFormatter.format_number(operation.milestone_multiplier())]
+	return "To upgrade %s you need %s Level %s\nEach doubles %s production\nUpgrade x%s (Production x%s)" % [operation.display_name, operation.display_name, NumberFormatter.format_number(operation.next_milestone_level()), operation.display_name, NumberFormatter.format_number(operation.milestones_triggered), NumberFormatter.format_number(operation.milestone_multiplier())]
 
 func _update_scrap_yard_milestone_ui() -> void:
 	var scrap_yard: ProductionOperation = materials_department.scrap_yard
@@ -404,9 +390,9 @@ func _format_level_up_button(department: Department, operation: ProductionOperat
 	var cost: BigNumber = operation.total_level_up_cost(n)
 	var energy_cost: float = operation.level_up_energy_cost * n
 	if energy_cost > 0.0:
-		button.text = "LEVEL UP x%d (%s %s + %.1f Energy)" % [n, NumberFormatter.format_number(cost), _currency_label(operation), energy_cost]
+		button.text = "LEVEL UP x%s (%s %s + %s Energy)" % [NumberFormatter.format_number(n), NumberFormatter.format_number(cost), _currency_label(operation), NumberFormatter.format_number(energy_cost)]
 	else:
-		button.text = "LEVEL UP x%d (%s %s)" % [n, NumberFormatter.format_number(cost), _currency_label(operation)]
+		button.text = "LEVEL UP x%s (%s %s)" % [NumberFormatter.format_number(n), NumberFormatter.format_number(cost), _currency_label(operation)]
 	button.disabled = not can_afford
 
 func _level_up_operation(department: Department, operation: ProductionOperation) -> void:
@@ -414,15 +400,6 @@ func _level_up_operation(department: Department, operation: ProductionOperation)
 	department.level_up_multiple(operation, count)
 	_update_ui()
 
-## Shows a card for a not-yet-unlocked building only once it's actually
-## affordable (Department.is_building_visible), with a live UNLOCK
-## button - replacing the old always-visible "LOCKED" placeholder whose
-## unlock button was never actually shown.
-##
-## Every production card now mirrors the Scrap Yard information model:
-## building count, current level, production per level, total production,
-## next milestone requirement, milestone multiplier, and Level Up/Build New
-## controls are all shown consistently.
 func _update_operation_ui(department: Department, operation: ProductionOperation, card: Control, status_label: Label, unlock_button: Button, level_up_button_ref: Button, build_new_button_ref: Button, milestone_button: Button) -> void:
 	var visible_now: bool = department.is_building_visible(operation)
 	card.visible = visible_now
@@ -439,12 +416,12 @@ func _update_operation_ui(department: Department, operation: ProductionOperation
 		milestone_button.visible = false
 		return
 
-	status_label.text = "%s (%d)\nYou have %d %s level %d\nEach level produces %s %s\nAll produce %s %s" % [
+	status_label.text = "%s (%s)\nYou have %s %s level %s\nEach level produces %s %s\nAll produce %s %s" % [
 		operation.display_name.to_upper(),
-		operation.count,
-		operation.count,
+		NumberFormatter.format_number(operation.count),
+		NumberFormatter.format_number(operation.count),
 		operation.display_name,
-		operation.level,
+		NumberFormatter.format_number(operation.level),
 		NumberFormatter.format_number(operation.milestone_multiplier()),
 		_operation_production_unit(operation),
 		NumberFormatter.format_number(operation.total_effectiveness()),
