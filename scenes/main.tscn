@@ -169,7 +169,7 @@ text = "Multi Shot"
 [node name="SkillCard3" type="Button" parent="UI/SkillPanel" unique_id=1200000005]
 layout_mode = 0
 offset_left = 730.0
-oxset_top = 90.0
+offset_top = 90.0
 offset_right = 1030.0
 offset_bottom = 280.0
 theme_override_font_sizes/font_size = 22
