@@ -9,6 +9,7 @@ extends Control
 @onready var damage_upgrade_button: Button = get_node_or_null("DamageUpgradeButton")
 @onready var attack_speed_upgrade_button: Button = get_node_or_null("AttackSpeedUpgradeButton")
 @onready var critical_chance_upgrade_button: Button = get_node_or_null("CriticalChanceUpgradeButton")
+@onready var critical_damage_upgrade_button: Button = get_node_or_null("CriticalDamageUpgradeButton")
 
 var upgrade_manager: UpgradeManager
 
@@ -35,6 +36,8 @@ func _ready() -> void:
 		attack_speed_upgrade_button.pressed.connect(_on_attack_speed_upgrade_pressed)
 	if critical_chance_upgrade_button:
 		critical_chance_upgrade_button.pressed.connect(_on_critical_chance_upgrade_pressed)
+	if critical_damage_upgrade_button:
+		critical_damage_upgrade_button.pressed.connect(_on_critical_damage_upgrade_pressed)
 	_on_wave_changed(GameState.current_wave)
 	_on_coins_changed(Economy.get_coins())
 
@@ -83,6 +86,12 @@ func _on_critical_chance_upgrade_pressed() -> void:
 			wave_status_label.text = "Crit Chance upgraded: +5%"
 	_update_upgrade_buttons()
 
+func _on_critical_damage_upgrade_pressed() -> void:
+	if upgrade_manager and upgrade_manager.buy_critical_damage_upgrade():
+		if wave_status_label:
+			wave_status_label.text = "Crit Damage upgraded: +0.5x"
+	_update_upgrade_buttons()
+
 func _update_upgrade_buttons() -> void:
 	if upgrade_manager == null:
 		return
@@ -95,6 +104,9 @@ func _update_upgrade_buttons() -> void:
 	if critical_chance_upgrade_button:
 		critical_chance_upgrade_button.text = upgrade_manager.get_critical_chance_upgrade_text()
 		critical_chance_upgrade_button.disabled = not Economy.can_spend(UpgradeManager.CRITICAL_CHANCE_UPGRADE_COST)
+	if critical_damage_upgrade_button:
+		critical_damage_upgrade_button.text = upgrade_manager.get_critical_damage_upgrade_text()
+		critical_damage_upgrade_button.disabled = not Economy.can_spend(UpgradeManager.CRITICAL_DAMAGE_UPGRADE_COST)
 
 func set_passive_text(text: String) -> void:
 	if passive_label:
