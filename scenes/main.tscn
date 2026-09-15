@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3]
 
-[ext_resource type="Script" path="res://scripts/milestone1_controller.gd" id="1_controller"]
+[ext_resource type="Script" path="res://scripts/game_controller.gd" id="1_controller"]
 [ext_resource type="PackedScene" path="res://scenes/castle.tscn" id="2_castle"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" path="res://scenes/enemy.tscn" id="4_enemy"]
@@ -12,11 +12,11 @@
 script = ExtResource("1_controller")
 
 [node name="Castle" parent="." instance=ExtResource("2_castle")]
-position = Vector2(1700, 540)
+position = Vector2(960, 540)
 max_health = 1000.0
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
-position = Vector2(300, 540)
+position = Vector2(960, 540)
 stats = ExtResource("7_stats")
 auto_fire_range = 2000.0
 
@@ -27,7 +27,7 @@ starting_wave = 1
 enemies_per_wave = 5
 enemy_count_growth = 1
 wave_break = 2.0
-spawn_distance = 500.0
+spawn_distance = 900.0
 vertical_spacing = 120.0
 
 [node name="UI" type="Control" parent="."]
