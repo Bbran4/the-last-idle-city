@@ -9,7 +9,7 @@ signal wave_completed(wave: int)
 @export var enemies_per_wave: int = 5
 @export var enemy_count_growth: int = 1
 @export var wave_break: float = 2.0
-@export var spawn_distance: float = 500.0
+@export var spawn_distance: float = 900.0
 @export var vertical_spacing: float = 120.0
 
 var current_wave: int = 0
@@ -66,7 +66,8 @@ func _spawn_enemy(index: int, total: int) -> void:
 
 	var center_offset := float(total - 1) * 0.5
 	var y_offset := (float(index) - center_offset) * vertical_spacing
-	enemy.global_position = target_castle.global_position + Vector2(spawn_distance, y_offset)
+	var side := -1.0 if index % 2 == 0 else 1.0
+	enemy.global_position = target_castle.global_position + Vector2(side * spawn_distance, y_offset)
 
 	var enemy_stats := Stats.new()
 	var health_scale := 1.0 + ((current_wave - 1) * 0.15)
@@ -81,9 +82,3 @@ func _on_enemy_died(_enemy: Unit) -> void:
 		wave_completed.emit(current_wave)
 		waiting_for_next_wave = true
 		wave_timer = wave_break
-
-func register_enemy() -> void:
-	active_enemies += 1
-
-func register_enemy_defeated() -> void:
-	_on_enemy_died(null)
