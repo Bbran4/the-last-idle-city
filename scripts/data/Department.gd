@@ -123,8 +123,8 @@ func purchasable_level_ups(operation: ProductionOperation, mode: String) -> int:
 
 ## Purchases up to `count` consecutive Level Ups in one bulk operation.
 ## Level-up costs are fixed, so the purchase is calculated once rather
-## than calling level_up() once per level. This keeps a Max purchase of
-## 25,000+ levels effectively constant-time.
+## than calling level_up() once per level. This keeps very large Max
+## purchases constant-time instead of iterating once per purchased level.
 func level_up_multiple(operation: ProductionOperation, count: int) -> int:
 	if not department_unlocked or not operation.unlocked:
 		return 0
@@ -137,12 +137,13 @@ func level_up_multiple(operation: ProductionOperation, count: int) -> int:
 	if purchase_count <= 0:
 		return 0
 
-	var total_cost: BigNumber = operation.total_level_up_cost(purchase_count)
 	if operation.cost_source != null:
-		if not operation.can_afford_level_up_from_source() or float(operation.cost_source.level) < total_cost.to_float():
+		var source_cost: int = operation.source_levels_required_for_level_ups(purchase_count)
+		if source_cost <= 0 or operation.cost_source.level < source_cost:
 			return 0
-		operation.cost_source.level = max(1, operation.cost_source.level - purchase_count)
+		operation.cost_source.level = max(1, operation.cost_source.level - source_cost)
 	else:
+		var total_cost: BigNumber = operation.total_level_up_cost(purchase_count)
 		if GameState.data.materials.is_less_than(total_cost):
 			return 0
 		GameState.data.materials = GameState.data.materials.subtract(total_cost)
