@@ -3,6 +3,7 @@ extends Unit
 
 @export var arrow_scene: PackedScene = preload("res://scenes/arrow.tscn")
 @export var arrow_spawn_offset: float = 28.0
+@export var auto_fire_range: float = 1400.0
 
 var attack_cooldown: float = 0.0
 
@@ -11,10 +12,31 @@ func _process(delta: float) -> void:
 	if is_dead:
 		return
 
-	look_at(get_global_mouse_position())
+	var target := _find_nearest_enemy()
+	if target == null:
+		return
 
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and attack_cooldown <= 0.0:
-		fire_arrow(get_global_mouse_position())
+	look_at(target.global_position)
+
+	if attack_cooldown <= 0.0:
+		fire_arrow(target.global_position)
+
+func _find_nearest_enemy() -> Enemy:
+	var nearest: Enemy = null
+	var nearest_distance := auto_fire_range
+
+	for node in get_tree().get_nodes_in_group("enemies"):
+		if not node is Enemy:
+			continue
+		var enemy := node as Enemy
+		if enemy.is_dead:
+			continue
+		var distance := global_position.distance_to(enemy.global_position)
+		if distance <= nearest_distance:
+			nearest = enemy
+			nearest_distance = distance
+
+	return nearest
 
 func fire_arrow(target_position: Vector2) -> void:
 	if arrow_scene == null or stats == null:
