@@ -4,9 +4,9 @@ extends Department
 ## The Materials chain. Scrap Yard is the always-available base tier;
 ## Reclamation Depot, Workshop, and Factory each become visible once the
 ## player can afford them (see Department.is_building_visible), and each
-## tier automates a fixed amount of the tier below it per second once
-## unlocked - this is the cascading automation from the README's
-## Milestone 4 production chain.
+## tier automates a fixed amount of LEVELS in the tier below it per second
+## once unlocked. Automation never creates additional buildings; it levels
+## the previous operation in the same way Reclamation Depot levels Scrap Yard.
 
 const MIN_SCRAP_YARD_LEVEL: int = 1
 
@@ -138,17 +138,17 @@ func process(delta: float) -> void:
 
 	if workshop.unlocked:
 		workshop_production_progress += workshop_reclamation_depot_rate() * delta
-		var depots_to_add: int = int(floor(workshop_production_progress))
-		if depots_to_add > 0:
-			reclamation_depot.count += depots_to_add
-			workshop_production_progress -= float(depots_to_add)
+		var reclamation_depot_levels_to_add: int = int(floor(workshop_production_progress))
+		if reclamation_depot_levels_to_add > 0:
+			reclamation_depot.level += reclamation_depot_levels_to_add
+			workshop_production_progress -= float(reclamation_depot_levels_to_add)
 
 	if factory.unlocked:
 		factory_production_progress += factory_workshop_rate() * delta
-		var workshops_to_add: int = int(floor(factory_production_progress))
-		if workshops_to_add > 0:
-			workshop.count += workshops_to_add
-			factory_production_progress -= float(workshops_to_add)
+		var workshop_levels_to_add: int = int(floor(factory_production_progress))
+		if workshop_levels_to_add > 0:
+			workshop.level += workshop_levels_to_add
+			factory_production_progress -= float(workshop_levels_to_add)
 
 	ensure_minimums()
 
