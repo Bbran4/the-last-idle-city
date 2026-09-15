@@ -6,3 +6,4 @@
 resource_name = "PlayerStats"
 script = ExtResource("1_stats")
 damage = 1.0
+range = 100.0

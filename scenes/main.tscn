@@ -5,15 +5,14 @@
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="3_player"]
 [ext_resource type="Script" uid="uid://jdbie8mvcd6a" path="res://scripts/wave_manager.gd" id="5_wave"]
 [ext_resource type="Script" uid="uid://boryseoaxbyn6" path="res://scripts/ui.gd" id="6_ui"]
-[ext_resource type="Resource" path="res://data/player_stats.tres" id="7_stats"]
-[ext_resource type="Script" path="res://scripts/upgrade_manager.gd" id="8_upgrade"]
+[ext_resource type="Resource" uid="uid://donuryanswuqa" path="res://data/player_stats.tres" id="7_stats"]
+[ext_resource type="Script" uid="uid://b7o3w8yxayp15" path="res://scripts/upgrade_manager.gd" id="8_upgrade"]
 
 [node name="Main" type="Node2D" unique_id=852949483]
 script = ExtResource("1_controller")
 
 [node name="Castle" parent="." unique_id=2126418533 instance=ExtResource("2_castle")]
 position = Vector2(960, 540)
-max_health = 100.0
 
 [node name="Player" parent="." unique_id=932988793 instance=ExtResource("3_player")]
 position = Vector2(960, 540)
@@ -21,7 +20,6 @@ stats = ExtResource("7_stats")
 
 [node name="WaveManager" type="Node" parent="." unique_id=102710928]
 script = ExtResource("5_wave")
-wave_break = 5.0
 spawn_distance = 850.0
 
 [node name="UpgradeManager" type="Node" parent="." unique_id=114245918]
@@ -73,7 +71,7 @@ offset_bottom = 205.0
 theme_override_font_sizes/font_size = 18
 text = "Damage +1 | Cost: 1 coin"
 
-[node name="AttackSpeedUpgradeButton" type="Button" parent="UI"]
+[node name="AttackSpeedUpgradeButton" type="Button" parent="UI" unique_id=1439762867]
 layout_mode = 0
 offset_left = 310.0
 offset_top = 160.0
@@ -82,7 +80,7 @@ offset_bottom = 205.0
 theme_override_font_sizes/font_size = 18
 text = "Attack Speed +0.1 | Cost: 2 coins"
 
-[node name="CriticalChanceUpgradeButton" type="Button" parent="UI"]
+[node name="CriticalChanceUpgradeButton" type="Button" parent="UI" unique_id=1276925781]
 layout_mode = 0
 offset_left = 620.0
 offset_top = 160.0
@@ -91,7 +89,7 @@ offset_bottom = 205.0
 theme_override_font_sizes/font_size = 18
 text = "Crit Chance +5% | Cost: 3 coins"
 
-[node name="CriticalDamageUpgradeButton" type="Button" parent="UI"]
+[node name="CriticalDamageUpgradeButton" type="Button" parent="UI" unique_id=54935669]
 layout_mode = 0
 offset_left = 920.0
 offset_top = 160.0
@@ -100,7 +98,7 @@ offset_bottom = 205.0
 theme_override_font_sizes/font_size = 18
 text = "Crit Damage +0.5x | Cost: 4 coins"
 
-[node name="ArrowSpeedUpgradeButton" type="Button" parent="UI"]
+[node name="ArrowSpeedUpgradeButton" type="Button" parent="UI" unique_id=1416330866]
 layout_mode = 0
 offset_left = 40.0
 offset_top = 260.0
@@ -109,7 +107,7 @@ offset_bottom = 305.0
 theme_override_font_sizes/font_size = 18
 text = "Arrow Speed +100 | Cost: 5 coins"
 
-[node name="RangeUpgradeButton" type="Button" parent="UI"]
+[node name="RangeUpgradeButton" type="Button" parent="UI" unique_id=1063721398]
 layout_mode = 0
 offset_left = 370.0
 offset_top = 260.0
@@ -118,7 +116,7 @@ offset_bottom = 305.0
 theme_override_font_sizes/font_size = 18
 text = "Range +100 | Cost: 6 coins"
 
-[node name="CastleHealthUpgradeButton" type="Button" parent="UI"]
+[node name="CastleHealthUpgradeButton" type="Button" parent="UI" unique_id=915422825]
 layout_mode = 0
 offset_left = 690.0
 offset_top = 260.0
@@ -127,7 +125,7 @@ offset_bottom = 305.0
 theme_override_font_sizes/font_size = 18
 text = "Castle Health +25 | Cost: 7 coins"
 
-[node name="BossHealthLabel" type="Label" parent="UI"]
+[node name="BossHealthLabel" type="Label" parent="UI" unique_id=554574719]
 visible = false
 layout_mode = 0
 offset_left = 650.0
