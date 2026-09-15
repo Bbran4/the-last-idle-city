@@ -2,6 +2,7 @@ class_name Enemy
 extends Unit
 
 signal reached_castle(damage: float)
+signal boss_health_changed(current: float, maximum: float)
 
 @export var coin_reward: int = 1
 @export var movement_speed: float = 80.0
@@ -9,6 +10,7 @@ signal reached_castle(damage: float)
 
 var target_castle: Castle
 var feedback_tween: Tween
+var is_boss: bool = false
 
 func setup(castle: Castle, enemy_stats: Stats) -> void:
 	target_castle = castle
@@ -17,6 +19,8 @@ func setup(castle: Castle, enemy_stats: Stats) -> void:
 	scale = Vector2.ONE
 	modulate = Color.WHITE
 	health_changed.emit(stats.health, stats.max_health)
+	if is_boss:
+		boss_health_changed.emit(stats.health, stats.max_health)
 
 func _physics_process(delta: float) -> void:
 	if is_dead or target_castle == null:
@@ -33,6 +37,8 @@ func take_damage(amount: float) -> void:
 		return
 
 	super.take_damage(amount)
+	if is_boss:
+		boss_health_changed.emit(stats.health, stats.max_health)
 	if is_dead:
 		Economy.add_coins(coin_reward)
 	else:
