@@ -73,6 +73,15 @@ offset_bottom = 205.0
 theme_override_font_sizes/font_size = 18
 text = "Damage +1 | Cost: 1 coin"
 
+[node name="AttackSpeedUpgradeButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 310.0
+offset_top = 160.0
+offset_right = 610.0
+offset_bottom = 205.0
+theme_override_font_sizes/font_size = 18
+text = "Attack Speed +0.1 | Cost: 2 coins"
+
 [node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
 layout_mode = 0
 offset_left = 40.0
