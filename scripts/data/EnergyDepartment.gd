@@ -16,7 +16,7 @@ extends Department
 const MIN_GENERATOR_LEVEL: int = 1
 
 ## Overrides the Department base default (true) - Energy starts locked.
-@export var department_unlocked: bool = false
+#@export var department_unlocked: bool = false
 
 @export_group("Generator")
 @export var generator_level_up_cost: float = 8.0
@@ -28,7 +28,7 @@ var generator: ProductionOperation
 
 func _init_buildings() -> void:
 	department_name = "Energy"
-
+	department_unlocked = false
 	generator = ProductionOperation.new("Generator", 0.0, generator_level_up_cost, generator_build_cost, 0.0, 1.0, 1.0)
 	generator.unlocked = true
 	generator.count = 1

@@ -14,15 +14,15 @@ const MIN_SCRAP_YARD_LEVEL: int = 1
 @export var scrap_yard_level_up_cost: float = 10.0
 @export var scrap_yard_level_up_energy_cost: float = 1.0
 @export var scrap_yard_build_cost: float = 1_000_000_000_000.0
-@export var scrap_yard_build_energy_cost: float = 100_000.0
+@export var scrap_yard_build_energy_cost: float = 0.0
 @export var scrap_yard_material_per_effective_unit: float = 1.0
 
 @export_group("Reclamation Depot")
-@export var reclamation_depot_unlock_cost: float = 250.0
+@export var reclamation_depot_unlock_cost: float = 100.0
 @export var reclamation_depot_level_up_cost: float = 100.0
 @export var reclamation_depot_level_up_energy_cost: float = 10.0
 @export var reclamation_depot_build_cost: float = 10_000_000_000_000_000_000.0
-@export var reclamation_depot_build_energy_cost: float = 5.0
+@export var reclamation_depot_build_energy_cost: float = 0.0
 @export var reclamation_depot_scrap_yards_per_second: float = 0.10
 @export var reclamation_depot_energy_consumption_per_unit: float = 0.5
 
