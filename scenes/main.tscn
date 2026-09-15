@@ -91,6 +91,15 @@ offset_bottom = 205.0
 theme_override_font_sizes/font_size = 18
 text = "Crit Chance +5% | Cost: 3 coins"
 
+[node name="CriticalDamageUpgradeButton" type="Button" parent="UI"]
+layout_mode = 0
+offset_left = 920.0
+offset_top = 160.0
+offset_right = 1240.0
+offset_bottom = 205.0
+theme_override_font_sizes/font_size = 18
+text = "Crit Damage +0.5x | Cost: 4 coins"
+
 [node name="WaveStatusLabel" type="Label" parent="UI" unique_id=1719060109]
 layout_mode = 0
 offset_left = 40.0
