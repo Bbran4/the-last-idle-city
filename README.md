@@ -15,8 +15,8 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 # 🎯 Current Gameplay Layout
 
 ```text
-        Enemies →     🏰 Castle + Archer     ← Enemies
-                              CENTER
+		Enemies →     🏰 Castle + Archer     ← Enemies
+							  CENTER
 ```
 
 - The castle sits in the middle of the battlefield.
