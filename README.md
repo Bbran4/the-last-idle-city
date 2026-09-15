@@ -47,6 +47,8 @@ Current combat stats include:
 
 The current implementation supports mouse aiming and automatic arrow firing.
 
+Critical hits are now active. Each arrow rolls against the archer's Critical Hit Chance and deals the configured Critical Hit Damage multiplier when successful.
+
 ---
 
 # 💰 Current Progression
@@ -61,11 +63,17 @@ After the player has earned **6 total coins**, the first passive automatically u
 
 This is intentionally simple. It gives the player an immediate progression milestone without introducing a large skill tree.
 
-## First Purchasable Upgrade
+## Purchasable Upgrades
 
-The first upgrade is:
+The current upgrade layer includes:
 
-**Damage +1 for 1 coin**
+| Upgrade | Effect | Cost |
+|---|---:|---:|
+| Damage | +1 Damage | 1 coin |
+| Attack Speed | +0.1 attacks/sec | 2 coins |
+| Critical Chance | +5% critical chance | 3 coins |
+
+Critical Chance starts at **5%**, so the first Critical Chance purchase raises it to **10%**. Critical hits currently use the player's **2.0x Critical Damage** multiplier.
 
 The upgrade system is intentionally small and will be expanded with additional stats later.
 
@@ -100,6 +108,8 @@ Basic combat feedback is now implemented.
 - Wave status communicates incoming and cleared waves.
 - Passive unlocks display a clear message.
 - Damage upgrades display a clear confirmation.
+- Attack Speed upgrades display a clear confirmation.
+- Critical Chance upgrades display a clear confirmation.
 
 More polished effects can be added later without changing the underlying combat architecture.
 
@@ -204,7 +214,7 @@ Currently:
 - Enemies award coins when killed.
 - The UI displays the current coin total.
 - Total coins earned are tracked for progression unlocks.
-- Coins can be spent on the first Damage upgrade.
+- Coins can be spent on Damage, Attack Speed, and Critical Chance upgrades.
 - The first passive unlocks at 6 total coins earned.
 
 The economy should remain understandable. Avoid adding currencies or complicated scaling unless they genuinely improve progression.
@@ -300,14 +310,15 @@ Detailed balance tuning is intentionally deferred until more upgrade progression
 
 - [x] Build initial upgrade system
 - [x] Add Damage upgrade
+- [x] Add Attack Speed upgrade
+- [x] Add Critical Chance upgrade
 - [x] Add first passive unlock
 - [x] First passive: **+1 Attack Damage**
+- [x] Activate Critical Hit Chance in combat
 - [x] Add basic upgrade feedback
 
 ### Remaining
 
-- [ ] Add Attack Speed upgrade
-- [ ] Add Critical Chance upgrade
 - [ ] Add Critical Damage upgrade
 - [ ] Add Arrow Speed upgrade
 - [ ] Add Range upgrade
@@ -415,7 +426,7 @@ The upgrade system should remain simple. Every upgrade should have an obvious ef
 
 Work on one system at a time. Do not jump ahead simply because a later system is already described in the README.
 
-### Completed Foundation / Combat / Waves
+### Completed Foundation / Combat / Waves / Early Upgrades
 
 - [x] Main gameplay scene
 - [x] Castle in the center
@@ -437,12 +448,14 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [x] Basic wave/coin/castle UI
 - [x] First upgrade system
 - [x] First passive: +1 Attack Damage
+- [x] Damage upgrade
+- [x] Attack Speed upgrade
+- [x] Critical Chance upgrade
+- [x] Critical hit calculation
 - [x] Removed obsolete Milestone 1 test scene
 
 ### Next Focus
 
-- [ ] Add Attack Speed upgrade
-- [ ] Add Critical Chance upgrade
 - [ ] Add Critical Damage upgrade
 - [ ] Add Arrow Speed upgrade
 - [ ] Add Range upgrade
