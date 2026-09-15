@@ -4,7 +4,9 @@ extends Node
 signal skill_choices_ready(skill_names: Array[String])
 signal skill_acquired(skill_name: String)
 signal power_shot_state_changed(available: bool, cooldown_remaining: float)
+signal multi_shot_state_changed(available: bool, cooldown_remaining: float)
 signal power_shot_requested
+signal multi_shot_requested
 
 const SKILLS: Array[String] = [
 	"Power Shot",
@@ -17,11 +19,16 @@ const SKILLS: Array[String] = [
 
 const POWER_SHOT_DAMAGE_MULTIPLIER: float = 3.0
 const POWER_SHOT_COOLDOWN: float = 10.0
+const MULTI_SHOT_ARROW_COUNT: int = 3
+const MULTI_SHOT_SPREAD_DEGREES: float = 10.0
+const MULTI_SHOT_COOLDOWN: float = 12.0
 
 var owned_skills: Array[String] = []
 var current_choices: Array[String] = []
 var power_shot_cooldown: float = 0.0
 var power_shot_armed: bool = false
+var multi_shot_cooldown: float = 0.0
+var multi_shot_armed: bool = false
 var wave_manager: WaveManager
 
 func setup(manager: WaveManager) -> void:
@@ -30,15 +37,21 @@ func setup(manager: WaveManager) -> void:
 	current_choices.clear()
 	power_shot_cooldown = 0.0
 	power_shot_armed = false
+	multi_shot_cooldown = 0.0
+	multi_shot_armed = false
 	if wave_manager and not wave_manager.intermission_started.is_connected(_on_intermission_started):
 		wave_manager.intermission_started.connect(_on_intermission_started)
 	power_shot_state_changed.emit(is_power_shot_available(), power_shot_cooldown)
+	multi_shot_state_changed.emit(is_multi_shot_available(), multi_shot_cooldown)
 
 func _process(delta: float) -> void:
 	if power_shot_cooldown > 0.0:
 		power_shot_cooldown = maxf(power_shot_cooldown - delta, 0.0)
-		if power_shot_cooldown <= 0.0:
-			power_shot_state_changed.emit(is_power_shot_available(), 0.0)
+		power_shot_state_changed.emit(is_power_shot_available(), power_shot_cooldown)
+
+	if multi_shot_cooldown > 0.0:
+		multi_shot_cooldown = maxf(multi_shot_cooldown - delta, 0.0)
+		multi_shot_state_changed.emit(is_multi_shot_available(), multi_shot_cooldown)
 
 func _exit_tree() -> void:
 	if wave_manager and wave_manager.intermission_started.is_connected(_on_intermission_started):
@@ -77,6 +90,8 @@ func choose_skill(skill_name: String) -> bool:
 	skill_acquired.emit(skill_name)
 	if skill_name == "Power Shot":
 		power_shot_state_changed.emit(true, 0.0)
+	elif skill_name == "Multi Shot":
+		multi_shot_state_changed.emit(true, 0.0)
 	return true
 
 func activate_power_shot() -> bool:
@@ -105,6 +120,33 @@ func get_power_shot_cooldown() -> float:
 
 func is_power_shot_available() -> bool:
 	return has_skill("Power Shot") and not power_shot_armed and power_shot_cooldown <= 0.0
+
+func activate_multi_shot() -> bool:
+	if not has_skill("Multi Shot") or multi_shot_armed or multi_shot_cooldown > 0.0:
+		return false
+	if not GameState.is_game_active() or wave_manager == null or wave_manager.is_intermission():
+		return false
+
+	multi_shot_armed = true
+	multi_shot_cooldown = MULTI_SHOT_COOLDOWN
+	multi_shot_requested.emit()
+	multi_shot_state_changed.emit(false, multi_shot_cooldown)
+	return true
+
+func consume_multi_shot() -> bool:
+	if not multi_shot_armed:
+		return false
+	multi_shot_armed = false
+	return true
+
+func has_multi_shot_armed() -> bool:
+	return multi_shot_armed
+
+func get_multi_shot_cooldown() -> float:
+	return multi_shot_cooldown
+
+func is_multi_shot_available() -> bool:
+	return has_skill("Multi Shot") and not multi_shot_armed and multi_shot_cooldown <= 0.0
 
 func has_skill(skill_name: String) -> bool:
 	return owned_skills.has(skill_name)
