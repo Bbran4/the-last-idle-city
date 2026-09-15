@@ -175,6 +175,16 @@ offset_bottom = 280.0
 theme_override_font_sizes/font_size = 22
 text = "Piercing Arrow"
 
+[node name="PowerShotButton" type="Button" parent="UI" unique_id=1200000006]
+visible = false
+layout_mode = 0
+offset_left = 1450.0
+offset_top = 75.0
+offset_right = 1880.0
+offset_bottom = 125.0
+theme_override_font_sizes/font_size = 22
+text = "Power Shot: READY"
+
 [node name="BossHealthLabel" type="Label" parent="UI" unique_id=554574719]
 visible = false
 layout_mode = 0
