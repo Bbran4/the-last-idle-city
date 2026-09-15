@@ -30,6 +30,14 @@ func heal(amount: float) -> void:
 	health = minf(health + maxf(amount, 0.0), max_health)
 	health_changed.emit(health, max_health)
 
+func increase_max_health(amount: float) -> void:
+	if destroyed_flag:
+		return
+	var increase := maxf(amount, 0.0)
+	max_health += increase
+	health += increase
+	health_changed.emit(health, max_health)
+
 func _process(delta: float) -> void:
 	if not destroyed_flag and health_regen > 0.0:
 		heal(health_regen * delta)
