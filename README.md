@@ -22,9 +22,10 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 - Castle sits in the center.
 - Player archer is positioned at the castle.
 - Enemies spawn from both sides and run along the ground toward the tower.
-- Player aims with the mouse and automatically fires at enemies that are within the archer's current range.
-- The archer does not fire when there are no enemies in range.
-- Arrow targets are selected from enemies within range, so the mouse cannot make an arrow travel beyond the archer's range.
+- Player aims with the mouse and automatically fires during active waves.
+- The mouse determines the firing direction, while the target point is clamped to the archer's current maximum range.
+- The archer fires even when no enemy is currently in range.
+- Arrow targets can never be farther away than the archer's current range.
 - Arrows travel in a ballistic arc and fall toward the battlefield instead of moving in a straight line.
 - Enemy kills award coins.
 - Enemies reaching the castle deal damage.
@@ -101,8 +102,9 @@ The battlefield now has a clearer physical relationship between the archer and a
 - Enemies spawn on the tower's ground line.
 - Enemies move horizontally toward the castle's ground position rather than drifting vertically through the battlefield.
 - The castle exposes a shared ground position so enemies and arrows can use the same battlefield reference.
-- The archer only fires when an enemy is inside its current range.
-- The mouse still controls the archer's facing direction, but it cannot extend the archer's effective attack range.
+- The archer fires continuously during active waves.
+- The mouse controls the firing direction, but the target point is clamped to the archer's maximum range.
+- Range upgrades therefore directly increase how far the archer can send an arrow.
 
 This keeps the combat readable while making the battlefield feel more like a real lane defense game.
 
@@ -141,6 +143,8 @@ Current feedback includes:
 - Major Boss shields also display as a pulsing blue circular glow around the boss.
 - Upgrade purchases display confirmation.
 - Passive unlocks display confirmation.
+- Skill card choices appear during the appropriate intermission.
+- Skill acquisition is confirmed in the wave status UI.
 
 ---
 
@@ -207,12 +211,14 @@ The current Major Boss values are considered balanced for this development pass.
 
 # 🎯 Skills
 
-Skills are planned as **card choices** rather than a traditional RPG skill tree.
+Skills are implemented as **card choices** rather than a traditional RPG skill tree.
 
-- After every **5 completed waves**, the player will receive a small selection of skill cards.
-- The player chooses one card to add that skill to the archer's available abilities.
-- Skill choices happen during the between-wave intermission.
-- Skills are intended to be meaningful active abilities rather than small percentage bonuses.
+- After every **5 completed waves**, the player receives up to **3 skill cards** during the between-wave intermission.
+- The cards are selected from skills the player does not already own.
+- The player chooses one card to add that skill to their owned skill list.
+- Duplicate skills are not offered.
+- Major Boss waves do not trigger a second skill choice because they occur on the same 10-wave cadence.
+- The current card system handles skill choice and ownership. Actual active skill effects are being added one skill at a time next.
 
 Planned active skills:
 
@@ -306,7 +312,7 @@ Avoid adding currencies or complicated scaling unless they genuinely improve pro
 - [x] Enemy health/movement/death
 - [x] Castle damage
 - [x] Basic hit/death feedback
-- [x] Range-gated automatic firing
+- [x] Range-clamped automatic firing
 
 ---
 
@@ -383,10 +389,10 @@ The Major Boss has a distinct two-part encounter: reaching 50% health triggers i
 
 ## ⚡ Milestone 5 - Skills
 
-**Status: Next focus**
+**Status: In progress**
 
-- [ ] Skill card selection after every 5 waves
-- [ ] Skill ownership/state
+- [x] Skill card selection after every 5 waves
+- [x] Skill ownership/state
 - [ ] Active skill system
 - [ ] Cooldowns
 - [ ] Power Shot
@@ -395,7 +401,9 @@ The Major Boss has a distinct two-part encounter: reaching 50% health triggers i
 - [ ] Explosive Arrow
 - [ ] Rapid Fire
 - [ ] Rain of Arrows
-- [ ] Skill UI/feedback
+- [x] Basic skill card UI/feedback
+
+The first Milestone 5 slice is intentionally small: the player can earn and own skills without introducing the active combat effects yet.
 
 ---
 
@@ -456,7 +464,7 @@ Work on one system at a time.
 - [x] Main gameplay scene
 - [x] Castle and player
 - [x] Enemy spawning and movement
-- [x] Mouse aiming and range-gated automatic firing
+- [x] Mouse aiming and range-clamped automatic firing
 - [x] Ballistic arrow arcs
 - [x] Ground-based enemy movement
 - [x] Arrow collision
@@ -475,12 +483,12 @@ Work on one system at a time.
 - [x] Reactive enemy health bars
 - [x] Boss entrance/death feedback
 
-### Next Focus
+### Current Focus
 
-**Milestone 5: Skill cards**
+**Milestone 5: Active skills**
 
-- [ ] Add the skill-card selection UI during the intermission after every 5 waves
-- [ ] Add skill ownership/state
+- [x] Add the skill-card selection UI during the intermission after every 5 waves
+- [x] Add skill ownership/state
 - [ ] Implement the first active skill
 - [ ] Add cooldown handling
 - [ ] Add the remaining skills one at a time
