@@ -2,7 +2,7 @@
 
 > **A simple incremental castle-defense game where you shoot enemies, earn coins, upgrade your archer, and survive increasingly ridiculous waves.**
 
-Castle Archer is a small **2D Godot game written in GDScript**, designed for a polished browser/indie release on **Kongregate and itch.io**.
+Castle Archer is a small 2D Godot game written in GDScript, designed for a polished browser/indie release on Kongregate and itch.io.
 
 The core loop is deliberately simple:
 
@@ -12,38 +12,21 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 
 ---
 
-# 🎯 Current Gameplay Layout
+# 🎯 Current Gameplay
 
 ```text
         Enemies →     🏰 Castle + Archer     ← Enemies
-                                      CENTER
+                              CENTER
 ```
 
-- The castle sits in the middle of the battlefield.
-- The player archer is positioned at the castle.
-- Enemies spawn from both the left and right sides.
+- Castle sits in the center.
+- Player archer is positioned at the castle.
+- Enemies spawn from both sides.
 - Enemies move toward the castle.
-- The player aims with the mouse and automatically fires arrows.
+- Player aims with the mouse and automatically fires arrows.
 - Enemy kills award coins.
 - Enemies reaching the castle deal damage.
-- Castle health reaching zero ends the run.
-
-`main.tscn` is the single gameplay scene. The obsolete `milestone1_test` scene and controller have been removed.
-
----
-
-# 🏹 The Archer
-
-The player begins with one archer.
-
-Current combat stats include:
-
-- Damage
-- Attack Speed
-- Arrow Speed
-- Range
-- Critical Hit Chance
-- Critical Hit Damage
+- Castle reaching 0 HP ends the run.
 
 Current starting combat values:
 
@@ -54,99 +37,82 @@ Current starting combat values:
 - **5% Critical Chance**
 - **2.0x Critical Damage**
 
-The current implementation supports mouse aiming and automatic arrow firing.
-
-Critical hits are active. Each arrow rolls against the archer's Critical Hit Chance and deals the configured Critical Hit Damage multiplier when successful.
+Critical hits are active.
 
 ---
 
-# 💰 Current Progression
+# 💰 Progression
 
-The first progression layer is now fully implemented.
+The first progression layer is implemented.
 
 ## First Passive
 
-After the player has earned **6 total coins**, the first passive automatically unlocks:
+After **6 total coins earned**:
 
 **Sharpened Arrows: +1 Attack Damage**
 
-This is intentionally simple. It gives the player an immediate progression milestone without introducing a large skill tree.
-
 ## Purchasable Upgrades
-
-The complete basic upgrade layer currently includes:
 
 | Upgrade | Effect | Cost |
 |---|---:|---:|
 | Damage | +1 Damage | 1 coin |
 | Attack Speed | +0.1 attacks/sec | 2 coins |
-| Critical Chance | +5% critical chance | 3 coins |
-| Critical Damage | +0.5x critical multiplier | 4 coins |
-| Arrow Speed | +100 arrow speed | 5 coins |
-| Range | +100 range | 6 coins |
-| Castle Health | +25 max health and +25 current health | 7 coins |
+| Critical Chance | +5% | 3 coins |
+| Critical Damage | +0.5x | 4 coins |
+| Arrow Speed | +100 | 5 coins |
+| Range | +100 | 6 coins |
+| Castle Health | +25 max/current HP | 7 coins |
 
-With the starting damage of **1**, the Damage upgrade represents a full **100% increase** to base damage. The first passive then adds another +1 damage.
-
-Critical Chance starts at **5%**, so the first Critical Chance purchase raises it to **10%**. Critical hits currently use the player's **2.0x Critical Damage** multiplier.
-
-The Critical Damage upgrade raises the multiplier by **0.5x**, taking it from 2.0x to 2.5x per purchase.
-
-The Arrow Speed upgrade increases projectile speed by **100**, making arrows reach their targets faster without changing damage or attack rate.
-
-The Range upgrade increases the player's actual firing range by **100** per purchase.
-
-The Castle Health upgrade increases both maximum and current castle health by **25**, so buying it immediately provides the extra survivability rather than leaving the new health capacity empty.
-
-The current upgrade costs use a simple fixed progression. The basic set has now been played and is considered reasonably balanced for the current development pass. More detailed cost scaling will only be added if testing shows that fixed costs stop producing meaningful choices.
+The current fixed costs are intentionally simple and are considered reasonably balanced for this development pass.
 
 ---
 
-# 🌊 Enemy Waves
-
-The wave system is currently playable and considered stable enough to move forward.
-
-Current wave behavior:
+# 🌊 Waves
 
 - Wave 1 starts with **5 enemies**.
 - Enemy count increases by **1 per wave**.
 - Enemy health starts at **3 HP**.
-- Enemy health increases by **15% per wave** relative to the starting enemy health.
-- A **2 second** break occurs between cleared waves.
-- Enemies spawn from both sides of the castle.
-- Enemy kills award **1 coin** by default.
-- Killing enemies progresses the current wave.
-- The next wave starts automatically.
-- Castle destruction ends the run.
+- Enemy health increases by **15% per wave**.
+- A **2 second** break occurs between waves.
+- Enemies spawn from both sides.
+- Normal enemies award **1 coin**.
 - Every **10th wave** also contains a Mini Boss.
+- Castle destruction ends the run.
 
-The **1 Damage vs 3 HP** starting balance is intentional. The player needs several hits to kill a basic enemy, while every +1 Damage upgrade has a clearly noticeable effect.
+The starting **1 Damage vs 3 HP** balance is intentional. Damage upgrades therefore create clear combat breakpoints.
 
-These values are development values and can still be adjusted as bosses, skills, and automation are introduced.
+---
+
+# ❤️ Enemy Health Bars
+
+Enemy health bars are now implemented for **all enemies and bosses**.
+
+Behavior:
+
+- Health bars are **hidden by default**.
+- The first time an enemy takes damage, its health bar appears.
+- The bar updates as the enemy takes additional damage.
+- The bar remains visible for that enemy after it has been revealed.
+- Health bars disappear when the enemy dies.
+- Mini Bosses use the same system automatically.
+
+This keeps the battlefield clean while still giving the player immediate information about enemies they have actually engaged.
 
 ---
 
 # 💥 Combat Feedback
 
-Basic combat feedback is implemented.
+Current feedback includes:
 
+- Enemy health bars appear after the first hit.
 - Enemies flash when hit.
 - Enemies shrink and fade when killed.
 - Wave status communicates incoming and cleared waves.
 - Mini Boss waves announce themselves.
 - Mini Boss health is displayed while active.
-- Mini Boss enrage displays a clear warning when its second phase begins.
-- Mini Boss defeat displays a reward message.
-- Passive unlocks display a clear message.
-- Damage upgrades display a clear confirmation.
-- Attack Speed upgrades display a clear confirmation.
-- Critical Chance upgrades display a clear confirmation.
-- Critical Damage upgrades display a clear confirmation.
-- Arrow Speed upgrades display a clear confirmation.
-- Range upgrades display a clear confirmation.
-- Castle Health upgrades display a clear confirmation.
-
-More polished effects can be added later without changing the underlying combat architecture.
+- Mini Boss enrage displays a warning.
+- Upgrade purchases display confirmation.
+- Passive unlocks display confirmation.
 
 ---
 
@@ -156,41 +122,36 @@ Bosses are progression events rather than ordinary enemies with huge health pool
 
 ## Mini Bosses
 
-The first Mini Boss system is now implemented.
-
-- Appears every **10 waves**.
-- Spawns alongside that wave's normal enemies.
-- Uses the existing Enemy framework rather than a separate boss framework.
-- Has **10x the normal enemy health** for that wave.
-- Moves at **45 speed** before its enrage phase.
-- Deals **25 castle damage** before enraging.
-- Awards **10 coins** when killed.
-- Appears at **1.6x scale** so it is visually distinct.
-- Has a dedicated health display in the UI.
+- Appear every **10 waves**.
+- Spawn alongside normal enemies.
+- Use the existing Enemy framework.
+- Have **10x normal enemy health** for that wave.
+- Move at **45 speed** before enraging.
+- Deal **25 castle damage** before enraging.
+- Award **10 coins** when killed.
+- Appear at **1.6x scale**.
+- Have the normal enemy health bar plus a dedicated UI health display.
 
 ### Mini Boss Enrage
 
-At **50% health**, the Mini Boss enters an **Enraged** phase.
+At **50% health**:
 
 - Movement speed increases from **45 to 80**.
 - Castle damage increases from **25 to 35**.
-- The boss visibly pulses and changes appearance when the phase begins.
+- The boss pulses and changes appearance.
 - The UI announces **MINI BOSS ENRAGED**.
-- The phase happens only once per boss.
 
-This gives the player a meaningful reason to finish the boss quickly once it reaches half health. The mechanic is intentionally small and reuses the existing Enemy framework.
+The phase happens once per boss.
 
 ## Major Bosses
 
-Every **50 waves**.
-
-Major Bosses are not implemented yet.
+Planned every **50 waves**. Not implemented yet.
 
 ---
 
 # 🎯 Skills
 
-Planned active skills include:
+Planned active skills:
 
 - Power Shot
 - Multi Shot
@@ -199,17 +160,13 @@ Planned active skills include:
 - Rapid Fire
 - Rain of Arrows
 
-Passive progression is separate from active combat skills. The first passive is **Sharpened Arrows: +1 Damage**.
-
-The skill system should remain much smaller than a traditional RPG skill tree.
+Skills remain intentionally smaller than a traditional RPG skill tree.
 
 ---
 
 # 🤖 Automation
 
-The game will eventually transition from active shooting into incremental/idle progression.
-
-Planned automation includes:
+Planned progression includes:
 
 - Auto Aim
 - Automatic target selection
@@ -220,15 +177,13 @@ Planned automation includes:
 - Archer recruitment
 - Archer upgrades
 
-Automation should feel like a major progression milestone rather than another percentage bonus.
+Automation should feel like a major progression milestone rather than another small percentage bonus.
 
 ---
 
 # 🏰 Castle Defense
 
-The castle is the main objective.
-
-Current castle systems include:
+Current castle systems:
 
 - Health
 - Armor support
@@ -237,16 +192,9 @@ Current castle systems include:
 - Destruction/game-over state
 - Maximum Health upgrades
 
-The current development test value is **100 HP**.
+Current development castle health is **100 HP**.
 
-The current Castle Health upgrade costs **7 coins** and adds **25 maximum health plus 25 current health** each time it is purchased.
-
-Planned additional castle upgrades include:
-
-- Armor
-- Health Regeneration
-- Damage Reduction
-- Starting Health
+Planned upgrades include Armor, Health Regeneration, Damage Reduction, and Starting Health.
 
 ---
 
@@ -257,34 +205,27 @@ Coins are the primary currency.
 Currently:
 
 - Enemies award coins when killed.
-- The UI displays the current coin total.
+- Current coins are displayed.
 - Total coins earned are tracked for progression unlocks.
-- Coins can be spent on Damage, Attack Speed, Critical Chance, Critical Damage, Arrow Speed, Range, and Castle Health upgrades.
+- Coins buy the current upgrades.
 - Mini Bosses award **10 coins**.
-- The first passive unlocks at 6 total coins earned.
 
-The economy should remain understandable. Avoid adding currencies or complicated scaling unless they genuinely improve progression.
+Avoid adding currencies or complicated scaling unless they genuinely improve progression.
 
 ---
 
 # 🚀 DEVELOPMENT ROADMAP
 
-Development remains deliberately sequential.
-
 ## 🏁 Milestone 0 - Foundation
 
 **Status: Mostly complete**
 
-- [x] Confirm Godot project opens and runs
-- [x] Establish main scene
-- [x] Establish basic game controller/state
-- [x] Establish folder/script structure
-- [x] Create basic UI layout
-- [ ] Create dedicated game loop/tick where required
-- [ ] Establish save/load foundation
-- [x] Confirm clean project startup
-
-Save/load and a dedicated tick are intentionally deferred until they are actually needed.
+- [x] Main scene
+- [x] Game state/controller
+- [x] Folder/script structure
+- [x] Basic UI
+- [x] Clean startup
+- [ ] Save/load foundation
 
 ---
 
@@ -292,20 +233,13 @@ Save/load and a dedicated tick are intentionally deferred until they are actuall
 
 **Status: Complete**
 
-- [x] Create castle
-- [x] Create player archer
-- [x] Implement mouse aiming
-- [x] Implement arrow firing
-- [x] Implement arrow movement
-- [x] Create first enemy
-- [x] Implement enemy health
-- [x] Implement enemy movement toward castle
-- [x] Implement enemy death
-- [x] Implement castle health
-- [x] Implement enemy damage to castle
-- [x] Add basic hit/death feedback
-
-The first combat loop is complete.
+- [x] Castle
+- [x] Player archer
+- [x] Mouse aiming
+- [x] Arrow firing/movement
+- [x] Enemy health/movement/death
+- [x] Castle damage
+- [x] Basic hit/death feedback
 
 ---
 
@@ -313,20 +247,16 @@ The first combat loop is complete.
 
 **Status: Complete for the current development pass**
 
-- [x] Implement wave manager
-- [x] Spawn multiple enemies per wave
-- [x] Spawn enemies from both sides
-- [x] Complete waves when all active enemies are gone
-- [x] Increase enemy count between waves
-- [x] Increase enemy health between waves
-- [x] Add wave display
-- [x] Add wave completion/incoming feedback
-- [x] Add coin rewards for enemy kills
-- [x] Start the next wave automatically
-- [x] End the run when castle health reaches zero
-- [x] Validate the current wave loop
-
-Detailed balance tuning will continue as later systems are introduced.
+- [x] Wave manager
+- [x] Multiple enemies
+- [x] Both spawn sides
+- [x] Wave completion
+- [x] Enemy count scaling
+- [x] Enemy health scaling
+- [x] Wave UI
+- [x] Coin rewards
+- [x] Automatic next waves
+- [x] Game over on castle destruction
 
 ---
 
@@ -334,31 +264,18 @@ Detailed balance tuning will continue as later systems are introduced.
 
 **Status: Basic upgrade set complete**
 
-### Completed
+- [x] Damage
+- [x] Attack Speed
+- [x] Critical Chance
+- [x] Critical Damage
+- [x] Arrow Speed
+- [x] Range
+- [x] Castle Health
+- [x] First passive
+- [x] Critical hit calculation
+- [x] Basic upgrade feedback
 
-- [x] Build initial upgrade system
-- [x] Add Damage upgrade
-- [x] Add Attack Speed upgrade
-- [x] Add Critical Chance upgrade
-- [x] Add Critical Damage upgrade
-- [x] Add Arrow Speed upgrade
-- [x] Add Range upgrade
-- [x] Add Castle Health upgrade
-- [x] Add first passive unlock
-- [x] First passive: **+1 Attack Damage**
-- [x] Activate Critical Hit Chance in combat
-- [x] Rebalance starting player damage to **1**
-- [x] Rebalance starting enemy health to **3**
-- [x] Add basic upgrade feedback
-
-### Remaining polish
-
-- [ ] Display broader upgrade progression
-- [ ] Improve progression feedback
-- [ ] Revisit cost scaling if future systems require it
-- [ ] Rebalance values only when later systems expose problems
-
-The complete basic upgrade set is now implemented and is considered reasonably balanced for the current development pass. We can now move to the next major progression system without adding unnecessary complexity to Milestone 3.
+Remaining polish can wait until later systems expose actual problems.
 
 ---
 
@@ -368,26 +285,25 @@ The complete basic upgrade set is now implemented and is considered reasonably b
 
 ### Completed
 
-- [x] Add Mini Boss system
-- [x] Spawn Mini Boss every 10 waves
-- [x] Add Mini Boss health display
-- [x] Add Mini Boss rewards
-- [x] Reuse the existing Enemy framework
-- [x] Add basic Mini Boss visual distinction
-- [x] Add Mini Boss enrage mechanic at 50% health
-- [x] Increase Mini Boss speed and castle damage during enrage
-- [x] Add Mini Boss enrage UI feedback
+- [x] Mini Boss every 10 waves
+- [x] Mini Boss rewards
+- [x] Mini Boss health display
+- [x] Existing Enemy framework reused
+- [x] Visual distinction
+- [x] Enrage phase at 50% health
+- [x] Enrage speed/damage increase
+- [x] Enrage UI feedback
+- [x] Enemy/boss health bars that appear after first damage
 
 ### Remaining
 
-- [ ] Add stronger boss entrance/death feedback
-- [ ] Verify the Mini Boss feels like an event rather than just a large enemy
-- [ ] Add Major Boss system
-- [ ] Spawn Major Boss every 50 waves
-- [ ] Add Major Boss health bars
-- [ ] Add Major Boss rewards
+- [ ] Stronger Mini Boss entrance/death feedback
+- [ ] Major Boss system
+- [ ] Major Boss every 50 waves
+- [ ] Major Boss health bars/UI
+- [ ] Major Boss rewards
 
-The first Mini Boss now has a real two-phase encounter. The next boss work should focus on stronger presentation before adding Major Boss complexity.
+The Mini Boss now has a two-phase encounter and reactive health information without cluttering the battlefield.
 
 ---
 
@@ -395,16 +311,15 @@ The first Mini Boss now has a real two-phase encounter. The next boss work shoul
 
 **Status: Not started**
 
-- [ ] Create active skill system
-- [ ] Create cooldown system
-- [ ] Add Power Shot
-- [ ] Add Multi Shot
-- [ ] Add Piercing Arrow
-- [ ] Add Explosive Arrow
-- [ ] Add Rapid Fire
-- [ ] Add Rain of Arrows
-- [ ] Add skill UI
-- [ ] Add skill feedback
+- [ ] Active skill system
+- [ ] Cooldowns
+- [ ] Power Shot
+- [ ] Multi Shot
+- [ ] Piercing Arrow
+- [ ] Explosive Arrow
+- [ ] Rapid Fire
+- [ ] Rain of Arrows
+- [ ] Skill UI/feedback
 
 ---
 
@@ -412,15 +327,13 @@ The first Mini Boss now has a real two-phase encounter. The next boss work shoul
 
 **Status: Not started**
 
-- [ ] Add Auto Aim unlock
-- [ ] Implement automatic target selection
-- [ ] Add target priority rules
-- [ ] Add automatic firing mode
-- [ ] Add Auto Aim upgrades
-- [ ] Add additional archers
-- [ ] Add archer recruitment costs
-- [ ] Add archer upgrades
-- [ ] Balance active and automated play
+- [ ] Auto Aim
+- [ ] Automatic targeting
+- [ ] Target priority
+- [ ] Automatic firing
+- [ ] Auto Aim upgrades
+- [ ] Additional archers
+- [ ] Archer recruitment/upgrades
 
 ---
 
@@ -428,19 +341,17 @@ The first Mini Boss now has a real two-phase encounter. The next boss work shoul
 
 **Status: Not started**
 
-- [ ] Add reliable save system
-- [ ] Add settings
-- [ ] Add sound effects
-- [ ] Add music
-- [ ] Improve combat animations
-- [ ] Improve UI feedback
-- [ ] Add achievements
-- [ ] Add menus
-- [ ] Add pause functionality where appropriate
-- [ ] Test browser resolutions
-- [ ] Test performance
-- [ ] Fix gameplay bugs
-- [ ] Balance progression
+- [ ] Save system
+- [ ] Settings
+- [ ] Audio
+- [ ] Better animations
+- [ ] UI polish
+- [ ] Achievements
+- [ ] Menus
+- [ ] Pause
+- [ ] Browser resolution testing
+- [ ] Performance testing
+- [ ] Final balancing
 
 ---
 
@@ -448,66 +359,45 @@ The first Mini Boss now has a real two-phase encounter. The next boss work shoul
 
 **Status: Not started**
 
-- [ ] Final gameplay balance
-- [ ] Final UI pass
-- [ ] Final audio pass
+- [ ] Final balance
+- [ ] Final UI/audio pass
 - [ ] Browser testing
 - [ ] Kongregate build
 - [ ] itch.io build
-- [ ] Store/page artwork
-- [ ] Game description
+- [ ] Store artwork/description
 - [ ] Screenshots
-- [ ] Short gameplay video/GIF
+- [ ] Gameplay video/GIF
 - [ ] Publish
-- [ ] Collect player feedback
-- [ ] Fix critical launch issues
 
 ---
 
 # 📋 IMMEDIATE TASK LIST
 
-Work on one system at a time. Do not jump ahead simply because a later system is already described in the README.
+Work on one system at a time.
 
 ### Completed Foundation / Combat / Waves / Upgrades
 
 - [x] Main gameplay scene
-- [x] Castle in the center
-- [x] Player positioned at the castle
-- [x] Enemies spawn from both sides
-- [x] Enemy movement toward castle
-- [x] Mouse aiming
-- [x] Automatic arrow firing
+- [x] Castle and player
+- [x] Enemy spawning and movement
+- [x] Mouse aiming and automatic firing
 - [x] Arrow collision
-- [x] Enemy health
-- [x] Enemy death
-- [x] Hit/death feedback
-- [x] Castle health
-- [x] Castle destruction/game over
+- [x] Enemy health/death
+- [x] Castle health/game over
 - [x] Wave system
-- [x] Multiple enemies per wave
-- [x] Wave scaling
 - [x] Coin rewards
-- [x] Basic wave/coin/castle UI
-- [x] First upgrade system
-- [x] First passive: +1 Attack Damage
-- [x] Damage upgrade
-- [x] Attack Speed upgrade
-- [x] Critical Chance upgrade
-- [x] Critical Damage upgrade
-- [x] Arrow Speed upgrade
-- [x] Range upgrade
-- [x] Castle Health upgrade
-- [x] Critical hit calculation
-- [x] Rebalanced starting damage and enemy health
-- [x] Removed obsolete Milestone 1 test scene
+- [x] Basic upgrades
+- [x] Critical hits
+- [x] Mini Boss system
+- [x] Mini Boss enrage
+- [x] Reactive enemy health bars
 
 ### Next Focus
 
 **Milestone 4: Mini Boss polish**
 
-- [ ] Add stronger Mini Boss entrance/death feedback
-- [x] Add one unique Mini Boss mechanic
-- [x] Verify the Mini Boss has an event-style phase change
+- [ ] Stronger Mini Boss entrance/death feedback
+- [ ] Verify the Mini Boss feels like an event
 
 ### Later
 
@@ -521,29 +411,15 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 
 **Do not build prestige, complex meta-progression, large skill trees, or complicated economy systems yet.**
 
-The immediate goal is to make the first boss encounter feel meaningful while keeping the existing combat and progression systems intact.
-
 ---
 
 # 🧭 Design Rules
 
-## 1. Keep It Small
-
-This is intentionally a small game. Do not turn it into an RPG, city builder, tower-defense spreadsheet, or MMORPG wearing a castle hat.
-
-## 2. Make Every Upgrade Feel Useful
-
-Players should understand what an upgrade does and feel its impact.
-
-## 3. Bosses Must Be Events
-
-A boss should change the player's behaviour or require a meaningful response. More health alone is not enough.
-
-## 4. Automation Is Progression
-
-Auto Aim and additional archers should feel like major achievements.
-
-## 5. Do Not Build Complexity Before Fun
+1. **Keep It Small.**
+2. **Make Every Upgrade Feel Useful.**
+3. **Bosses Must Be Events.** More health alone is not enough.
+4. **Automation Is Progression.**
+5. **Do Not Build Complexity Before Fun.**
 
 ```text
 Fun Shooting
@@ -563,22 +439,14 @@ Polish
 Release
 ```
 
-Only add complexity when the existing layer is working and enjoyable.
-
 ---
 
 # ⭐ The Goal
 
-A player should be able to open Castle Archer and immediately understand what to do:
+A player should immediately understand:
 
 **Shoot. Earn. Upgrade. Defend. Repeat.**
 
-Start with one archer.
-
-Build a stronger defender.
-
-Survive increasingly dangerous waves.
-
-Eventually automate the defense and build a ridiculous storm of arrows, enemies, critical hits, skills, bosses, and additional archers.
+Start with one archer, survive increasingly dangerous waves, and gradually build toward automation, skills, bosses, and additional archers.
 
 But first: make the first few minutes fun.
