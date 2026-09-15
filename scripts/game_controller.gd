@@ -9,7 +9,7 @@ func _ready() -> void:
 	GameState.start_game()
 	castle.health_changed.connect(_on_castle_health_changed)
 	_on_castle_health_changed(castle.health, castle.max_health)
-	upgrade_manager.setup(player)
+	upgrade_manager.setup(player, castle)
 	wave_manager.setup(castle)
 	wave_manager.start()
 
