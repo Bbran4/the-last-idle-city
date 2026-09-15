@@ -15,8 +15,8 @@ The goal is to keep the project small, readable, fun, and actually finishable.
 # 🎯 Current Gameplay Layout
 
 ```text
-		Enemies →     🏰 Castle + Archer     ← Enemies
-							  CENTER
+        Enemies →     🏰 Castle + Archer     ← Enemies
+                                      CENTER
 ```
 
 - The castle sits in the middle of the battlefield.
@@ -135,6 +135,7 @@ Basic combat feedback is implemented.
 - Wave status communicates incoming and cleared waves.
 - Mini Boss waves announce themselves.
 - Mini Boss health is displayed while active.
+- Mini Boss enrage displays a clear warning when its second phase begins.
 - Mini Boss defeat displays a reward message.
 - Passive unlocks display a clear message.
 - Damage upgrades display a clear confirmation.
@@ -161,13 +162,23 @@ The first Mini Boss system is now implemented.
 - Spawns alongside that wave's normal enemies.
 - Uses the existing Enemy framework rather than a separate boss framework.
 - Has **10x the normal enemy health** for that wave.
-- Moves at **45 speed**, making it slower and more threatening as it approaches.
-- Deals **25 castle damage** if it reaches the castle.
+- Moves at **45 speed** before its enrage phase.
+- Deals **25 castle damage** before enraging.
 - Awards **10 coins** when killed.
 - Appears at **1.6x scale** so it is visually distinct.
 - Has a dedicated health display in the UI.
 
-The Mini Boss is deliberately simple for the first implementation. Its main purpose is to create a noticeable wave event and give the player a high-value target without introducing a second combat system.
+### Mini Boss Enrage
+
+At **50% health**, the Mini Boss enters an **Enraged** phase.
+
+- Movement speed increases from **45 to 80**.
+- Castle damage increases from **25 to 35**.
+- The boss visibly pulses and changes appearance when the phase begins.
+- The UI announces **MINI BOSS ENRAGED**.
+- The phase happens only once per boss.
+
+This gives the player a meaningful reason to finish the boss quickly once it reaches half health. The mechanic is intentionally small and reuses the existing Enemy framework.
 
 ## Major Bosses
 
@@ -363,17 +374,20 @@ The complete basic upgrade set is now implemented and is considered reasonably b
 - [x] Add Mini Boss rewards
 - [x] Reuse the existing Enemy framework
 - [x] Add basic Mini Boss visual distinction
+- [x] Add Mini Boss enrage mechanic at 50% health
+- [x] Increase Mini Boss speed and castle damage during enrage
+- [x] Add Mini Boss enrage UI feedback
 
 ### Remaining
 
 - [ ] Add stronger boss entrance/death feedback
-- [ ] Add at least one unique boss mechanic
+- [ ] Verify the Mini Boss feels like an event rather than just a large enemy
 - [ ] Add Major Boss system
 - [ ] Spawn Major Boss every 50 waves
 - [ ] Add Major Boss health bars
 - [ ] Add Major Boss rewards
 
-The first Mini Boss is intentionally simple. The next boss work should focus on making the event feel distinct rather than immediately adding many boss types.
+The first Mini Boss now has a real two-phase encounter. The next boss work should focus on stronger presentation before adding Major Boss complexity.
 
 ---
 
@@ -492,8 +506,8 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 **Milestone 4: Mini Boss polish**
 
 - [ ] Add stronger Mini Boss entrance/death feedback
-- [ ] Add one unique Mini Boss mechanic
-- [ ] Verify the Mini Boss feels like an event rather than just a large enemy
+- [x] Add one unique Mini Boss mechanic
+- [x] Verify the Mini Boss has an event-style phase change
 
 ### Later
 
