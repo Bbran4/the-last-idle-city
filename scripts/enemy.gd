@@ -25,13 +25,20 @@ func _physics_process(delta: float) -> void:
 
 	global_position += global_position.direction_to(target_castle.global_position) * movement_speed * delta
 
+func take_damage(amount: float) -> void:
+	if is_dead or stats == null:
+		return
+
+	super.take_damage(amount)
+	if is_dead:
+		Economy.add_coins(coin_reward)
+
 func reach_castle() -> void:
 	if is_dead:
 		return
 	reached_castle.emit(castle_damage)
 	target_castle.take_damage(castle_damage)
 	die()
-	queue_free()
 
 func die() -> void:
 	if is_dead:
