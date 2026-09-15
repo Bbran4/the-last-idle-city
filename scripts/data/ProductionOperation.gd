@@ -146,29 +146,32 @@ func can_afford_unlock_from_source() -> bool:
 func can_afford_level_up_from_source() -> bool:
 	return cost_source != null and BigNumber.from_float(float(cost_source.level)).is_greater_or_equal(level_up_cost())
 
-## Simulates purchasing consecutive levels against a currency pool
-## (Materials, or another operation's level when cost_source is set),
-## returning how many levels are actually affordable.
-## max_levels < 0 = uncapped ("Max"); 1 = "x1"; a positive cap is used
-## by "Next" mode to stop at a target level.
+## Calculates how many consecutive Level Ups are affordable without
+## simulating every individual purchase. max_levels < 0 means uncapped
+## ("Max"); 1 means "x1"; a positive cap is used by "Next" mode.
+##
+## Level-up costs are currently fixed, so the affordable count can be
+## determined directly from the available currency and Energy. This is
+## important because this method is called repeatedly while refreshing
+## the UI. A loop over thousands or millions of affordable levels would
+## otherwise make the game progressively slower as the idle economy grows.
 func max_purchasable_levels(currency: BigNumber, available_energy: float, max_levels: int = -1) -> int:
 	if not unlocked:
 		return 0
-	var remaining: BigNumber = currency
-	var energy_budget: float = available_energy
-	var simulated_level: int = level
-	var purchased: int = 0
-	while max_levels < 0 or purchased < max_levels:
-		var cost: BigNumber = BigNumber.from_float(level_up_base_cost)
-		if remaining.is_less_than(cost):
-			break
-		if level_up_energy_cost > 0.0 and energy_budget < level_up_energy_cost:
-			break
-		remaining = remaining.subtract(cost)
-		energy_budget -= level_up_energy_cost
-		simulated_level += 1
-		purchased += 1
-	return purchased
+	if level_up_base_cost <= 0.0:
+		return max_levels if max_levels >= 0 else 0
+
+	var currency_limit: int = int(floor(currency.to_float() / level_up_base_cost))
+	var affordable: int = max(0, currency_limit)
+
+	if level_up_energy_cost > 0.0:
+		var energy_limit: int = int(floor(max(0.0, available_energy) / level_up_energy_cost))
+		affordable = min(affordable, max(0, energy_limit))
+
+	if max_levels >= 0:
+		affordable = min(affordable, max_levels)
+
+	return affordable
 
 ## Total cost of purchasing `levels` consecutive Level Ups from the
 ## current level, in whatever currency backs this operation.
