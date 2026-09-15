@@ -4,6 +4,8 @@ extends Unit
 @export var arrow_scene: PackedScene = preload("res://scenes/arrow.tscn")
 @export var arrow_spawn_offset: float = 28.0
 
+@onready var castle: Castle = get_node_or_null("../Castle") as Castle
+
 var attack_cooldown: float = 0.0
 
 func _process(delta: float) -> void:
@@ -31,11 +33,13 @@ func fire_arrow(target_position: Vector2) -> void:
 	var arrow_damage := stats.damage
 	if randf() < stats.critical_chance:
 		arrow_damage *= stats.critical_damage
+	var ground_y: float = castle.get_ground_y() if castle else global_position.y + 300.0
 	arrow.setup(
 		global_position + direction * arrow_spawn_offset,
 		target_position,
 		arrow_damage,
-		stats.arrow_speed
+		stats.arrow_speed,
+		ground_y
 	)
 	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
 
