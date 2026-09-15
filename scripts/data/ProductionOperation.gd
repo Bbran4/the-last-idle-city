@@ -18,9 +18,7 @@ const FIRST_MILESTONE_LEVEL: int = 10
 @export var milestones_triggered: int = 0
 ## When set, this operation's unlock/level-up costs are paid by
 ## consuming LEVELS from another operation instead of the shared
-## Materials pool (e.g. Reclamation Depot spends Scrap Yard levels,
-## Workshop spends Reclamation Depot levels, Factory spends Workshop
-## levels).
+## Materials pool.
 @export var cost_source: ProductionOperation = null
 
 func _init(
@@ -45,14 +43,25 @@ static func milestone_level_at(index: int) -> int:
 	var last_defined: int = MILESTONE_LEVELS[MILESTONE_LEVELS.size() - 1]
 	return int(round(float(last_defined) * pow(5.0, generated_steps)))
 
+static func milestones_reached_at_level(level_value: int) -> int:
+	var reached: int = 0
+	while reached < MILESTONE_LEVELS.size() and level_value >= milestone_level_at(reached):
+		reached += 1
+	if reached >= MILESTONE_LEVELS.size():
+		var next_level: int = milestone_level_at(reached)
+		while level_value >= next_level:
+			reached += 1
+			next_level = milestone_level_at(reached)
+	return reached
+
 static func milestone_multiplier_for_count(count_value: int) -> BigNumber:
 	return BigNumber.from_float(2.0).pow_int(count_value)
 
 func milestone_multiplier() -> BigNumber:
-	return milestone_multiplier_for_count(milestones_triggered)
+	return milestone_multiplier_for_count(milestones_reached_at_level(level))
 
 func next_milestone_level() -> int:
-	return milestone_level_at(milestones_triggered)
+	return milestone_level_at(milestones_reached_at_level(level))
 
 func production_per_building() -> BigNumber:
 	if not unlocked or count <= 0:
@@ -89,17 +98,14 @@ func build_new(materials: BigNumber, current_energy: float) -> Dictionary:
 		"energy": current_energy - build_new_energy_cost
 	}
 
+## Milestones are automatic. Reaching the required level immediately
+## increases the production multiplier. There is no currency or energy
+## cost and the level is never reduced when a milestone is reached.
 func can_trigger_milestone() -> bool:
-	var required_level: int = next_milestone_level()
-	return unlocked and level > required_level
+	return false
 
 func trigger_milestone() -> Dictionary:
-	if not can_trigger_milestone():
-		return {"success": false}
-	var required_level: int = next_milestone_level()
-	level = max(1, level - required_level)
-	milestones_triggered += 1
-	return {"success": true}
+	return {"success": false}
 
 func unlock(materials: BigNumber) -> BigNumber:
 	if unlocked:
@@ -147,15 +153,6 @@ func can_afford_unlock_from_source() -> bool:
 func can_afford_level_up_from_source() -> bool:
 	return cost_source != null and BigNumber.from_float(float(cost_source.level)).is_greater_or_equal(level_up_cost())
 
-## Calculates how many consecutive Level Ups are affordable without
-## simulating every individual purchase. max_levels < 0 means uncapped
-## ("Max"); 1 means "x1"; a positive cap is used by "Next" mode.
-##
-## Level-up costs are currently fixed, so the affordable count can be
-## determined directly from the available currency and Energy. This is
-## important because this method is called repeatedly while refreshing
-## the UI. A loop over thousands or millions of affordable levels would
-## otherwise make the game progressively slower as the idle economy grows.
 func max_purchasable_levels(currency: BigNumber, available_energy: float, max_levels: int = -1) -> int:
 	if not unlocked:
 		return 0
@@ -174,13 +171,6 @@ func max_purchasable_levels(currency: BigNumber, available_energy: float, max_le
 
 	return affordable
 
-## Total cost of purchasing `levels` consecutive Level Ups from the
-## current level, in whatever currency backs this operation.
-##
-## Level-up costs are fixed, so this is intentionally O(1). Do not loop
-## once per purchased level here: this method is called while refreshing
-## the UI and must remain cheap even when Max mode can buy millions of
-## levels.
 func total_level_up_cost(levels: int) -> BigNumber:
 	if levels <= 0 or level_up_base_cost <= 0.0:
 		return BigNumber.zero()
@@ -191,13 +181,13 @@ func save_data() -> Dictionary:
 		"unlocked": unlocked,
 		"level": level,
 		"count": count,
-		"milestones_triggered": milestones_triggered
+		"milestones_triggered": milestones_reached_at_level(level)
 	}
 
 func load_save_data(data: Dictionary) -> void:
 	unlocked = bool(data.get("unlocked", false))
 	level = max(1, int(data.get("level", 1)))
 	count = max(0, int(data.get("count", 0)))
-	milestones_triggered = max(0, int(data.get("milestones_triggered", 0)))
+	milestones_triggered = milestones_reached_at_level(level)
 	if unlocked and count == 0:
 		count = 1
