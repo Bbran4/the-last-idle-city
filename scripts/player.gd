@@ -15,6 +15,7 @@ func _ready() -> void:
 	super._ready()
 	if skill_manager:
 		skill_manager.power_shot_requested.connect(_on_power_shot_requested)
+	skill_manager.multi_shot_requested.connect(_on_multi_shot_requested)
 
 func _process(delta: float) -> void:
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
@@ -52,6 +53,20 @@ func fire_arrow(target_position: Vector2) -> void:
 	if arrow_scene == null or stats == null:
 		return
 
+	var multi_shot := skill_manager != null and skill_manager.consume_multi_shot()
+	var arrow_count := SkillManager.MULTI_SHOT_ARROW_COUNT if multi_shot else 1
+	var base_direction := global_position.direction_to(target_position)
+	var spread_step := deg_to_rad(SkillManager.MULTI_SHOT_SPREAD_DEGREES)
+	var start_angle := -spread_step if arrow_count > 1 else 0.0
+
+	for index in arrow_count:
+		var direction := base_direction.rotated(start_angle + spread_step * index)
+		var arrow_target := global_position + direction * global_position.distance_to(target_position)
+		_spawn_arrow(arrow_target, multi_shot)
+
+	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
+
+func _spawn_arrow(target_position: Vector2, _multi_shot: bool) -> void:
 	var arrow := arrow_scene.instantiate() as Arrow
 	if arrow == null:
 		return
@@ -71,9 +86,12 @@ func fire_arrow(target_position: Vector2) -> void:
 		stats.arrow_speed,
 		ground_y
 	)
-	attack_cooldown = 1.0 / maxf(stats.attack_speed, 0.01)
 
 func _on_power_shot_requested() -> void:
+	if wave_manager == null or wave_manager.is_intermission():
+		return
+
+func _on_multi_shot_requested() -> void:
 	if wave_manager == null or wave_manager.is_intermission():
 		return
 
