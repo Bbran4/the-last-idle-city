@@ -81,10 +81,13 @@ The current upgrade layer includes:
 | Damage | +1 Damage | 1 coin |
 | Attack Speed | +0.1 attacks/sec | 2 coins |
 | Critical Chance | +5% critical chance | 3 coins |
+| Critical Damage | +0.5x critical multiplier | 4 coins |
 
 With the new starting damage of **1**, the Damage upgrade represents a full **100% increase** to base damage. The first passive then adds another +1 damage.
 
 Critical Chance starts at **5%**, so the first Critical Chance purchase raises it to **10%**. Critical hits currently use the player's **2.0x Critical Damage** multiplier.
+
+The Critical Damage upgrade raises the multiplier by **0.5x**, taking it from 2.0x to 2.5x per purchase.
 
 The upgrade system is intentionally small and will be expanded with additional stats later.
 
@@ -124,6 +127,7 @@ Basic combat feedback is implemented.
 - Damage upgrades display a clear confirmation.
 - Attack Speed upgrades display a clear confirmation.
 - Critical Chance upgrades display a clear confirmation.
+- Critical Damage upgrades display a clear confirmation.
 
 More polished effects can be added later without changing the underlying combat architecture.
 
@@ -214,7 +218,7 @@ Currently:
 - Enemies award coins when killed.
 - The UI displays the current coin total.
 - Total coins earned are tracked for progression unlocks.
-- Coins can be spent on Damage, Attack Speed, and Critical Chance upgrades.
+- Coins can be spent on Damage, Attack Speed, Critical Chance, and Critical Damage upgrades.
 - The first passive unlocks at 6 total coins earned.
 
 The economy should remain understandable. Avoid adding currencies or complicated scaling unless they genuinely improve progression.
@@ -294,6 +298,7 @@ Detailed balance tuning is ongoing as upgrade progression is added.
 - [x] Add Damage upgrade
 - [x] Add Attack Speed upgrade
 - [x] Add Critical Chance upgrade
+- [x] Add Critical Damage upgrade
 - [x] Add first passive unlock
 - [x] First passive: **+1 Attack Damage**
 - [x] Activate Critical Hit Chance in combat
@@ -303,7 +308,6 @@ Detailed balance tuning is ongoing as upgrade progression is added.
 
 ### Remaining
 
-- [ ] Add Critical Damage upgrade
 - [ ] Add Arrow Speed upgrade
 - [ ] Add Range upgrade
 - [ ] Add Castle Health upgrade
@@ -435,13 +439,13 @@ Work on one system at a time. Do not jump ahead simply because a later system is
 - [x] Damage upgrade
 - [x] Attack Speed upgrade
 - [x] Critical Chance upgrade
+- [x] Critical Damage upgrade
 - [x] Critical hit calculation
 - [x] Rebalanced starting damage and enemy health
 - [x] Removed obsolete Milestone 1 test scene
 
 ### Next Focus
 
-- [ ] Add Critical Damage upgrade
 - [ ] Add Arrow Speed upgrade
 - [ ] Add Range upgrade
 - [ ] Add Castle Health upgrade
