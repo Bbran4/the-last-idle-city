@@ -91,9 +91,9 @@ func ensure_minimums() -> void:
 ## handled by the base class.
 func _unlock_requirement_met(operation: ProductionOperation) -> bool:
 	if operation == workshop:
-		return reclamation_depot.unlocked and reclamation_depot.milestones_triggered >= 1
+		return reclamation_depot.unlocked and ProductionOperation.milestones_reached_at_level(reclamation_depot.level) >= 1
 	if operation == factory:
-		return workshop.unlocked and workshop.milestones_triggered >= 1
+		return workshop.unlocked and ProductionOperation.milestones_reached_at_level(workshop.level) >= 1
 	return true
 
 
