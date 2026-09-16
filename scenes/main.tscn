@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="4_o6xl0"]
 [ext_resource type="PackedScene" path="res://scenes/target.tscn" id="5_tipki"]
 [ext_resource type="PackedScene" path="res://scenes/ground.tscn" id="6_85g3d"]
+[ext_resource type="Script" path="res://scripts/tent.gd" id="7_tent"]
 
 [node name="Main" type="Node2D" unique_id=324881482]
 script = ExtResource("1_main")
@@ -23,6 +24,11 @@ script = ExtResource("2_world_view")
 [node name="Player" parent="WorldView" unique_id=641124038 instance=ExtResource("4_o6xl0")]
 position = Vector2(190, 1656)
 
+[node name="CustomizationTent" type="Node2D" parent="WorldView"]
+position = Vector2(-600, 1656)
+script = ExtResource("7_tent")
+z_index = 1
+
 [node name="Target" parent="WorldView" unique_id=529700850 instance=ExtResource("5_tipki")]
 position = Vector2(1623, 1566)
 
@@ -31,7 +37,7 @@ position = Vector2(2432, 1111)
 scale = Vector2(0.8, 0.8)
 coin_reward = 2
 
-[node name="TargetThree" parent="WorldView" unique_id=434040876 instance=ExtResource("5_tipki")]
+[node name="TargetThree" parent="WorldView" unique_id=434040889 instance=ExtResource("5_tipki")]
 position = Vector2(2800, 317)
 scale = Vector2(0.6, 0.6)
 coin_reward = 3
