@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BowData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bow_data.gd" id="1_bow"]
+
+[resource]
+script = ExtResource("1_bow")
+id = "war_bow"
+display_name = "War Bow"
+price = 900
+required_strength = 5
+max_draw_strength = 125.0
+draw_speed = 45.0
+min_launch_speed = 470.0
+max_launch_speed = 980.0
+description = "Heavy draw and excellent range."
