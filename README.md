@@ -63,16 +63,16 @@ The game combines player skill with character progression. A skilled player with
 
 **Goal:** Give the arrow believable physical behavior and target interaction.
 
-- [ ] Create dedicated arrow scene
-- [ ] Add projectile movement
-- [ ] Add gravity and arrow arc
-- [ ] Rotate arrow along its flight path
-- [ ] Add target collision
-- [ ] Stop arrow on valid target impact
-- [ ] Keep arrows embedded in the target
-- [ ] Handle misses
-- [ ] Add impact feedback
-- [ ] Add testing/reset support for arrows
+- [x] Create dedicated arrow scene
+- [x] Add projectile movement
+- [x] Add gravity and arrow arc
+- [x] Rotate arrow along its flight path
+- [x] Add target collision
+- [x] Stop arrow on valid target impact
+- [x] Keep arrows embedded in the target
+- [x] Handle misses
+- [x] Add impact feedback
+- [x] Add testing/reset support for arrows
 
 **Completion:** Arrows have believable flight and remain visibly embedded when they hit the target.
 
@@ -378,10 +378,10 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 2 - Bow Drawing & Firing**
+**Current Stage: Milestone 3 - Arrow Physics & Target Hits**
 
-Milestones 0, 1, and 2 are complete. The project has a clean Godot 4.7 foundation, a visible practice range, and the first playable shooting interaction: hold the left mouse button to draw the bow, build draw strength, and release to fire an arrow.
+Milestones 0 through 3 are complete. The project now has a dedicated arrow scene with projectile movement, gravity, flight rotation, target collision, embedded arrows, miss handling, impact feedback, and an `R` reset control for testing.
 
 The next major goal is:
 
-> **Make the arrow fly, hit the target, and stay embedded.**
+> **Make every hit matter with scoring and bullseyes.**
