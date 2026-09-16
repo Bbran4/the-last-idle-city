@@ -14,6 +14,8 @@ const TRAJECTORY_EXTRA_TIME: float = 2.75
 
 @onready var player: Player = $Player
 @onready var target: Target = $Target
+@onready var target_two: Target = $TargetTwo
+@onready var target_three: Target = $TargetThree
 @onready var ground: Node2D = $Ground
 
 var impact_position: Vector2 = Vector2.ZERO
@@ -26,6 +28,7 @@ var trajectory_visible: bool = false
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
+	set_active_targets([true, false, false])
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -62,6 +65,14 @@ func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, qualit
 func get_target() -> Target:
 	return target
 
+func get_targets() -> Array[Target]:
+	return [target, target_two, target_three]
+
+func set_active_targets(active: Array[bool]) -> void:
+	var targets: Array[Target] = get_targets()
+	for index: int in range(targets.size()):
+		targets[index].visible = index < active.size() and active[index]
+
 func update_impact(position: Vector2, timer: float) -> void:
 	impact_position = position
 	impact_timer = timer
@@ -71,8 +82,21 @@ func fire_arrow(direction: Vector2, launch_speed: float) -> Arrow:
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
 	arrow.position = to_local(bow.get_arrow_spawn_position())
 	add_child(arrow)
-	arrow.launch(direction * launch_speed, target.position, target.get_radius(), ground.position.y, 0.0, to_local(Vector2(get_viewport_rect().size.x, 0.0)).x)
+	arrow.launch(
+		direction * launch_speed,
+		get_active_targets(),
+		ground.position.y,
+		0.0,
+		to_local(Vector2(get_viewport_rect().size.x, 0.0)).x
+	)
 	return arrow
+
+func get_active_targets() -> Array[Target]:
+	var active: Array[Target] = []
+	for range_target: Target in get_targets():
+		if range_target.visible:
+			active.append(range_target)
+	return active
 
 func clear_arrows() -> void:
 	for child: Node in get_children():
