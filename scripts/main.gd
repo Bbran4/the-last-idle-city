@@ -25,6 +25,7 @@ var bullseyes: int = 0
 func _ready() -> void:
 	world_view.configure_bow(bow_inventory.get_equipped())
 	hud.training_upgrade_pressed.connect(_on_training_upgrade_pressed)
+	hud.bow_action_requested.connect(_on_bow_action_requested)
 	_refresh_hud()
 
 func _process(delta: float) -> void:
@@ -113,6 +114,30 @@ func _on_training_upgrade_pressed() -> void:
 		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
 	_refresh_hud()
 
+func _on_bow_action_requested(bow_id: String) -> void:
+	var bow: BowData = bow_inventory.get_bow(bow_id)
+	if bow == null:
+		return
+	if bow_inventory.is_owned(bow_id):
+		if bow_inventory.equip(bow_id, stats.strength_level):
+			world_view.configure_bow(bow)
+			hud.show_economy_feedback("EQUIPPED  %s" % bow.display_name)
+		else:
+			hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
+	else:
+		if not bow_inventory.can_purchase(bow_id, economy.money, stats.strength_level):
+			if stats.strength_level < bow.required_strength:
+				hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
+			else:
+				hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+			return
+		if economy.spend_money(bow.price):
+			bow_inventory.purchase(bow_id, economy.money + bow.price, stats.strength_level)
+			hud.show_economy_feedback("PURCHASED  %s" % bow.display_name)
+		else:
+			hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+	_refresh_hud()
+
 func _show_result(text: String) -> void:
 	shot_result_timer = SHOT_RESULT_DURATION
 	hud.show_shot_result(text)
@@ -124,6 +149,7 @@ func _refresh_hud() -> void:
 	hud.set_strength(stats.strength_level, stats.strength_xp, stats.strength_xp_to_next_level(), stats.strength_progress_ratio())
 	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
 	hud.set_economy(economy.money, economy.training_manual_level, economy.get_training_manual_cost(), economy.can_buy_training_manual())
+	hud.set_bows(bow_inventory.get_all_bows(), bow_inventory.owned, bow_inventory.equipped_bow_id, economy.money, stats.strength_level)
 
 func _reset_session() -> void:
 	is_drawing = false
