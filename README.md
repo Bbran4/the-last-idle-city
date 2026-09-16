@@ -97,14 +97,14 @@ The game combines player skill with character progression. A skilled player with
 
 **Goal:** Good draw and release technique develops the character's Strength.
 
-- [ ] Add Strength stat
-- [ ] Connect draw strength and shooting technique to Strength progression
-- [ ] Award Strength XP for appropriate releases
-- [ ] Prevent exploitative progression
-- [ ] Add Strength levels
-- [ ] Display Strength and XP
-- [ ] Make Strength affect relevant capabilities
-- [ ] Balance early progression
+- [x] Add Strength stat
+- [x] Connect draw strength and shooting technique to Strength progression
+- [x] Award Strength XP for appropriate releases
+- [x] Prevent exploitative progression
+- [x] Add Strength levels
+- [x] Display Strength and XP
+- [x] Make Strength affect relevant capabilities
+- [x] Balance early progression
 
 **Completion:** Practice meaningfully develops Strength.
 
@@ -378,14 +378,16 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 4 - Scoring & Bullseye**
+**Current Stage: Milestone 5 - Strength Progression**
 
-Milestones 0 through 4 are complete. The project now has a dedicated scene structure for the player, bow, arrow, target, ground, world view, and HUD. The practice range uses a scaled world so the full shooting distance fits comfortably inside the viewport while keeping the UI at normal screen scale.
+Milestones 0 through 5 are complete. The project now has a dedicated Strength progression system layered on top of the existing shooting loop without changing the core bow, arrow, target, or collision architecture.
 
-The current shooting loop includes mouse-controlled bow drawing, draw-strength feedback, variable launch speed, projectile movement, gravity, flight rotation, target collision, embedded arrows, miss handling, impact feedback, target-zone scoring, bullseye detection, score tracking, shot/hit/bullseye statistics, and an `R` reset control for testing.
+Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release, preventing frame-based or rapid low-effort progression exploits. Early levels require 100 XP, with the requirement increasing by 25 XP per level.
 
-The target currently uses five scoring zones, awarding 10 points for a bullseye and 6–9 points for the outer scoring zones. Missed shots receive no score.
+Strength currently affects launch capability by adding 25 launch-speed points per Strength level above level 1. It does not affect aim or scoring, so player shooting skill remains important.
+
+The HUD now displays Strength level, current XP, XP required for the next level, and XP gained from successful practice releases.
 
 The next major goal is:
 
-> **Turn successful practice into meaningful character progression with Strength.**
+> **Turn accurate shooting into meaningful character progression with Accuracy.**
