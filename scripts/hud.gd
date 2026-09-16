@@ -3,6 +3,7 @@ extends Control
 
 signal training_upgrade_pressed
 signal bow_action_requested(bow_id: String)
+signal range_target_action_requested(target_index: int)
 
 const DRAW_BAR_WIDTH: float = 360.0
 
@@ -24,6 +25,8 @@ const DRAW_BAR_WIDTH: float = 360.0
 
 var equipment_panel: PanelContainer
 var equipment_list: VBoxContainer
+var range_panel: PanelContainer
+var range_list: VBoxContainer
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -34,6 +37,7 @@ func _ready() -> void:
 	economy_feedback_label.visible = false
 	training_upgrade_button.pressed.connect(_on_training_upgrade_pressed)
 	_create_equipment_panel()
+	_create_range_panel()
 
 func _create_equipment_panel() -> void:
 	equipment_panel = PanelContainer.new()
@@ -55,6 +59,26 @@ func _create_equipment_panel() -> void:
 	title.add_theme_font_size_override("font_size", 18)
 	equipment_list.add_child(title)
 
+func _create_range_panel() -> void:
+	range_panel = PanelContainer.new()
+	range_panel.position = Vector2(954.0, 250.0)
+	range_panel.size = Vector2(306.0, 220.0)
+	range_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(range_panel)
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 12)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 12)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	range_panel.add_child(margin)
+	range_list = VBoxContainer.new()
+	range_list.add_theme_constant_override("separation", 6)
+	margin.add_child(range_list)
+	var title := Label.new()
+	title.text = "PRACTICE RANGE"
+	title.add_theme_font_size_override("font_size", 18)
+	range_list.add_child(title)
+
 func set_bows(bows: Array[BowData], owned: Dictionary, equipped_id: String, money: int, strength_level: int) -> void:
 	if equipment_list == null:
 		return
@@ -75,11 +99,36 @@ func set_bows(bows: Array[BowData], owned: Dictionary, equipped_id: String, mone
 		else:
 			button.text = "%s  $%d  STR %d" % [bow.display_name, bow.price, bow.required_strength]
 			button.disabled = money < bow.price or strength_level < bow.required_strength
-		button.pressed.connect(_on_bow_button_pressed.bind(bow.id))
+			button.pressed.connect(_on_bow_button_pressed.bind(bow.id))
 		equipment_list.add_child(button)
+
+func set_range_targets(targets: Array[Target], owned: Array[bool], costs: Array[int], money: int) -> void:
+	if range_list == null:
+		return
+	for child in range_list.get_children():
+		if child is Button:
+			child.queue_free()
+	for index: int in range(targets.size()):
+		var target: Target = targets[index]
+		var button := Button.new()
+		button.custom_minimum_size = Vector2(0, 34)
+		button.mouse_filter = Control.MOUSE_FILTER_STOP
+		var is_owned: bool = index < owned.size() and owned[index]
+		if is_owned:
+			button.text = "TARGET %d  +%d COINS  [ACTIVE]" % [index + 1, target.get_coin_reward()]
+			button.disabled = true
+		else:
+			var cost: int = costs[index] if index < costs.size() else 0
+			button.text = "TARGET %d  +%d COINS  $%d" % [index + 1, target.get_coin_reward(), cost]
+			button.disabled = money < cost
+			button.pressed.connect(_on_range_target_button_pressed.bind(index))
+		range_list.add_child(button)
 
 func _on_bow_button_pressed(bow_id: String) -> void:
 	bow_action_requested.emit(bow_id)
+
+func _on_range_target_button_pressed(target_index: int) -> void:
+	range_target_action_requested.emit(target_index)
 
 func set_coins_earned(amount: int) -> void:
 	score_label.text = "EARNED  %d COINS" % amount
