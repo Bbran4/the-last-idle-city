@@ -41,9 +41,12 @@ func _process(delta: float) -> void:
 		if shot_result_timer <= 0.0:
 			hud.hide_shot_result()
 
-	world_view.set_draw_ratio(draw_strength / MAX_DRAW_STRENGTH)
+	var draw_ratio: float = draw_strength / MAX_DRAW_STRENGTH
+	var preview_speed: float = stats.get_max_launch_speed(lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, draw_ratio))
+	world_view.set_draw_ratio(draw_ratio)
+	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, stats.get_trajectory_prediction_quality())
 	world_view.update_impact(impact_position, impact_timer)
-	hud.set_draw_strength(draw_strength / MAX_DRAW_STRENGTH, is_drawing)
+	hud.set_draw_strength(draw_ratio, is_drawing)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
@@ -96,11 +99,13 @@ func _on_arrow_hit(position: Vector2) -> void:
 	var score_result: Dictionary = world_view.get_target().calculate_score(position)
 	total_score += score_result.score
 	successful_hits += 1
+
+	var accuracy_xp: int = stats.award_accuracy_hit_xp()
+	if accuracy_xp > 0:
+		hud.show_accuracy_xp_gain(accuracy_xp)
+
 	if score_result.is_bullseye:
 		bullseyes += 1
-		var accuracy_xp: int = stats.award_accuracy_bullseye_xp()
-		if accuracy_xp > 0:
-			hud.show_accuracy_xp_gain(accuracy_xp)
 
 	active_arrow = null
 	impact_position = position
