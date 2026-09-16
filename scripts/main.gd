@@ -23,7 +23,7 @@ var economy: PlayerEconomy = PlayerEconomy.new()
 var bow_inventory: BowInventory = BowInventory.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
-var left_mouse_held: bool = false
+var right_mouse_held: bool = false
 var full_draw_timer: float = 0.0
 var shot_recovery_timer: float = 0.0
 var impact_position: Vector2 = Vector2.ZERO
@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 	world_view.set_recovery_progress(shot_recovery_timer / SHOT_RECOVERY_TIME)
 
 	if is_drawing:
-		if left_mouse_held:
+		if right_mouse_held:
 			draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
 		else:
 			draw_strength = max(draw_strength - bow.max_draw_strength * RIGHT_MOUSE_DRAW_DECAY * delta, 0.0)
@@ -64,9 +64,9 @@ func _process(delta: float) -> void:
 		full_draw_timer = 0.0
 
 	if is_drawing and full_draw_timer >= FULL_DRAW_AUTO_RELEASE_TIME:
-		_release_arrow()
+		_fire_arrow()
 
-	if not is_drawing and shot_recovery_timer <= 0.0 and left_mouse_held:
+	if not is_drawing and shot_recovery_timer <= 0.0 and right_mouse_held:
 		_start_drawing()
 		bow = bow_inventory.get_equipped()
 		draw_ratio = draw_strength / bow.max_draw_strength
@@ -101,15 +101,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		left_mouse_held = event.pressed
+		if event.pressed:
+			_fire_arrow()
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed:
-			if not is_drawing and shot_recovery_timer <= 0.0:
-				_start_drawing()
-		elif is_drawing:
-			_release_arrow()
+		right_mouse_held = event.pressed
+		if event.pressed and not is_drawing and shot_recovery_timer <= 0.0:
+			_start_drawing()
 
 func _start_drawing() -> void:
 	if is_drawing or shot_recovery_timer > 0.0:
@@ -133,9 +132,11 @@ func _update_aim() -> void:
 				aim_angle += wobble
 	world_view.aim_bow(world_view.player.get_bow_aim_angle(aim_angle))
 
-func _release_arrow() -> void:
+func _fire_arrow() -> void:
+	if not is_drawing or shot_recovery_timer > 0.0:
+		return
+
 	is_drawing = false
-	left_mouse_held = false
 	full_draw_timer = 0.0
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
@@ -257,7 +258,7 @@ func _refresh_hud() -> void:
 
 func _reset_session() -> void:
 	is_drawing = false
-	left_mouse_held = false
+	right_mouse_held = false
 	draw_strength = 0.0
 	full_draw_timer = 0.0
 	shot_recovery_timer = 0.0
