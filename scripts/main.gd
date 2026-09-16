@@ -17,11 +17,14 @@ var is_drawing: bool = false
 var active_arrow: Arrow = null
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
+var aim_angle: float = 0.0
 
 func _ready() -> void:
 	queue_redraw()
 
 func _process(delta: float) -> void:
+	_update_aim()
+
 	if is_drawing:
 		draw_strength = min(draw_strength + DRAW_SPEED * delta, MAX_DRAW_STRENGTH)
 
@@ -43,6 +46,17 @@ func _input(event: InputEvent) -> void:
 		elif not event.pressed and is_drawing:
 			_release_arrow()
 
+func _update_aim() -> void:
+	var mouse_position: Vector2 = _get_design_mouse_position()
+	var aim_vector: Vector2 = mouse_position - BOW_POSITION
+	if aim_vector.length_squared() > 0.001:
+		aim_angle = aim_vector.angle()
+
+func _get_design_mouse_position() -> Vector2:
+	var scale_factor: float = _get_scale_factor()
+	var offset: Vector2 = _get_view_offset(scale_factor)
+	return (get_viewport().get_mouse_position() - offset) / scale_factor
+
 func _release_arrow() -> void:
 	is_drawing = false
 	if draw_strength <= 0.0:
@@ -52,19 +66,22 @@ func _release_arrow() -> void:
 
 	var strength_ratio: float = draw_strength / MAX_DRAW_STRENGTH
 	var launch_speed: float = lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, strength_ratio)
+	var direction: Vector2 = Vector2.RIGHT.rotated(aim_angle)
 	var scale_factor: float = _get_scale_factor()
 	var offset: Vector2 = _get_view_offset(scale_factor)
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
-	arrow.position = offset + BOW_POSITION * scale_factor + Vector2(38.0, 0.0) * scale_factor
+
+	arrow.position = offset + (BOW_POSITION + direction * 38.0) * scale_factor
 	arrow.scale = Vector2.ONE * scale_factor
 	add_child(arrow)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
 	arrow.launch(
-		Vector2(launch_speed, 0.0) * scale_factor,
+		direction * launch_speed * scale_factor,
 		offset + TARGET_POSITION * scale_factor,
 		TARGET_RADIUS * scale_factor
 	)
+
 	active_arrow = arrow
 	draw_strength = 0.0
 	queue_redraw()
@@ -148,14 +165,16 @@ func _draw_archer(position: Vector2, scale_factor: float) -> void:
 
 func _draw_bow(position: Vector2, scale_factor: float) -> void:
 	var s: float = scale_factor
-	var top: Vector2 = position + Vector2(0, -65) * s
-	var bottom: Vector2 = position + Vector2(0, 65) * s
+	var direction: Vector2 = Vector2.RIGHT.rotated(aim_angle)
+	var perpendicular: Vector2 = direction.rotated(PI * 0.5)
 	var grip: Vector2 = position
-	var string_x: float = position.x + 32.0 * s
+	var top: Vector2 = grip + perpendicular * 65.0 * s
+	var bottom: Vector2 = grip - perpendicular * 65.0 * s
+	var string_rest: Vector2 = grip + direction * 32.0 * s
 	var pull_distance: float = 34.0 * s * (draw_strength / MAX_DRAW_STRENGTH)
-	var string_anchor: Vector2 = Vector2(string_x - pull_distance, position.y)
+	var string_anchor: Vector2 = string_rest - direction * pull_distance
 
-	draw_arc(grip, 65.0 * s, -PI * 0.5, PI * 0.5, 24, Color("8d603d"), 7.0 * s)
+	draw_arc(grip, 65.0 * s, aim_angle - PI * 0.5, aim_angle + PI * 0.5, 24, Color("8d603d"), 7.0 * s)
 	draw_line(top, bottom, Color("d8d0bb"), 2.0 * s)
 	draw_line(top, string_anchor, Color("d8d0bb"), 2.0 * s)
 	draw_line(string_anchor, bottom, Color("d8d0bb"), 2.0 * s)
