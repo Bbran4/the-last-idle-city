@@ -16,6 +16,7 @@ const TRAJECTORY_EXTRA_TIME: float = 2.75
 @onready var target: Target = $Target
 @onready var target_two: Target = $TargetTwo
 @onready var target_three: Target = $TargetThree
+@onready var ring_target: Target = $RingTarget
 @onready var ground: Node2D = $Ground
 
 var impact_position: Vector2 = Vector2.ZERO
@@ -28,7 +29,7 @@ var trajectory_visible: bool = false
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
-	set_active_targets([true, false, false])
+	set_active_targets([true, false, false, false])
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -66,7 +67,7 @@ func get_target() -> Target:
 	return target
 
 func get_targets() -> Array[Target]:
-	return [target, target_two, target_three]
+	return [target, target_two, target_three, ring_target]
 
 func set_active_targets(active: Array[bool]) -> void:
 	var targets: Array[Target] = get_targets()
