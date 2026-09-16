@@ -11,7 +11,6 @@ const TRAJECTORY_STEP: float = 0.055
 const TRAJECTORY_MAX_TIME: float = 4.0
 const TRAJECTORY_BASE_TIME: float = 0.65
 const TRAJECTORY_EXTRA_TIME: float = 2.75
-const CAMERA_PLAYER_SCREEN_X: float = 300.0
 
 @onready var player: Player = $Player
 @onready var target: Target = $Target
@@ -38,7 +37,7 @@ func _process(_delta: float) -> void:
 	queue_redraw()
 
 func _update_camera() -> void:
-	position.x = CAMERA_PLAYER_SCREEN_X - player.position.x * WORLD_SCALE
+	position.x = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
 
 func get_world_mouse_position() -> Vector2:
 	return to_local(get_viewport().get_mouse_position())
