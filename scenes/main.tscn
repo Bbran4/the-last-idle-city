@@ -25,6 +25,17 @@ position = Vector2(190, 1656)
 
 [node name="Target" parent="WorldView" unique_id=529700850 instance=ExtResource("5_tipki")]
 position = Vector2(2952, 1589)
+coin_reward = 1
+
+[node name="TargetTwo" parent="WorldView" instance=ExtResource("5_tipki")]
+position = Vector2(2550, 1589)
+scale = Vector2(0.8, 0.8)
+coin_reward = 2
+
+[node name="TargetThree" parent="WorldView" instance=ExtResource("5_tipki")]
+position = Vector2(3100, 1589)
+scale = Vector2(0.6, 0.6)
+coin_reward = 3
 
 [node name="Ground" parent="WorldView" unique_id=1284974576 instance=ExtResource("6_85g3d")]
 position = Vector2(364, 1733)
