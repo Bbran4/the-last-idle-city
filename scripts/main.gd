@@ -3,7 +3,9 @@ extends Node2D
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
-const PROJECTILE_SPEED_MULTIPLIER: float = 10.0
+const MIN_PROJECTILE_SPEED_MULTIPLIER: float = 1.0
+const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
+const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
 const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
@@ -50,9 +52,10 @@ func _process(delta: float) -> void:
 		if shot_result_timer <= 0.0:
 			hud.hide_shot_result()
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
+	var projectile_speed_multiplier: float = _get_projectile_speed_multiplier(draw_ratio)
 	var preview_speed: float = 0.0
 	if is_drawing:
-		preview_speed = stats.get_max_launch_speed(lerp(bow.min_launch_speed, bow.max_launch_speed, draw_ratio)) * PROJECTILE_SPEED_MULTIPLIER
+		preview_speed = stats.get_max_launch_speed(lerp(bow.min_launch_speed, bow.max_launch_speed, draw_ratio)) * projectile_speed_multiplier
 	world_view.set_draw_ratio(draw_ratio)
 	var trajectory_quality: float = stats.get_trajectory_prediction_quality()
 	if world_view.player.is_crouched():
@@ -61,6 +64,10 @@ func _process(delta: float) -> void:
 	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, trajectory_quality, trajectory_visible)
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
+
+func _get_projectile_speed_multiplier(draw_ratio: float) -> float:
+	var normalized_draw: float = clamp((draw_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0)
+	return lerp(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, normalized_draw)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
@@ -90,7 +97,7 @@ func _release_arrow() -> void:
 	var bow: BowData = bow_inventory.get_equipped()
 	var strength_ratio: float = draw_strength / bow.max_draw_strength
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
-	launch_speed = stats.get_max_launch_speed(launch_speed) * PROJECTILE_SPEED_MULTIPLIER
+	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
 	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
 	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(aim_angle), launch_speed)
 	arrow.hit_target.connect(_on_arrow_hit)
