@@ -80,16 +80,16 @@ The game combines player skill with character progression. A skilled player with
 
 **Goal:** Make every shot produce a meaningful result.
 
-- [ ] Add target scoring zones
-- [ ] Detect exact impact area
-- [ ] Add bullseye detection
-- [ ] Calculate target score
-- [ ] Display shot result
-- [ ] Display current score
-- [ ] Add visual scoring feedback
-- [ ] Track shots fired
-- [ ] Track successful hits
-- [ ] Track bullseyes
+- [x] Add target scoring zones
+- [x] Detect exact impact area
+- [x] Add bullseye detection
+- [x] Calculate target score
+- [x] Display shot result
+- [x] Display current score
+- [x] Add visual scoring feedback
+- [x] Track shots fired
+- [x] Track successful hits
+- [x] Track bullseyes
 
 **Completion:** Every shot clearly communicates its result and score.
 
@@ -378,10 +378,14 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 3 - Arrow Physics & Target Hits**
+**Current Stage: Milestone 4 - Scoring & Bullseye**
 
-Milestones 0 through 3 are complete. The project now has a dedicated arrow scene with projectile movement, gravity, flight rotation, target collision, embedded arrows, miss handling, impact feedback, and an `R` reset control for testing.
+Milestones 0 through 4 are complete. The project now has a dedicated scene structure for the player, bow, arrow, target, ground, world view, and HUD. The practice range uses a scaled world so the full shooting distance fits comfortably inside the viewport while keeping the UI at normal screen scale.
+
+The current shooting loop includes mouse-controlled bow drawing, draw-strength feedback, variable launch speed, projectile movement, gravity, flight rotation, target collision, embedded arrows, miss handling, impact feedback, target-zone scoring, bullseye detection, score tracking, shot/hit/bullseye statistics, and an `R` reset control for testing.
+
+The target currently uses five scoring zones, awarding 10 points for a bullseye and 6–9 points for the outer scoring zones. Missed shots receive no score.
 
 The next major goal is:
 
-> **Make every hit matter with scoring and bullseyes.**
+> **Turn successful practice into meaningful character progression with Strength.**
