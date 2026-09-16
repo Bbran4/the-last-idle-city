@@ -12,6 +12,7 @@ var passed_ring_targets: Array[Target] = []
 var ground_y: float = 0.0
 var window_left: float = 0.0
 var window_right: float = 1280.0
+var shot_origin: Vector2 = Vector2.ZERO
 var is_embedded: bool = false
 
 func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: float, left_bound: float, right_bound: float) -> void:
@@ -21,9 +22,15 @@ func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: fl
 	ground_y = ground
 	window_left = left_bound
 	window_right = right_bound
+	shot_origin = position
 	is_embedded = false
 	rotation = velocity.angle()
 	queue_redraw()
+
+func get_shot_distance_to_target(target: Target) -> float:
+	if not is_instance_valid(target):
+		return 0.0
+	return shot_origin.distance_to(target.position)
 
 func _process(delta: float) -> void:
 	if is_embedded:
