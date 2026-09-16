@@ -10,9 +10,10 @@ const BASE_XP_TO_LEVEL: int = 100
 const XP_GROWTH_PER_LEVEL: int = 25
 const MAX_LEVEL: int = 100
 
-const STRENGTH_XP_PER_FULL_DRAW: int = 25
+const STRENGTH_XP_PER_FULL_DRAW: int = 10
 const MINIMUM_STRENGTH_DRAW_RATIO: float = 0.60
 const ACCURACY_XP_PER_HIT: int = 25
+const STRENGTH_LAUNCH_SPEED_PER_LEVEL: float = 10.0
 
 var strength_level: int = STARTING_LEVEL
 var strength_xp: int = 0
@@ -63,7 +64,7 @@ func accuracy_progress_ratio() -> float:
 	return float(accuracy_xp) / float(accuracy_xp_to_next_level())
 
 func get_max_launch_speed(base_speed: float) -> float:
-	return base_speed + float(strength_level - 1) * 25.0
+	return base_speed + float(strength_level - 1) * STRENGTH_LAUNCH_SPEED_PER_LEVEL
 
 ## Accuracy level 1 has no trajectory assistance. Assistance unlocks at level 2.
 ## Higher Accuracy increases both prediction distance and visual resolution.
