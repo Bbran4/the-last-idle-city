@@ -5,7 +5,7 @@ const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
 const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
 const MAX_RANGE_LEVEL: int = 4
-const CROUCH_TRAJECTORY_BOOST: float = 0.35
+const CROUCH_TRAJECTORY_BOOST: float = 0.20
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -73,10 +73,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			_release_arrow()
 
 func _update_aim() -> void:
-	var aim_vector: Vector2 = world_view.get_world_mouse_position() - world_view.get_bow_position()
+	var mouse_world_position: Vector2 = world_view.get_world_mouse_position()
+	world_view.player.set_facing_from_mouse(mouse_world_position)
+	var aim_vector: Vector2 = mouse_world_position - world_view.get_bow_position()
 	if aim_vector.length_squared() > 0.001:
 		aim_angle = aim_vector.angle() + world_view.player.get_aim_wobble()
-	world_view.aim_bow(aim_angle)
+	world_view.aim_bow(world_view.player.get_bow_aim_angle(aim_angle))
 
 func _release_arrow() -> void:
 	is_drawing = false
