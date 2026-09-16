@@ -1,8 +1,8 @@
 class_name Target
 extends Area2D
 
-## Target reward is intentionally independent from the player's shooting stats.
-## Range expansion can use different target sizes, distances, and reward values.
+## Each target controls its own difficulty and coin reward.
+## Range expansion can place targets at different distances and scales.
 
 @export var coin_reward: int = 1
 @export var is_ring_target: bool = false
@@ -12,8 +12,8 @@ extends Area2D
 func get_radius() -> float:
 	var shape: Shape2D = collision_shape.shape
 	if shape is CircleShape2D:
-		return (shape as CircleShape2D).radius
-	return 100.0
+		return (shape as CircleShape2D).radius * abs(global_scale.x)
+	return 100.0 * abs(global_scale.x)
 
 func get_coin_reward() -> int:
 	if is_ring_target:
