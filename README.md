@@ -169,7 +169,7 @@ The game combines player skill with character progression. A skilled player with
 
 **Current implementation:** The economy is represented by a dedicated `PlayerEconomy` system. The practice range starts with 250 coins so the economy can be tested before tournaments exist. The first upgrade is a Training Manual with five levels. Each level costs more and increases Strength and Accuracy XP gains by 10%.
 
-Tournament rewards remain intentionally deferred to the tournament systems. When tournaments are implemented, they will become the primary long-term source of money rather than adding unrelated money generation to practice shooting.
+There is currently no gameplay method for earning money. The starting bankroll is a temporary testing aid and is not intended to represent the final economy. Tournament rewards will become the primary long-term source of money when tournaments are implemented.
 
 **Completion:** The economy and purchase infrastructure work independently from shooting. Tournament reward integration remains for Milestones 12-13.
 
@@ -177,20 +177,26 @@ Tournament rewards remain intentionally deferred to the tournament systems. When
 
 **Goal:** Create meaningful equipment progression.
 
-- [ ] Create bow data structure
-- [ ] Add starting bow
-- [ ] Add bow tiers
-- [ ] Define draw strength
-- [ ] Define Strength requirements
-- [ ] Define arrow velocity
-- [ ] Define draw speed/time
-- [ ] Add equipment modifiers
-- [ ] Add purchase/unlock system
-- [ ] Prevent equipping bows beyond requirements
-- [ ] Allow owned bows to be equipped
-- [ ] Make shooting behavior use equipped bow data
+- [x] Create bow data structure
+- [x] Add starting bow
+- [x] Add bow tiers
+- [x] Define draw strength
+- [x] Define Strength requirements
+- [x] Define arrow velocity
+- [x] Define draw speed/time
+- [x] Add equipment modifiers
+- [x] Add purchase/unlock system
+- [x] Prevent equipping bows beyond requirements
+- [x] Allow owned bows to be equipped
+- [x] Make shooting behavior use equipped bow data
 
-**Completion:** Money can buy better bows while Strength remains relevant.
+**Current implementation:** Bow definitions are stored as individual Godot `.tres` resources rather than being hard-coded into gameplay logic. The current equipment set contains the Training Bow, Recurve Bow, and War Bow. Each bow defines its own draw strength, draw speed, launch velocity, Strength requirement, price, and visual properties.
+
+The equipment panel displays available bows, purchase costs, Strength requirements, ownership, and the currently equipped bow. Purchasing a valid bow deducts coins, marks the bow as owned, and equips it immediately. Owned bows can be equipped again as long as the player's Strength meets the requirement. The active bow's resource data drives the actual shooting behavior and visuals.
+
+Bow prices are currently tuned for development testing because there is no gameplay income yet. Final equipment prices will be balanced after tournament rewards and the broader economy are implemented.
+
+**Completion:** The player can purchase and equip different bows, and the equipped bow directly affects shooting behavior.
 
 ### Milestone 11 - Practice Range Expansion
 
@@ -380,9 +386,9 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 9 - Economy & Money**
+**Current Stage: Milestone 10 - Bows & Equipment**
 
-Milestones 0 through 8 are implemented and the core practice loop has been playtested. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy now improves from every successful target hit rather than requiring a bullseye.
+Milestones 0 through 9 are implemented, with tournament income intentionally deferred until the tournament systems are built. The core practice loop has been playtested. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy improves from every successful target hit rather than requiring a bullseye.
 
 Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release. Early levels require 100 XP, with the requirement increasing by 25 XP per level. Strength affects launch capability by adding 25 launch-speed points per Strength level above level 1.
 
@@ -390,8 +396,10 @@ Accuracy starts at level 1 with 0 XP. Each successful target hit awards 25 Accur
 
 The trajectory preview is a visual simulation of the actual shot arc. It follows the current bow aim, draw strength, launch speed, and gravity. Higher Accuracy increases the useful prediction window and improves line visibility. The player still controls the aim completely. The system does not rotate the bow, alter the mouse aim, bend the arrow, or select a target automatically.
 
-Milestone 9 now adds a separate economy layer with coins, purchase validation, upgrade feedback, and a Training Manual upgrade. The Training Manual has five levels and increases both Strength and Accuracy XP gains by 10% per level. The economy is intentionally separate from the shooting code. The current starting bankroll exists to test the purchase loop before tournaments are available.
+Milestone 9 adds a separate economy layer with coins, purchase validation, upgrade feedback, and a Training Manual upgrade. The Training Manual has five levels and increases both Strength and Accuracy XP gains by 10% per level. The practice range currently starts with 250 coins for development testing. There is no current gameplay income source, so equipment prices are temporarily tuned low enough to allow equipment testing. Tournament rewards will become the primary long-term money source later.
+
+Milestone 10 adds data-driven bow equipment using individual `.tres` resources. The player can purchase and equip the Training Bow, Recurve Bow, and War Bow. Each bow has independent performance and visual data, while Strength requirements prevent the player from equipping equipment that is currently beyond their progression.
 
 The next goal is:
 
-> **Finish the economy's tournament reward connection later, then build Milestone 10: Bows & Equipment.**
+> **Build Milestone 11: Practice Range Expansion.**
