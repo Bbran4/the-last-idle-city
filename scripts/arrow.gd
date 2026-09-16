@@ -4,7 +4,7 @@ extends Node2D
 signal hit_target(position: Vector2, target: Target, arrow: Arrow)
 signal missed
 
-const GRAVITY: float = 900.0
+const GRAVITY: float = 2500.0
 
 var velocity: Vector2 = Vector2.ZERO
 var targets: Array[Target] = []

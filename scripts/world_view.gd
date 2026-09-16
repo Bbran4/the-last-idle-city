@@ -6,7 +6,7 @@ extends Node2D
 const WORLD_SCALE: float = 0.40
 const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
 const IMPACT_FLASH_DURATION: float = 0.18
-const GRAVITY: float = 180.0
+const GRAVITY: float = 2500.0
 const TRAJECTORY_STEP: float = 0.055
 const TRAJECTORY_MAX_TIME: float = 4.0
 const TRAJECTORY_BASE_TIME: float = 0.65
