@@ -23,24 +23,16 @@ script = ExtResource("2_world_view")
 [node name="Ground" parent="WorldView" unique_id=1284974576 instance=ExtResource("6_85g3d")]
 position = Vector2(364, 1664)
 
+[node name="Player" parent="WorldView" unique_id=641124038 instance=ExtResource("4_o6xl0")]
+position = Vector2(190, 1656)
+
 [node name="CustomizationTent" parent="WorldView" unique_id=509816865 instance=ExtResource("7_tent")]
+z_index = 1
 position = Vector2(-600, 1656)
 
-<<<<<<< Updated upstream
 [node name="RangeUpgradeVisuals" parent="WorldView" unique_id=198234801 instance=ExtResource("8_range_visuals")]
 z_index = 0
 position = Vector2(2050, 1664)
-=======
-<<<<<<< HEAD
-[node name="Player" parent="WorldView" unique_id=641124038 instance=ExtResource("4_o6xl0")]
-z_index = 1
-position = Vector2(190, 1656)
-=======
-[node name="RangeUpgradeVisuals" parent="WorldView" unique_id=198234801 instance=ExtResource("8_range_visuals")]
-z_index = 0
-position = Vector2(2050, 1664)
->>>>>>> d4f715c500c7925c12fc37ea445bb5795a2dc52d
->>>>>>> Stashed changes
 
 [node name="Target" parent="WorldView" unique_id=529700850 instance=ExtResource("5_tipki")]
 position = Vector2(1623, 1566)
