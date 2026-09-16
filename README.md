@@ -362,13 +362,13 @@ The order below is intentional. The shooting mechanic must prove itself before l
 
 ### Tasks
 
-- [ ] Create/configure the Godot 4.7 project
-- [ ] Configure project display and input settings
-- [ ] Create the main scene
-- [ ] Establish the initial folder structure
-- [ ] Add the initial game entry point
-- [ ] Confirm the project launches without errors
-- [ ] Confirm the project runs correctly from a clean checkout
+- [x] Create/configure the Godot 4.7 project
+- [x] Configure project display and input settings
+- [x] Create the main scene
+- [x] Establish the initial folder structure
+- [x] Add the initial game entry point
+- [x] Confirm the project launches without errors
+- [x] Confirm the project runs correctly from a clean checkout
 
 **Completion Criteria:** The project launches into a basic playable scene with no gameplay systems yet.
 
@@ -380,14 +380,14 @@ The order below is intentional. The shooting mechanic must prove itself before l
 
 ### Tasks
 
-- [ ] Create the main practice scene
-- [ ] Add the archer on the left side of the screen
-- [ ] Add a basic bow
-- [ ] Add the first target
-- [ ] Position the target at a sensible starting distance
-- [ ] Add basic background/environment elements
-- [ ] Establish a simple camera/view layout
-- [ ] Make sure the scene scales correctly with the game window
+- [x] Create the main practice scene
+- [x] Add the archer on the left side of the screen
+- [x] Add a basic bow
+- [x] Add the first target
+- [x] Position the target at a sensible starting distance
+- [x] Add basic background/environment elements
+- [x] Establish a simple camera/view layout
+- [x] Make sure the scene scales correctly with the game window
 
 **Completion Criteria:** The player can launch the game and see an archer, bow, and target in a functional practice range.
 
@@ -642,43 +642,43 @@ The order below is intentional. The shooting mechanic must prove itself before l
 
 ## Milestone 14 - Advanced Targets & Challenges
 
-**Goal:** Expand the shooting challenges after the core game is proven.
+**Goal:** Add variety to the shooting experience.
 
 ### Tasks
 
 - [ ] Add moving targets
-- [ ] Add long-distance targets
+- [ ] Add long-distance challenges
 - [ ] Add timed challenges
 - [ ] Add multi-target challenges
 - [ ] Add smaller precision targets
-- [ ] Create challenge-specific scoring rules
+- [ ] Create challenge-specific scoring where needed
 - [ ] Ensure new challenges remain compatible with the core shooting system
 
-**Completion Criteria:** The player has multiple meaningful ways to practice and demonstrate archery skill.
+**Completion Criteria:** Players have multiple meaningful ways to practice and test their archery skills.
 
 ---
 
 ## Milestone 15 - Advanced Archery Systems
 
-**Goal:** Add optional depth to the archery simulation.
+**Goal:** Add optional depth without losing focus.
 
 ### Tasks
 
-- [ ] Evaluate wind mechanics
-- [ ] Add wind direction/strength if the system improves gameplay
-- [ ] Connect wind information to Accuracy progression
+- [ ] Evaluate whether wind improves the game
+- [ ] Add wind only if it strengthens the core loop
+- [ ] Allow Accuracy to affect available wind information
 - [ ] Evaluate different arrow types
 - [ ] Add arrow types only if they create meaningful choices
-- [ ] Evaluate additional character statistics such as Speed or Endurance
-- [ ] Add only systems that strengthen the core gameplay loop
+- [ ] Evaluate Speed and Endurance progression
+- [ ] Add only systems that strengthen the archery experience
 
-**Completion Criteria:** Advanced mechanics add depth without turning the game into a collection of unrelated systems.
+**Completion Criteria:** Additional depth exists only where it improves the game rather than adding complexity for its own sake.
 
 ---
 
 ## Milestone 16 - Progression Balance
 
-**Goal:** Balance the complete gameplay loop.
+**Goal:** Balance the complete progression loop.
 
 ### Tasks
 
@@ -687,39 +687,39 @@ The order below is intentional. The shooting mechanic must prove itself before l
 - [ ] Balance aim assistance
 - [ ] Balance bow costs
 - [ ] Balance bow requirements
-- [ ] Balance range upgrade costs
+- [ ] Balance practice range costs
 - [ ] Balance tournament entry costs
 - [ ] Balance tournament rewards
 - [ ] Balance tournament difficulty
-- [ ] Review progression pacing
-- [ ] Remove or simplify systems that do not contribute to the game
+- [ ] Review overall pacing
+- [ ] Remove or simplify weak systems
 
-**Completion Criteria:** Progression feels deliberate, understandable, and rewarding from the first practice session through advanced tournaments.
+**Completion Criteria:** Progression feels deliberate, understandable, and rewarding without overwhelming the player.
 
 ---
 
 ## Milestone 17 - UI, Audio & Visual Polish
 
-**Goal:** Turn the functional game into a polished experience.
+**Goal:** Turn the working game into a cohesive presentation.
 
 ### Tasks
 
-- [ ] Finalize HUD layout
-- [ ] Improve buttons and menus
+- [ ] Polish the HUD
+- [ ] Polish buttons and menus
 - [ ] Improve target visuals
 - [ ] Improve archer visuals
 - [ ] Improve bow and arrow visuals
-- [ ] Add shooting animations
-- [ ] Add arrow impact effects
-- [ ] Add target hit feedback
-- [ ] Add Strength/Accuracy progression feedback
-- [ ] Add tournament presentation
+- [ ] Add shooting and draw animations
+- [ ] Add impact effects
+- [ ] Add target feedback
+- [ ] Add stat progression feedback
+- [ ] Improve tournament presentation
 - [ ] Add sound effects
 - [ ] Add music if appropriate
-- [ ] Add settings/options
-- [ ] Improve accessibility and readability
+- [ ] Add settings
+- [ ] Review accessibility and readability
 
-**Completion Criteria:** The game feels cohesive and polished rather than like a development prototype.
+**Completion Criteria:** The game feels visually and audibly cohesive rather than like a collection of development placeholders.
 
 ---
 
@@ -729,25 +729,25 @@ The order below is intentional. The shooting mechanic must prove itself before l
 
 ### Tasks
 
-- [ ] Implement save data
+- [ ] Create save data
 - [ ] Save player progression
 - [ ] Save money
 - [ ] Save equipment
-- [ ] Save range upgrades
+- [ ] Save practice range upgrades
 - [ ] Save tournament progression
 - [ ] Implement reliable loading
-- [ ] Handle corrupted/missing save data safely
-- [ ] Add reset-save option
-- [ ] Test fresh-game progression
+- [ ] Handle missing or corrupt save data safely
+- [ ] Add a reset-save option
+- [ ] Test fresh-game startup
 - [ ] Test long-term progression
 - [ ] Test different display resolutions
-- [ ] Fix remaining bugs
-- [ ] Optimize performance
-- [ ] Prepare release build
+- [ ] Fix release-blocking bugs
+- [ ] Perform final optimization pass
+- [ ] Create release build
 - [ ] Prepare itch.io build
-- [ ] Prepare Kongregate-compatible build if supported by the final technology/runtime requirements
+- [ ] Prepare Kongregate-compatible build if supported
 
-**Completion Criteria:** A new player can download the game, play through it, close it, return later, and continue their progression reliably.
+**Completion Criteria:** A player can download the game, play it, close it, return later, and continue their progression reliably.
 
 ---
 
@@ -755,12 +755,12 @@ The order below is intentional. The shooting mechanic must prove itself before l
 
 The first playable MVP ends at **Milestone 8**.
 
-It should contain:
+The MVP should contain:
 
 * One archer
 * One bow
 * One target
-* Mouse-controlled drawing
+* Mouse-controlled bow drawing
 * Arrow physics
 * Target collision
 * Bullseye detection
@@ -770,9 +770,16 @@ It should contain:
 * Basic practice HUD
 * Clear shot feedback
 
-The MVP does **not** need tournaments, an economy, multiple bows, advanced targets, wind, or a save system.
+The MVP does **not** need:
 
-The purpose of the MVP is to answer one question:
+* Tournaments
+* Economy
+* Multiple bows
+* Advanced targets
+* Wind
+* Save system
+
+The primary question for the MVP is simple:
 
 > **Is firing an arrow fun?**
 
@@ -780,32 +787,28 @@ If the answer is yes, the rest of the game can be built around that foundation.
 
 ---
 
-# 🚧 Development Rules
+# 📐 Development Rules
 
-To keep the project focused, development should follow these rules:
-
-1. **Build one milestone at a time.**
-2. **Do not build future systems early unless they are required by the current milestone.**
-3. **Keep the core shooting mechanic independent from progression and economy systems.**
-4. **Prefer simple systems over unnecessary abstractions.**
-5. **Every completed milestone must remain playable.**
-6. **Playtest major mechanics before expanding them.**
-7. **If a feature makes the game less fun, reconsider or remove it.**
-8. **Do not add complexity simply because an idle game traditionally has it.**
-9. **The player's skill must always matter.**
-10. **The README is the development roadmap, but gameplay testing can change the design when necessary.**
+1. Build one milestone at a time.
+2. Do not build future systems early unless they are required by the current milestone.
+3. Keep shooting logic independent from progression and economy logic.
+4. Prefer simple systems over unnecessary abstractions.
+5. Every completed milestone should remain playable.
+6. Playtest major mechanics before expanding the game.
+7. If a feature makes the game less fun, reconsider or remove it.
+8. Do not add complexity simply because idle games traditionally have it.
+9. Player skill must always matter.
+10. The README is the roadmap, but gameplay testing is allowed to change the design.
 
 ---
 
-# 📌 Project Status
+# 📍 Project Status
 
-**Current Stage:** Milestone 0 - Project Foundation
+**Current Stage: Milestone 1 - Archer & Practice Range**
 
-The project has been reset to a **completely blank implementation**. Previous gameplay scripts, scenes, and data files have been removed so the new game can be built cleanly around the archery concept.
+Milestone 0 and Milestone 1 are complete. The project now has a clean Godot foundation and a visible practice range containing the first archer, bow, and target.
 
-The current priority is to establish the project foundation and then build the shooting mechanic from the ground up.
-
-The first major gameplay goal remains:
+The next major goal is:
 
 > **Hold. Aim. Release. Hit the target.**
 
