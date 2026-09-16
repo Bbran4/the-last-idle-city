@@ -20,6 +20,12 @@ func get_coin_reward() -> int:
 		return 5
 	return clamp(coin_reward, 1, 3)
 
+func is_bullseye_hit(local_hit_position: Vector2) -> bool:
+	var radius: float = get_radius()
+	if radius <= 0.0:
+		return false
+	return local_hit_position.distance_to(global_position) <= radius * 0.16
+
 func get_reward_label() -> String:
 	if is_ring_target:
 		return "RING TARGET  +5 COINS"
