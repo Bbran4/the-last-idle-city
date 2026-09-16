@@ -81,8 +81,8 @@ func set_bows(bows: Array[BowData], owned: Dictionary, equipped_id: String, mone
 func _on_bow_button_pressed(bow_id: String) -> void:
 	bow_action_requested.emit(bow_id)
 
-func set_score(score: int) -> void:
-	score_label.text = "SCORE  %d" % score
+func set_coins_earned(amount: int) -> void:
+	score_label.text = "EARNED  %d COINS" % amount
 
 func set_stats(shots: int, hits: int, bullseyes: int) -> void:
 	stats_label.text = "SHOTS  %d    HITS  %d    BULLSEYES  %d" % [shots, hits, bullseyes]
