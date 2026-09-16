@@ -8,6 +8,7 @@ const GRAVITY: float = 180.0
 
 var velocity: Vector2 = Vector2.ZERO
 var targets: Array[Target] = []
+var passed_ring_targets: Array[Target] = []
 var ground_y: float = 0.0
 var window_left: float = 0.0
 var window_right: float = 1280.0
@@ -16,6 +17,7 @@ var is_embedded: bool = false
 func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: float, left_bound: float, right_bound: float) -> void:
 	velocity = initial_velocity
 	targets = active_targets
+	passed_ring_targets.clear()
 	ground_y = ground
 	window_left = left_bound
 	window_right = right_bound
@@ -34,6 +36,12 @@ func _process(delta: float) -> void:
 
 	if velocity.length_squared() > 0.0:
 		rotation = velocity.angle()
+
+	var ring_pass: Dictionary = _find_ring_pass(previous_position, position)
+	if not ring_pass.is_empty():
+		var ring_target: Target = ring_pass.target
+		passed_ring_targets.append(ring_target)
+		hit_target.emit(ring_pass.position, ring_target)
 
 	var hit_target_result: Dictionary = _find_target_hit(previous_position, position)
 	if not hit_target_result.is_empty():
@@ -63,11 +71,28 @@ func embed() -> void:
 	velocity = Vector2.ZERO
 	queue_redraw()
 
+func _find_ring_pass(start: Vector2, end: Vector2) -> Dictionary:
+	var segment: Vector2 = end - start
+	if abs(segment.x) <= 0.0001:
+		return {}
+	for target: Target in targets:
+		if not is_instance_valid(target) or not target.visible or not target.is_ring_target:
+			continue
+		if passed_ring_targets.has(target):
+			continue
+		var t: float = (target.position.x - start.x) / segment.x
+		if t < 0.0 or t > 1.0:
+			continue
+		var crossing: Vector2 = start + segment * t
+		if abs(crossing.y - target.position.y) <= target.get_ring_inner_radius():
+			return {"position": crossing, "target": target}
+	return {}
+
 func _find_target_hit(start: Vector2, end: Vector2) -> Dictionary:
 	var closest_hit: Dictionary = {}
 	var closest_projection: float = INF
 	for target: Target in targets:
-		if not is_instance_valid(target) or not target.visible:
+		if not is_instance_valid(target) or not target.visible or target.is_ring_target:
 			continue
 		var hit_position: Vector2 = _segment_circle_hit(start, end, target.position, target.get_radius())
 		if hit_position == Vector2.INF:
