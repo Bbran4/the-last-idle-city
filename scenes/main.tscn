@@ -24,15 +24,14 @@ script = ExtResource("2_world_view")
 position = Vector2(190, 1656)
 
 [node name="Target" parent="WorldView" unique_id=529700850 instance=ExtResource("5_tipki")]
-position = Vector2(2952, 1589)
-coin_reward = 1
+position = Vector2(2493, 1589)
 
-[node name="TargetTwo" parent="WorldView" instance=ExtResource("5_tipki")]
-position = Vector2(2550, 1589)
+[node name="TargetTwo" parent="WorldView" unique_id=882783016 instance=ExtResource("5_tipki")]
+position = Vector2(2827, 1589)
 scale = Vector2(0.8, 0.8)
 coin_reward = 2
 
-[node name="TargetThree" parent="WorldView" instance=ExtResource("5_tipki")]
+[node name="TargetThree" parent="WorldView" unique_id=434040876 instance=ExtResource("5_tipki")]
 position = Vector2(3100, 1589)
 scale = Vector2(0.6, 0.6)
 coin_reward = 3
