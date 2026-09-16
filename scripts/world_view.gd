@@ -11,6 +11,7 @@ const TRAJECTORY_STEP: float = 0.055
 const TRAJECTORY_MAX_TIME: float = 4.0
 const TRAJECTORY_BASE_TIME: float = 0.65
 const TRAJECTORY_EXTRA_TIME: float = 2.75
+const CAMERA_PLAYER_SCREEN_X: float = 300.0
 
 @onready var player: Player = $Player
 @onready var target: Target = $Target
@@ -30,9 +31,14 @@ var trajectory_visible: bool = false
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
 	set_active_targets(1)
+	_update_camera()
 
 func _process(_delta: float) -> void:
+	_update_camera()
 	queue_redraw()
+
+func _update_camera() -> void:
+	position.x = CAMERA_PLAYER_SCREEN_X - player.position.x * WORLD_SCALE
 
 func get_world_mouse_position() -> Vector2:
 	return to_local(get_viewport().get_mouse_position())
@@ -73,6 +79,16 @@ func set_active_targets(range_level: int) -> void:
 	var targets: Array[Target] = get_targets()
 	for index: int in range(targets.size()):
 		targets[index].visible = index < range_level
+
+func set_range_level(level: int) -> void:
+	set_active_targets(level)
+
+func get_range_level() -> int:
+	var active_targets: Array[Target] = get_active_targets()
+	return active_targets.size()
+
+func get_range_upgrade_costs() -> Array[int]:
+	return [50, 100, 250]
 
 func update_impact(position: Vector2, timer: float) -> void:
 	impact_position = position
