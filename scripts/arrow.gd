@@ -1,7 +1,7 @@
 class_name Arrow
 extends Node2D
 
-signal hit_target(position: Vector2, target: Target)
+signal hit_target(position: Vector2, target: Target, arrow: Arrow)
 signal missed
 
 const GRAVITY: float = 180.0
@@ -48,14 +48,14 @@ func _process(delta: float) -> void:
 	if not ring_pass.is_empty():
 		var ring_target: Target = ring_pass.target
 		passed_ring_targets.append(ring_target)
-		hit_target.emit(ring_pass.position, ring_target)
+		hit_target.emit(ring_pass.position, ring_target, self)
 
 	var hit_target_result: Dictionary = _find_target_hit(previous_position, position)
 	if not hit_target_result.is_empty():
 		var target: Target = hit_target_result.target
 		position = hit_target_result.position
 		embed()
-		hit_target.emit(position, target)
+		hit_target.emit(position, target, self)
 		return
 
 	if _crossed_ground(previous_position, position):
