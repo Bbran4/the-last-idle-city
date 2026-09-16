@@ -122,28 +122,46 @@ func _on_bow_action_requested(bow_id: String) -> void:
 	var bow: BowData = bow_inventory.get_bow(bow_id)
 	if bow == null:
 		return
+
 	if bow_inventory.is_owned(bow_id):
 		if bow_inventory.equip(bow_id, stats.strength_level):
 			world_view.configure_bow(bow)
 			hud.show_economy_feedback("EQUIPPED  %s" % bow.display_name)
 		else:
 			hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
-	else:
-		if not bow_inventory.can_purchase(bow_id, economy.money, stats.strength_level):
-			if stats.strength_level < bow.required_strength:
-				hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
-			else:
-				hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
-			return
-		if economy.spend_money(bow.price):
-			var purchased_cost: int = bow_inventory.purchase(bow_id, economy.money + bow.price, stats.strength_level)
-			if purchased_cost >= 0 and bow_inventory.equip(bow_id, stats.strength_level):
-				world_view.configure_bow(bow)
-				hud.show_economy_feedback("PURCHASED AND EQUIPPED  %s" % bow.display_name)
-			else:
-				hud.show_economy_feedback("PURCHASE FAILED")
-		else:
-			hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+		_refresh_hud()
+		return
+
+	if stats.strength_level < bow.required_strength:
+		hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
+		return
+
+	if economy.money < bow.price:
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+		return
+
+	if not bow_inventory.can_purchase(bow_id, economy.money, stats.strength_level):
+		hud.show_economy_feedback("PURCHASE UNAVAILABLE")
+		return
+
+	if not economy.spend_money(bow.price):
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+		return
+
+	if not bow_inventory.unlock(bow_id):
+		economy.add_money(bow.price)
+		hud.show_economy_feedback("PURCHASE FAILED")
+		_refresh_hud()
+		return
+
+	if not bow_inventory.equip(bow_id, stats.strength_level):
+		economy.add_money(bow.price)
+		hud.show_economy_feedback("EQUIP FAILED")
+		_refresh_hud()
+		return
+
+	world_view.configure_bow(bow)
+	hud.show_economy_feedback("PURCHASED AND EQUIPPED  %s" % bow.display_name)
 	_refresh_hud()
 
 func _on_range_target_action_requested(target_index: int) -> void:
