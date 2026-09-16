@@ -62,7 +62,7 @@ func _create_equipment_panel() -> void:
 func _create_range_panel() -> void:
 	range_panel = PanelContainer.new()
 	range_panel.position = Vector2(954.0, 250.0)
-	range_panel.size = Vector2(306.0, 285.0)
+	range_panel.size = Vector2(306.0, 330.0)
 	range_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(range_panel)
 	var margin := MarginContainer.new()
@@ -107,7 +107,7 @@ func set_range_level(level: int, max_level: int, costs: Array[int], money: int) 
 	if range_list == null:
 		return
 	for child in range_list.get_children():
-		if child is Button:
+		if child is Button or child is Label and child != range_list.get_child(0):
 			child.queue_free()
 
 	var status := Label.new()
