@@ -19,10 +19,13 @@ The game combines player skill with character progression. Upgrades improve capa
 | Space | Jump |
 | Ctrl / C | Crouch |
 | Mouse | Aim |
-| Left Mouse Button | Draw and release bow |
+| Right Mouse Button | Hold to draw bow |
+| Left Mouse Button | Fire current draw strength |
 | R | Reset practice session |
 
 The archer faces the mouse cursor and the bow follows the facing direction. Moving while aiming introduces a small amount of bow wobble, while crouching extends the trajectory preview by 20%. The trajectory preview is disabled while airborne.
+
+Holding Right Mouse Button draws the bow. Releasing it does not fire. Left Mouse Button fires the current draw strength. Holding right mouse through shot recovery automatically begins the next draw when recovery finishes.
 
 ## Development Roadmap
 
@@ -128,6 +131,7 @@ Final bow prices will be balanced after the range and tournament economies are e
 - [x] Movement wobble while aiming
 - [x] Distance-based Accuracy XP
 - [x] 20% crouch trajectory bonus
+- [x] Tent is a standalone scene with editor-based visuals
 - [ ] Persist range upgrades
 - [ ] Visually evolve the range
 - [ ] Final expansion balance pass
@@ -145,25 +149,48 @@ The first three targets stop arrows on impact. The Ring Target rewards an arrow 
 
 Accuracy XP now scales with the original shot distance. Point-blank hits provide the minimum XP, while shots reaching 1000 distance or more provide the base maximum of 25 XP. The Training Manual multiplier is then applied, with XP capped by the current progression rules.
 
-### Milestone 12 - First Tournament
+### Milestone 12 - Pre-Tournament Foundation
+
+**Goal:** Finish the practice experience and establish a stable foundation before introducing tournament rules. The tournament should be built on a polished, persistent practice loop rather than becoming a second unfinished system.**
+
+- [ ] Persist player progression between sessions
+- [ ] Save and load money, Strength, Accuracy, bows and range progression
+- [ ] Add a deliberate reset-save flow for testing
+- [ ] Visually evolve the practice range with each range level
+- [ ] Make the training tent a proper practice-range hub and establish its future customization role
+- [ ] Finalize practice income and equipment costs
+- [ ] Finalize Strength and Accuracy progression pacing
+- [ ] Finalize range upgrade costs and target rewards
+- [ ] Confirm shooting, movement and trajectory behavior remain stable
+- [ ] Clean up prototype-only UI and development feedback
+- [ ] Complete a focused long-session playtest
+
+**Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
+
+### Milestone 13 - First Tournament
+
+**Goal:** Introduce the first structured competitive activity without replacing the core shooting mechanics.**
 
 - [ ] Tournament entry system
 - [ ] Tournament requirements
-- [ ] Rounds and attempt limits
-- [ ] Tournament scoring and targets
-- [ ] Opponents and generated scores
+- [ ] Tournament rounds and attempt limits
+- [ ] Tournament-specific target layouts
+- [ ] Tournament scoring rules
+- [ ] Opponent score generation
 - [ ] Results and tournament UI
 - [ ] Entry/restart flow
+- [ ] Tournament rewards feed back into the existing economy
 
-### Milestone 13 - Tournament Rewards
+### Milestone 14 - Tournament Rewards & Progression
 
 - [ ] Prize structures
 - [ ] Tournament money
 - [ ] Tournament progression
 - [ ] Harder tournaments
 - [ ] Entry/reward balancing
+- [ ] Clear relationship between practice progression and tournament progression
 
-### Milestone 14 - Advanced Targets & Challenges
+### Milestone 15 - Advanced Targets & Challenges
 
 - [ ] Moving targets
 - [ ] Long-distance targets
@@ -171,34 +198,34 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 - [ ] Multi-target challenges
 - [ ] Precision targets
 
-### Milestone 15 - Advanced Archery Systems
+### Milestone 16 - Advanced Archery Systems
 
 - [ ] Evaluate wind
 - [ ] Evaluate arrow types
 - [ ] Evaluate Speed and Endurance
 - [ ] Add only systems that strengthen the core loop
 
-### Milestone 16 - Progression Balance
+### Milestone 17 - Progression Balance
 
 - [ ] Balance Strength and Accuracy
 - [ ] Balance trajectory assistance
 - [ ] Balance bows and range costs
 - [ ] Balance tournaments and rewards
 - [ ] Balance overall pacing
+- [ ] Test early, mid and long-term progression
 
-### Milestone 17 - UI, Audio & Visual Polish
+### Milestone 18 - UI, Audio & Visual Polish
 
 - [ ] Polish HUD and menus
 - [ ] Improve archer, bow, arrow and target visuals
+- [ ] Improve practice range and tent visuals
 - [ ] Add animation and impact effects
 - [ ] Add sound effects and music where appropriate
 - [ ] Add settings and accessibility improvements
 
-### Milestone 18 - Save System & Release Preparation
+### Milestone 19 - Release Preparation
 
-- [ ] Save player progression
-- [ ] Save money, equipment and range upgrades
-- [ ] Save tournament progression
+- [ ] Finalize save system and migration handling
 - [ ] Reliable loading and reset-save support
 - [ ] Test fresh games and long-term progression
 - [ ] Test display resolutions
@@ -232,17 +259,20 @@ If the answer is not yes, improve the shooting experience before expanding the g
 8. Do not add complexity simply because other idle games traditionally use it.
 9. Player skill must always matter.
 10. The README is the roadmap, but gameplay testing can change the design.
+11. Do not start tournament implementation until the practice loop is persistent and balanced.
 
 ## Current Status
 
 **Current Stage: Milestone 11 - Practice Range Expansion**
 
-Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, and the 20% crouch trajectory bonus.
+Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, and the 20% crouch trajectory bonus. The tent is now also a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
 
 The core practice loop has been playtested. Strength and Accuracy live together in `PlayerStats`. Strength progression rewards meaningful draw and release practice. Accuracy improves from successful target hits and scales with shot distance.
 
 The trajectory preview remains informational. It follows the current bow aim and shot conditions, improves with Accuracy, becomes 20% longer while crouching, and disappears while airborne. It never rotates the bow, bends the arrow, or selects a target automatically.
 
-The next goal is:
+### Next Step
 
-> **Finish Milestone 11 with persistent range progression, visual range evolution, and a final balance pass, then begin Milestone 12: First Tournament.**
+**Finish Milestone 11, then complete Milestone 12: Pre-Tournament Foundation before beginning Milestone 13: First Tournament.**
+
+The immediate priority is not adding tournament mechanics. It is making the practice range feel like a complete, persistent game loop that can support tournaments without needing its foundations rebuilt afterward.
