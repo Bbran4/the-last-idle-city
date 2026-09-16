@@ -1,10 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://bsrlsgo0167me"]
+[gd_scene format=3 uid="uid://bsrlsgo0167me"]
 
 [ext_resource type="Script" uid="uid://dspq4pptxqo38" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/world_view.gd" id="2_world_view"]
+[ext_resource type="Script" uid="uid://genlf37jkqhy" path="res://scripts/world_view.gd" id="2_world_view"]
 
 [node name="Main" type="Node2D" unique_id=324881482]
 script = ExtResource("1_main")
 
-[node name="WorldView" type="Node2D" parent="."]
+[node name="WorldView" type="Node2D" parent="." unique_id=107804532]
 script = ExtResource("2_world_view")

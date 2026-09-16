@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/bow.tscn" id="2_bow"]
+
+[node name="Player" type="Node2D"]
+script = ExtResource("1_player")
+
+[node name="Body" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-50, -120, 50, -120, 50, 0, -50, 0)
+color = Color(0.427451, 0.498039, 0.568627, 1)
+
+[node name="BodyOutline" type="Line2D" parent="."]
+points = PackedVector2Array(-50, -120, 50, -120, 50, 0, -50, 0, -50, -120)
+width = 5.0
+default_color = Color(0.682353, 0.721569, 0.752941, 1)
+
+[node name="Bow" parent="." instance=ExtResource("2_bow")]
+position = Vector2(55, -45)

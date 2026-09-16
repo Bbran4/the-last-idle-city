@@ -8,6 +8,7 @@ const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
 
 @onready var world_view: WorldView = $WorldView
+@onready var hud: HUD = $HUD
 
 var draw_strength: float = 0.0
 var is_drawing: bool = false
@@ -21,11 +22,9 @@ var total_score: int = 0
 var shots_fired: int = 0
 var successful_hits: int = 0
 var bullseyes: int = 0
-var last_shot_score: int = 0
-var last_shot_label: String = ""
 
 func _ready() -> void:
-	queue_redraw()
+	_refresh_hud()
 
 func _process(delta: float) -> void:
 	_update_aim()
@@ -38,11 +37,12 @@ func _process(delta: float) -> void:
 
 	if shot_result_timer > 0.0:
 		shot_result_timer = max(shot_result_timer - delta, 0.0)
+		if shot_result_timer <= 0.0:
+			hud.hide_shot_result()
 
-	world_view.update_aim_state(aim_angle, draw_strength, MAX_DRAW_STRENGTH, is_drawing)
+	world_view.set_draw_ratio(draw_strength / MAX_DRAW_STRENGTH)
 	world_view.update_impact(impact_position, impact_timer)
-
-	queue_redraw()
+	hud.set_draw_strength(draw_strength / MAX_DRAW_STRENGTH, is_drawing)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
@@ -53,24 +53,21 @@ func _input(event: InputEvent) -> void:
 		if event.pressed and not is_drawing and active_arrow == null:
 			is_drawing = true
 			draw_strength = 0.0
-			queue_redraw()
 		elif not event.pressed and is_drawing:
 			_release_arrow()
 
 func _update_aim() -> void:
-	var mouse_position: Vector2 = _get_world_mouse_position()
-	var aim_vector: Vector2 = mouse_position - WorldView.BOW_POSITION
+	var mouse_position: Vector2 = world_view.get_world_mouse_position()
+	var bow_position: Vector2 = world_view.get_bow_position()
+	var aim_vector: Vector2 = mouse_position - bow_position
 	if aim_vector.length_squared() > 0.001:
 		aim_angle = aim_vector.angle()
-
-func _get_world_mouse_position() -> Vector2:
-	return get_viewport().get_mouse_position() / WorldView.WORLD_SCALE
+	world_view.aim_bow(aim_angle)
 
 func _release_arrow() -> void:
 	is_drawing = false
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
-		queue_redraw()
 		return
 
 	var strength_ratio: float = draw_strength / MAX_DRAW_STRENGTH
@@ -83,19 +80,15 @@ func _release_arrow() -> void:
 
 	active_arrow = arrow
 	shots_fired += 1
-	last_shot_label = "SHOT FIRED"
-	shot_result_timer = SHOT_RESULT_DURATION
+	_show_result("SHOT FIRED")
 	draw_strength = 0.0
-	queue_redraw()
 
 func _on_arrow_hit(position: Vector2) -> void:
 	if active_arrow == null:
 		return
 
-	var score_result: Dictionary = _calculate_score(position)
-	last_shot_score = score_result.score
-	last_shot_label = score_result.label
-	total_score += last_shot_score
+	var score_result: Dictionary = world_view.get_target().calculate_score(position)
+	total_score += score_result.score
 	successful_hits += 1
 	if score_result.is_bullseye:
 		bullseyes += 1
@@ -103,28 +96,20 @@ func _on_arrow_hit(position: Vector2) -> void:
 	active_arrow = null
 	impact_position = position
 	impact_timer = IMPACT_FLASH_DURATION
-	shot_result_timer = SHOT_RESULT_DURATION
-	queue_redraw()
+	_show_result(score_result.label)
 
 func _on_arrow_missed() -> void:
 	active_arrow = null
-	last_shot_score = 0
-	last_shot_label = "MISS"
+	_show_result("MISS")
+
+func _show_result(text: String) -> void:
 	shot_result_timer = SHOT_RESULT_DURATION
-	queue_redraw()
+	hud.show_shot_result(text)
+	_refresh_hud()
 
-func _calculate_score(position: Vector2) -> Dictionary:
-	var distance: float = position.distance_to(WorldView.TARGET_POSITION)
-
-	if distance <= 16.0:
-		return {"score": 10, "label": "BULLSEYE  +10", "is_bullseye": true}
-	if distance <= 36.0:
-		return {"score": 9, "label": "9 RING  +9", "is_bullseye": false}
-	if distance <= 56.0:
-		return {"score": 8, "label": "8 RING  +8", "is_bullseye": false}
-	if distance <= 78.0:
-		return {"score": 7, "label": "7 RING  +7", "is_bullseye": false}
-	return {"score": 6, "label": "6 RING  +6", "is_bullseye": false}
+func _refresh_hud() -> void:
+	hud.set_score(total_score)
+	hud.set_stats(shots_fired, successful_hits, bullseyes)
 
 func _reset_arrows() -> void:
 	is_drawing = false
@@ -133,38 +118,4 @@ func _reset_arrows() -> void:
 	impact_timer = 0.0
 	shot_result_timer = 0.0
 	world_view.clear_arrows()
-	queue_redraw()
-
-func _draw() -> void:
-	var size: Vector2 = get_viewport_rect().size
-	draw_rect(Rect2(Vector2.ZERO, size), Color("15191d"))
-
-	_draw_draw_strength(size)
-	_draw_hud()
-	_draw_title()
-
-func _draw_draw_strength(size: Vector2) -> void:
-	if not is_drawing:
-		return
-
-	var bar_size: Vector2 = Vector2(360.0, 18.0)
-	var bar_position: Vector2 = Vector2((size.x - bar_size.x) * 0.5, size.y - 50.0)
-	var fill_ratio: float = draw_strength / MAX_DRAW_STRENGTH
-
-	draw_rect(Rect2(bar_position, bar_size), Color("20282c"), true)
-	draw_rect(Rect2(bar_position, Vector2(bar_size.x * fill_ratio, bar_size.y)), Color("d7a449"), true)
-	draw_rect(Rect2(bar_position, bar_size), Color("8f988f"), false, 2.0)
-	draw_string(ThemeDB.fallback_font, bar_position + Vector2(0.0, -8.0), "DRAW  %d%%" % int(draw_strength), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("d8d0bb"))
-
-func _draw_hud() -> void:
-	var hud_position: Vector2 = Vector2(24.0, 70.0)
-	draw_string(ThemeDB.fallback_font, hud_position, "SCORE  %d" % total_score, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("e8dfca"))
-	draw_string(ThemeDB.fallback_font, hud_position + Vector2(0.0, 22.0), "SHOTS  %d    HITS  %d    BULLSEYES  %d" % [shots_fired, successful_hits, bullseyes], HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("aeb6ad"))
-
-	if shot_result_timer > 0.0:
-		var result_position: Vector2 = Vector2(get_viewport_rect().size.x * 0.5 - 120.0, 70.0)
-		draw_string(ThemeDB.fallback_font, result_position, last_shot_label, HORIZONTAL_ALIGNMENT_CENTER, 240.0, 20, Color("d7a449"))
-
-func _draw_title() -> void:
-	draw_string(ThemeDB.fallback_font, Vector2(24.0, 34.0), "THE LAST ARCHER", HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color("e8dfca"))
-	draw_string(ThemeDB.fallback_font, Vector2(26.0, 52.0), "PRACTICE RANGE", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("8f988f"))
+	hud.hide_shot_result()

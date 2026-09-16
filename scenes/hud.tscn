@@ -1,0 +1,94 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+
+[node name="HUD" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("1_hud")
+
+[node name="TitleLabel" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 10.0
+offset_right = 424.0
+offset_bottom = 46.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.909804, 0.87451, 0.792157, 1)
+text = "THE LAST ARCHER"
+
+[node name="SubtitleLabel" type="Label" parent="."]
+offset_left = 26.0
+offset_top = 44.0
+offset_right = 300.0
+offset_bottom = 62.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.560784, 0.596078, 0.560784, 1)
+text = "PRACTICE RANGE"
+
+[node name="ScoreLabel" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 70.0
+offset_right = 300.0
+offset_bottom = 100.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(0.909804, 0.87451, 0.792157, 1)
+text = "SCORE  0"
+
+[node name="StatsLabel" type="Label" parent="."]
+offset_left = 24.0
+offset_top = 98.0
+offset_right = 460.0
+offset_bottom = 118.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.682353, 0.713725, 0.682353, 1)
+text = "SHOTS  0    HITS  0    BULLSEYES  0"
+
+[node name="ShotResultLabel" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -120.0
+offset_top = 70.0
+offset_right = 120.0
+offset_bottom = 96.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.843137, 0.643137, 0.286275, 1)
+horizontal_alignment = 1
+text = ""
+
+[node name="DrawBar" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -68.0
+offset_right = 180.0
+offset_bottom = -20.0
+mouse_filter = 2
+
+[node name="Background" type="ColorRect" parent="DrawBar"]
+offset_top = 20.0
+offset_right = 360.0
+offset_bottom = 38.0
+mouse_filter = 2
+color = Color(0.12549, 0.156863, 0.172549, 1)
+
+[node name="Fill" type="ColorRect" parent="DrawBar"]
+offset_top = 20.0
+offset_bottom = 38.0
+mouse_filter = 2
+color = Color(0.843137, 0.643137, 0.286275, 1)
+
+[node name="DrawLabel" type="Label" parent="DrawBar"]
+offset_right = 360.0
+offset_bottom = 18.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.847059, 0.815686, 0.733333, 1)
+text = "DRAW  0%"
