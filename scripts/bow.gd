@@ -23,7 +23,10 @@ func _apply_visual_data() -> void:
 		return
 	limb.default_color = data.limb_color
 	limb.width = data.limb_width
-	limb.points = PackedVector2Array(0.0, -data.limb_height, 0.0, data.limb_height)
+	limb.points = PackedVector2Array([
+		Vector2(0.0, -data.limb_height),
+		Vector2(0.0, data.limb_height)
+	])
 	string_top.default_color = data.string_color
 	string_bottom.default_color = data.string_color
 	string_top.width = data.string_width
