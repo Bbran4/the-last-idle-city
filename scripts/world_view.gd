@@ -29,7 +29,7 @@ var trajectory_visible: bool = false
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
-	set_active_targets([true, false, false, false])
+	set_active_targets(1)
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -69,10 +69,10 @@ func get_target() -> Target:
 func get_targets() -> Array[Target]:
 	return [target, target_two, target_three, ring_target]
 
-func set_active_targets(active: Array[bool]) -> void:
+func set_active_targets(range_level: int) -> void:
 	var targets: Array[Target] = get_targets()
 	for index: int in range(targets.size()):
-		targets[index].visible = index < active.size() and active[index]
+		targets[index].visible = index < range_level
 
 func update_impact(position: Vector2, timer: float) -> void:
 	impact_position = position
