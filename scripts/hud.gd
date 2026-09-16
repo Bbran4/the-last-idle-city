@@ -96,6 +96,7 @@ func set_bows(bows: Array[BowData], owned: Dictionary, equipped_id: String, mone
 			button.disabled = true
 		elif is_owned:
 			button.text = "%s  [EQUIP]" % bow.display_name
+			button.pressed.connect(_on_bow_button_pressed.bind(bow.id))
 		else:
 			button.text = "%s  $%d  STR %d" % [bow.display_name, bow.price, bow.required_strength]
 			button.disabled = money < bow.price or strength_level < bow.required_strength
