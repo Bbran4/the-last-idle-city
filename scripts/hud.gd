@@ -3,7 +3,7 @@ extends Control
 
 signal training_upgrade_pressed
 signal bow_action_requested(bow_id: String)
-signal range_target_action_requested(target_index: int)
+signal range_upgrade_requested
 
 const DRAW_BAR_WIDTH: float = 360.0
 
@@ -103,39 +103,47 @@ func set_bows(bows: Array[BowData], owned: Dictionary, equipped_id: String, mone
 			button.pressed.connect(_on_bow_button_pressed.bind(bow.id))
 		equipment_list.add_child(button)
 
-func set_range_targets(targets: Array[Target], owned: Array[bool], costs: Array[int], money: int) -> void:
+func set_range_level(level: int, max_level: int, costs: Array[int], money: int) -> void:
 	if range_list == null:
 		return
 	for child in range_list.get_children():
 		if child is Button:
 			child.queue_free()
-	for index: int in range(targets.size()):
-		var target: Target = targets[index]
-		var button := Button.new()
-		button.custom_minimum_size = Vector2(0, 34)
-		button.mouse_filter = Control.MOUSE_FILTER_STOP
-		var is_owned: bool = index < owned.size() and owned[index]
-		if is_owned:
-			if target.is_ring_target:
-				button.text = "RING TARGET  +5 COINS  [ACTIVE]"
-			else:
-				button.text = "TARGET %d  +%d COINS  [ACTIVE]" % [index + 1, target.get_coin_reward()]
-			button.disabled = true
+
+	var status := Label.new()
+	status.text = "RANGE LEVEL  %d / %d" % [level, max_level]
+	range_list.add_child(status)
+
+	var target_names: Array[String] = ["LARGE TARGET", "SMALL TARGET", "DISTANT TARGET", "RING TARGET"]
+	var target_rewards: Array[int] = [1, 2, 3, 5]
+	for index: int in range(max_level):
+		var target_label := Label.new()
+		var unlocked: bool = index < level
+		if unlocked:
+			target_label.text = "%s  +%d COINS  [UNLOCKED]" % [target_names[index], target_rewards[index]]
 		else:
-			var cost: int = costs[index] if index < costs.size() else 0
-			if target.is_ring_target:
-				button.text = "RING TARGET  +5 COINS  $%d" % cost
-			else:
-				button.text = "TARGET %d  +%d COINS  $%d" % [index + 1, target.get_coin_reward(), cost]
-			button.disabled = money < cost
-			button.pressed.connect(_on_range_target_button_pressed.bind(index))
-		range_list.add_child(button)
+			target_label.text = "%s  +%d COINS  [LOCKED]" % [target_names[index], target_rewards[index]]
+		range_list.add_child(target_label)
+
+	if level < max_level:
+		var next_cost: int = costs[level]
+		var upgrade_button := Button.new()
+		upgrade_button.custom_minimum_size = Vector2(0, 34)
+		upgrade_button.mouse_filter = Control.MOUSE_FILTER_STOP
+		upgrade_button.text = "UPGRADE RANGE  $%d" % next_cost
+		upgrade_button.disabled = money < next_cost
+		upgrade_button.pressed.connect(_on_range_upgrade_button_pressed)
+		range_list.add_child(upgrade_button)
+	else:
+		var max_label := Label.new()
+		max_label.text = "RANGE FULLY UPGRADED"
+		range_list.add_child(max_label)
 
 func _on_bow_button_pressed(bow_id: String) -> void:
 	bow_action_requested.emit(bow_id)
 
-func _on_range_target_button_pressed(target_index: int) -> void:
-	range_target_action_requested.emit(target_index)
+func _on_range_upgrade_button_pressed() -> void:
+	range_upgrade_requested.emit()
 
 func set_coins_earned(amount: int) -> void:
 	score_label.text = "EARNED  %d COINS" % amount
