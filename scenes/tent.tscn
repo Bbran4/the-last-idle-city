@@ -1,6 +1,60 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/tent.gd" id="1_tent"]
-
 [node name="CustomizationTent" type="Node2D"]
-script = ExtResource("1_tent")
+
+[node name="TentBody" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-150, 0, 0, -180, 150, 0)
+color = Color(0.419608, 0.290196, 0.207843, 1)
+
+[node name="TentOutline" type="Line2D" parent="."]
+points = PackedVector2Array(-150, 0, 0, -180, 150, 0)
+width = 8.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Entrance" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-42, 0, 0, -105, 42, 0)
+color = Color(0.188235, 0.164706, 0.145098, 1)
+
+[node name="EntranceOutline" type="Line2D" parent="."]
+points = PackedVector2Array(-42, 0, 0, -105, 42, 0)
+width = 5.0
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="LeftPole" type="Line2D" parent="."]
+points = PackedVector2Array(-150, 0, -150, -195)
+width = 8.0
+
+[node name="RightPole" type="Line2D" parent="."]
+points = PackedVector2Array(150, 0, 150, -195)
+width = 8.0
+
+[node name="LampOuter" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(187, -8, 192.273, -20.727, 205, -26, 217.727, -20.727, 223, -8, 217.727, 4.727, 205, 10, 192.273, 4.727)
+color = Color(0.839216, 0.419608, 0.196078, 1)
+
+[node name="LampInner" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(196, -8, 198.636, -14.364, 205, -17, 211.364, -14.364, 214, -8, 211.364, -1.636, 205, 1, 198.636, -1.636)
+color = Color(0.945098, 0.764706, 0.356863, 1)
+
+[node name="Sign" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-95, 28, 95, 28, 95, 76, -95, 76)
+color = Color(0.356863, 0.25098, 0.176471, 1)
+
+[node name="SignOutline" type="Line2D" parent="."]
+points = PackedVector2Array(-95, 28, 95, 28, 95, 76, -95, 76, -95, 28)
+width = 4.0
+closed = true
+
+[node name="SignLabel" type="Label" parent="."]
+offset_left = -65.0
+offset_top = 39.0
+offset_right = 65.0
+offset_bottom = 67.0
+text = "CUSTOMIZE"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.898039, 0.835294, 0.721569, 1)
+theme_override_font_sizes/font_size = 20
