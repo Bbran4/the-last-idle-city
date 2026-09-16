@@ -2,6 +2,7 @@ extends Node2D
 
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
+const SHOT_RECOVERY_TIME: float = 1.0
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -11,7 +12,7 @@ var economy: PlayerEconomy = PlayerEconomy.new()
 var bow_inventory: BowInventory = BowInventory.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
-var active_arrow: Arrow = null
+var shot_recovery_timer: float = 0.0
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
 var aim_angle: float = 0.0
@@ -31,6 +32,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_update_aim()
 	var bow: BowData = bow_inventory.get_equipped()
+	shot_recovery_timer = max(shot_recovery_timer - delta, 0.0)
 	if is_drawing:
 		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
 	if impact_timer > 0.0:
@@ -53,7 +55,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_reset_session()
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed and not is_drawing and active_arrow == null:
+		if event.pressed and not is_drawing and shot_recovery_timer <= 0.0:
 			is_drawing = true
 			draw_strength = 0.0
 		elif not event.pressed and is_drawing:
@@ -67,6 +69,7 @@ func _update_aim() -> void:
 
 func _release_arrow() -> void:
 	is_drawing = false
+	shot_recovery_timer = SHOT_RECOVERY_TIME
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
 		return
@@ -78,7 +81,6 @@ func _release_arrow() -> void:
 	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(aim_angle), launch_speed)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
-	active_arrow = arrow
 	shots_fired += 1
 	_show_result("SHOT FIRED")
 	if strength_xp > 0:
@@ -87,8 +89,6 @@ func _release_arrow() -> void:
 	_refresh_hud()
 
 func _on_arrow_hit(position: Vector2) -> void:
-	if active_arrow == null:
-		return
 	var score_result: Dictionary = world_view.get_target().calculate_score(position)
 	total_score += score_result.score
 	successful_hits += 1
@@ -97,13 +97,11 @@ func _on_arrow_hit(position: Vector2) -> void:
 		hud.show_accuracy_xp_gain(accuracy_xp)
 	if score_result.is_bullseye:
 		bullseyes += 1
-	active_arrow = null
 	impact_position = position
 	impact_timer = IMPACT_FLASH_DURATION
 	_show_result(score_result.label)
 
 func _on_arrow_missed() -> void:
-	active_arrow = null
 	_show_result("MISS")
 
 func _on_training_upgrade_pressed() -> void:
@@ -158,7 +156,7 @@ func _refresh_hud() -> void:
 func _reset_session() -> void:
 	is_drawing = false
 	draw_strength = 0.0
-	active_arrow = null
+	shot_recovery_timer = 0.0
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
