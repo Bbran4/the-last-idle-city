@@ -12,7 +12,8 @@ const MAX_LEVEL: int = 100
 
 const STRENGTH_XP_PER_FULL_DRAW: int = 10
 const MINIMUM_STRENGTH_DRAW_RATIO: float = 0.60
-const ACCURACY_XP_PER_HIT: int = 25
+const ACCURACY_XP_MAX: int = 25
+const ACCURACY_XP_MAX_DISTANCE: float = 1000.0
 const STRENGTH_LAUNCH_SPEED_PER_LEVEL: float = 10.0
 
 var strength_level: int = STARTING_LEVEL
@@ -31,11 +32,13 @@ func award_strength_release_xp(draw_ratio: float, xp_multiplier: float = 1.0) ->
 	_add_strength_xp(awarded)
 	return awarded
 
-func award_accuracy_hit_xp(xp_multiplier: float = 1.0) -> int:
+func award_accuracy_hit_xp(distance: float, xp_multiplier: float = 1.0) -> int:
 	if accuracy_level >= MAX_LEVEL:
 		return 0
 
-	var awarded: int = max(1, roundi(float(ACCURACY_XP_PER_HIT) * max(xp_multiplier, 1.0)))
+	var distance_ratio: float = clamp(distance / ACCURACY_XP_MAX_DISTANCE, 0.0, 1.0)
+	var base_awarded: int = max(1, roundi(distance_ratio * ACCURACY_XP_MAX))
+	var awarded: int = max(1, roundi(float(base_awarded) * max(xp_multiplier, 1.0)))
 	_add_accuracy_xp(awarded)
 	return awarded
 
