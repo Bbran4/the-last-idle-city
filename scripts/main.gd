@@ -1,8 +1,7 @@
 extends Node2D
 
 const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
-const VIEW_SIZE: Vector2 = Vector2(1280.0, 720.0)
-const ZOOM: float = 0.55
+const WORLD_SCALE: float = 0.70
 const ARCHER_POSITION: Vector2 = Vector2(190.0, 500.0)
 const BOW_POSITION: Vector2 = Vector2(245.0, 435.0)
 const TARGET_POSITION: Vector2 = Vector2(965.0, 360.0)
@@ -67,9 +66,7 @@ func _update_aim() -> void:
 		aim_angle = aim_vector.angle()
 
 func _get_design_mouse_position() -> Vector2:
-	var scale_factor: float = _get_scale_factor()
-	var offset: Vector2 = _get_view_offset(scale_factor)
-	return (get_viewport().get_mouse_position() - offset) / scale_factor
+	return get_viewport().get_mouse_position() / WORLD_SCALE
 
 func _release_arrow() -> void:
 	is_drawing = false
@@ -81,21 +78,19 @@ func _release_arrow() -> void:
 	var strength_ratio: float = draw_strength / MAX_DRAW_STRENGTH
 	var launch_speed: float = lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, strength_ratio)
 	var direction: Vector2 = Vector2.RIGHT.rotated(aim_angle)
-	var scale_factor: float = _get_scale_factor()
-	var offset: Vector2 = _get_view_offset(scale_factor)
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
-	arrow.position = offset + (BOW_POSITION + direction * 38.0) * scale_factor
-	arrow.scale = Vector2.ONE * scale_factor
+	arrow.position = BOW_POSITION + direction * 38.0
+	arrow.scale = Vector2.ONE * WORLD_SCALE
 	add_child(arrow)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
 	arrow.launch(
-		direction * launch_speed * scale_factor,
-		offset + TARGET_POSITION * scale_factor,
-		TARGET_RADIUS * scale_factor,
-		offset.y + GROUND_Y * scale_factor,
-		offset.x,
-		offset.x + VIEW_SIZE.x * scale_factor
+		direction * launch_speed * WORLD_SCALE,
+		TARGET_POSITION,
+		TARGET_RADIUS,
+		GROUND_Y,
+		0.0,
+		get_viewport_rect().size.x / WORLD_SCALE
 	)
 
 	active_arrow = arrow
@@ -131,19 +126,15 @@ func _on_arrow_missed() -> void:
 	queue_redraw()
 
 func _calculate_score(position: Vector2) -> Dictionary:
-	var scale_factor: float = _get_scale_factor()
-	var offset: Vector2 = _get_view_offset(scale_factor)
-	var target_center: Vector2 = offset + TARGET_POSITION * scale_factor
-	var distance: float = position.distance_to(target_center)
-	var normalized_distance: float = distance / scale_factor
+	var distance: float = position.distance_to(TARGET_POSITION)
 
-	if normalized_distance <= 14.0:
+	if distance <= 14.0:
 		return {"score": 10, "label": "BULLSEYE  +10", "is_bullseye": true}
-	if normalized_distance <= 32.0:
+	if distance <= 32.0:
 		return {"score": 9, "label": "9 RING  +9", "is_bullseye": false}
-	if normalized_distance <= 52.0:
+	if distance <= 52.0:
 		return {"score": 8, "label": "8 RING  +8", "is_bullseye": false}
-	if normalized_distance <= 72.0:
+	if distance <= 72.0:
 		return {"score": 7, "label": "7 RING  +7", "is_bullseye": false}
 	return {"score": 6, "label": "6 RING  +6", "is_bullseye": false}
 
@@ -158,47 +149,35 @@ func _reset_arrows() -> void:
 			child.queue_free()
 	queue_redraw()
 
-func _get_scale_factor() -> float:
-	var size: Vector2 = get_viewport_rect().size
-	return min(size.x / VIEW_SIZE.x, size.y / VIEW_SIZE.y) * ZOOM
-
-func _get_view_offset(scale_factor: float) -> Vector2:
-	var size: Vector2 = get_viewport_rect().size
-	return (size - VIEW_SIZE * scale_factor) * 0.5
-
 func _draw() -> void:
 	var size: Vector2 = get_viewport_rect().size
-	var scale_factor: float = _get_scale_factor()
-	var offset: Vector2 = _get_view_offset(scale_factor)
+	var scale_factor: float = WORLD_SCALE
 
 	draw_rect(Rect2(Vector2.ZERO, size), Color("11161b"))
+	_draw_range(scale_factor, size)
+	_draw_archer(ARCHER_POSITION * scale_factor, scale_factor)
+	_draw_bow(BOW_POSITION * scale_factor, scale_factor)
+	_draw_target(TARGET_POSITION * scale_factor, scale_factor)
+	_draw_impact(scale_factor)
+	_draw_draw_strength(scale_factor, size)
+	_draw_hud(scale_factor)
+	_draw_title()
 
-	_draw_range(offset, scale_factor)
-	_draw_archer(offset + ARCHER_POSITION * scale_factor, scale_factor)
-	_draw_bow(offset + BOW_POSITION * scale_factor, scale_factor)
-	_draw_target(offset + TARGET_POSITION * scale_factor, scale_factor)
-	_draw_impact(offset, scale_factor)
-	_draw_draw_strength(offset, scale_factor)
-	_draw_hud(offset, scale_factor)
-	_draw_title(offset, scale_factor)
+func _draw_range(scale_factor: float, size: Vector2) -> void:
+	var ground_y: float = GROUND_Y * scale_factor
 
-func _draw_range(offset: Vector2, scale_factor: float) -> void:
-	var origin: Vector2 = offset
-	var ground_y: float = GROUND_Y * scale_factor + offset.y
-	var right: float = offset.x + VIEW_SIZE.x * scale_factor
+	draw_rect(Rect2(Vector2.ZERO, Vector2(size.x, ground_y)), Color("1b2428"))
+	draw_rect(Rect2(Vector2(0.0, ground_y), Vector2(size.x, size.y - ground_y)), Color("293126"))
+	draw_line(Vector2(0.0, ground_y), Vector2(size.x, ground_y), Color("4d5948"), 3.0 * scale_factor)
 
-	draw_rect(Rect2(origin, Vector2(VIEW_SIZE.x * scale_factor, GROUND_Y * scale_factor)), Color("1b2428"))
-	draw_rect(Rect2(Vector2(offset.x, ground_y), Vector2(VIEW_SIZE.x * scale_factor, (VIEW_SIZE.y - GROUND_Y) * scale_factor)), Color("293126"))
-	draw_line(Vector2(offset.x, ground_y), Vector2(right, ground_y), Color("4d5948"), 3.0 * scale_factor)
-
-	for i in range(1, 8):
-		var x: float = offset.x + float(i) * 160.0 * scale_factor
+	var world_right: float = size.x / scale_factor
+	for i in range(1, int(world_right / 160.0) + 1):
+		var x: float = float(i) * 160.0 * scale_factor
 		draw_line(Vector2(x, ground_y), Vector2(x + 70.0 * scale_factor, ground_y - 55.0 * scale_factor), Color("34402f"), 2.0 * scale_factor)
 
-	var archer_x: float = offset.x + 245.0 * scale_factor
-	var target_x: float = offset.x + 965.0 * scale_factor
-	for marker_x: float in [archer_x, target_x]:
-		draw_line(Vector2(marker_x, ground_y - 4.0 * scale_factor), Vector2(marker_x, ground_y + 8.0 * scale_factor), Color("68735d"), 2.0 * scale_factor)
+	for marker_x: float in [ARCHER_POSITION.x, TARGET_POSITION.x]:
+		var screen_x: float = marker_x * scale_factor
+		draw_line(Vector2(screen_x, ground_y - 4.0 * scale_factor), Vector2(screen_x, ground_y + 8.0 * scale_factor), Color("68735d"), 2.0 * scale_factor)
 
 func _draw_archer(position: Vector2, scale_factor: float) -> void:
 	var s: float = scale_factor
@@ -232,13 +211,13 @@ func _draw_bow(position: Vector2, scale_factor: float) -> void:
 	if is_drawing:
 		draw_circle(string_anchor, 5.0 * s, Color("d7a449"))
 
-func _draw_draw_strength(offset: Vector2, scale_factor: float) -> void:
+func _draw_draw_strength(scale_factor: float, size: Vector2) -> void:
 	if not is_drawing:
 		return
 
 	var s: float = scale_factor
-	var bar_position: Vector2 = offset + Vector2(420.0, 620.0) * s
 	var bar_size: Vector2 = Vector2(440.0, 24.0) * s
+	var bar_position: Vector2 = Vector2((size.x - bar_size.x) * 0.5, size.y - 70.0)
 	var fill_ratio: float = draw_strength / MAX_DRAW_STRENGTH
 
 	draw_rect(Rect2(bar_position, bar_size), Color("20282c"), true)
@@ -262,26 +241,24 @@ func _draw_target(center: Vector2, scale_factor: float) -> void:
 	draw_line(center + Vector2(42, 88) * s, Vector2(center.x + 42.0 * s, stand_y + 118.0 * s), Color("654b34"), 10.0 * s)
 	draw_line(Vector2(center.x - 65.0 * s, stand_y + 118.0 * s), Vector2(center.x + 65.0 * s, stand_y + 118.0 * s), Color("654b34"), 10.0 * s)
 
-func _draw_impact(offset: Vector2, scale_factor: float) -> void:
+func _draw_impact(scale_factor: float) -> void:
 	if impact_timer <= 0.0:
 		return
 
 	var progress: float = 1.0 - impact_timer / IMPACT_FLASH_DURATION
 	var radius: float = lerp(10.0, 28.0, progress) * scale_factor
-	draw_circle(impact_position, radius, Color(0.84, 0.66, 0.29, 0.35 * (1.0 - progress)), false, 4.0 * scale_factor)
-	draw_circle(impact_position, 4.0 * scale_factor, Color("d7a449"))
+	draw_circle(impact_position * scale_factor, radius, Color(0.84, 0.66, 0.29, 0.35 * (1.0 - progress)), false, 4.0 * scale_factor)
+	draw_circle(impact_position * scale_factor, 4.0 * scale_factor, Color("d7a449"))
 
-func _draw_hud(offset: Vector2, scale_factor: float) -> void:
-	var s: float = scale_factor
-	var hud_position: Vector2 = offset + Vector2(46.0, 120.0) * s
+func _draw_hud(scale_factor: float) -> void:
+	var hud_position: Vector2 = Vector2(32.0, 72.0)
 	draw_string(ThemeDB.fallback_font, hud_position, "SCORE  %d" % total_score, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("e8dfca"))
-	draw_string(ThemeDB.fallback_font, hud_position + Vector2(0.0, 28.0) * s, "SHOTS  %d    HITS  %d    BULLSEYES  %d" % [shots_fired, successful_hits, bullseyes], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("aeb6ad"))
+	draw_string(ThemeDB.fallback_font, hud_position + Vector2(0.0, 24.0), "SHOTS  %d    HITS  %d    BULLSEYES  %d" % [shots_fired, successful_hits, bullseyes], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("aeb6ad"))
 
 	if shot_result_timer > 0.0:
-		var result_position: Vector2 = offset + Vector2(520.0, 120.0) * s
-		draw_string(ThemeDB.fallback_font, result_position, last_shot_label, HORIZONTAL_ALIGNMENT_CENTER, 240.0 * s, 22, Color("d7a449"))
+		var result_position: Vector2 = Vector2(get_viewport_rect().size.x * 0.5 - 120.0, 72.0)
+		draw_string(ThemeDB.fallback_font, result_position, last_shot_label, HORIZONTAL_ALIGNMENT_CENTER, 240.0, 22, Color("d7a449"))
 
-func _draw_title(offset: Vector2, scale_factor: float) -> void:
-	var s: float = scale_factor
-	draw_string(ThemeDB.fallback_font, offset + Vector2(46.0, 58.0) * s, "THE LAST ARCHER", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("e8dfca"))
-	draw_string(ThemeDB.fallback_font, offset + Vector2(48.0, 82.0) * s, "PRACTICE RANGE", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("8f988f"))
+func _draw_title() -> void:
+	draw_string(ThemeDB.fallback_font, Vector2(32.0, 34.0), "THE LAST ARCHER", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("e8dfca"))
+	draw_string(ThemeDB.fallback_font, Vector2(34.0, 55.0), "PRACTICE RANGE", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("8f988f"))
