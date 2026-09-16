@@ -46,13 +46,13 @@ func _process(delta: float) -> void:
 	if is_drawing:
 		preview_speed = stats.get_max_launch_speed(lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, draw_ratio))
 	world_view.set_draw_ratio(draw_ratio)
-	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, stats.get_trajectory_prediction_quality())
+	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, stats.get_trajectory_prediction_quality(), is_drawing)
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
-		_reset_arrows()
+		_reset_session()
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -129,11 +129,18 @@ func _refresh_hud() -> void:
 	hud.set_strength(stats.strength_level, stats.strength_xp, stats.strength_xp_to_next_level(), stats.strength_progress_ratio())
 	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
 
-func _reset_arrows() -> void:
+## Resets the current practice session without resetting permanent Strength or Accuracy progression.
+func _reset_session() -> void:
 	is_drawing = false
 	draw_strength = 0.0
 	active_arrow = null
+	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
+	total_score = 0
+	shots_fired = 0
+	successful_hits = 0
+	bullseyes = 0
 	world_view.clear_arrows()
 	hud.hide_shot_result()
+	_refresh_hud()
