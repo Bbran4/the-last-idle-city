@@ -48,6 +48,9 @@ func configure_bow(data: BowData) -> void:
 func set_draw_ratio(ratio: float) -> void:
 	player.get_bow().set_draw_ratio(ratio)
 
+func set_recovery_progress(progress: float) -> void:
+	player.set_recovery_progress(progress)
+
 func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, quality: float, visible: bool) -> void:
 	trajectory_angle = angle
 	trajectory_draw_ratio = clamp(draw_ratio, 0.0, 1.0)
