@@ -18,6 +18,7 @@ const TRAJECTORY_EXTRA_TIME: float = 2.75
 @onready var target_three: Target = $TargetThree
 @onready var ring_target: Target = $RingTarget
 @onready var ground: Node2D = $Ground
+@onready var range_decor: Node2D = $RangeDecor
 
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
@@ -78,6 +79,7 @@ func set_active_targets(range_level: int) -> void:
 	var targets: Array[Target] = get_targets()
 	for index: int in range(targets.size()):
 		targets[index].visible = index < range_level
+	_update_range_decor(range_level)
 
 func set_range_level(level: int) -> void:
 	set_active_targets(level)
@@ -118,6 +120,11 @@ func clear_arrows() -> void:
 	for child: Node in get_children():
 		if child is Arrow:
 			child.queue_free()
+
+func _update_range_decor(range_level: int) -> void:
+	range_decor.get_node("Level2").visible = range_level >= 2
+	range_decor.get_node("Level3").visible = range_level >= 3
+	range_decor.get_node("Level4").visible = range_level >= 4
 
 func _draw() -> void:
 	_draw_trajectory()
