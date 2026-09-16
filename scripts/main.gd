@@ -10,7 +10,7 @@ const SHOT_RESULT_DURATION: float = 1.5
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
 
-var strength: StrengthProgression = StrengthProgression.new()
+var stats: PlayerStats = PlayerStats.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
 var active_arrow: Arrow = null
@@ -73,11 +73,10 @@ func _release_arrow() -> void:
 
 	var strength_ratio: float = draw_strength / MAX_DRAW_STRENGTH
 	var launch_speed: float = lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, strength_ratio)
-	launch_speed = strength.get_max_launch_speed(launch_speed)
+	launch_speed = stats.get_max_launch_speed(launch_speed)
 	var direction: Vector2 = Vector2.RIGHT.rotated(aim_angle)
 
-	# Strength XP is awarded once for this release. Weak releases earn nothing.
-	var strength_xp: int = strength.award_release_xp(strength_ratio)
+	var strength_xp: int = stats.award_strength_release_xp(strength_ratio)
 	var arrow: Arrow = world_view.fire_arrow(direction, launch_speed)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
@@ -99,6 +98,9 @@ func _on_arrow_hit(position: Vector2) -> void:
 	successful_hits += 1
 	if score_result.is_bullseye:
 		bullseyes += 1
+		var accuracy_xp: int = stats.award_accuracy_bullseye_xp()
+		if accuracy_xp > 0:
+			hud.show_accuracy_xp_gain(accuracy_xp)
 
 	active_arrow = null
 	impact_position = position
@@ -117,7 +119,8 @@ func _show_result(text: String) -> void:
 func _refresh_hud() -> void:
 	hud.set_score(total_score)
 	hud.set_stats(shots_fired, successful_hits, bullseyes)
-	hud.set_strength(strength.level, strength.xp, strength.xp_to_next_level(), strength.xp_progress_ratio())
+	hud.set_strength(stats.strength_level, stats.strength_xp, stats.strength_xp_to_next_level(), stats.strength_progress_ratio())
+	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
 
 func _reset_arrows() -> void:
 	is_drawing = false
