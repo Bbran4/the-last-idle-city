@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BowData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bow_data.gd" id="1_bow"]
+
+[resource]
+script = ExtResource("1_bow")
+id = "training_bow"
+display_name = "Training Bow"
+price = 0
+required_strength = 1
+max_draw_strength = 100.0
+draw_speed = 55.0
+min_launch_speed = 360.0
+max_launch_speed = 760.0
+description = "Reliable and forgiving."
