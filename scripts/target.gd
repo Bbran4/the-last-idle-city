@@ -12,8 +12,8 @@ extends Area2D
 func get_radius() -> float:
 	var shape: Shape2D = collision_shape.shape
 	if shape is CircleShape2D:
-		return (shape as CircleShape2D).radius * abs(global_scale.x)
-	return 100.0 * abs(global_scale.x)
+		return (shape as CircleShape2D).radius * abs(scale.x)
+	return 100.0 * abs(scale.x)
 
 func get_coin_reward() -> int:
 	if is_ring_target:
@@ -24,7 +24,7 @@ func is_bullseye_hit(local_hit_position: Vector2) -> bool:
 	var radius: float = get_radius()
 	if radius <= 0.0:
 		return false
-	return local_hit_position.distance_to(global_position) <= radius * 0.16
+	return local_hit_position.distance_to(position) <= radius * 0.16
 
 func get_reward_label() -> String:
 	if is_ring_target:
