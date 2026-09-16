@@ -113,29 +113,29 @@ The game combines player skill with character progression. A skilled player with
 **Goal:** Accurate shooting improves the character's ability to aim.
 
 - [x] Add Accuracy stat
-- [x] Award Accuracy XP for bullseyes
+- [x] Award Accuracy XP for target hits
 - [x] Add Accuracy levels
 - [x] Display Accuracy and XP
 - [x] Define Accuracy's effect on aim assistance
 - [x] Balance progression
 - [x] Ensure Accuracy does not auto-aim
 
-**Completion:** Bullseyes develop Accuracy and prepare the stat for the visible aim-assistance system in Milestone 7.
+**Completion:** Successful target hits develop Accuracy and prepare the stat for visible trajectory assistance.
 
 ### Milestone 7 - Aim Assistance
 
-**Goal:** Provide the first visible benefit from Accuracy.
+**Goal:** Provide the first visible benefit from Accuracy without taking control away from the player.
 
-- [ ] Add trajectory line
-- [ ] Make trajectory line react to bow and draw state
-- [ ] Define unlock conditions
-- [ ] Make prediction quality depend on Accuracy
-- [ ] Improve prediction at higher Accuracy
-- [ ] Preserve player skill requirements
-- [ ] Add clear visual feedback
-- [ ] Support multiple distances
+- [x] Add trajectory line
+- [x] Make trajectory line react to bow aim and draw state
+- [x] Define unlock conditions and progression behavior
+- [x] Make prediction quality depend on Accuracy
+- [x] Improve prediction visibility at higher Accuracy
+- [x] Preserve player skill requirements
+- [x] Add clear visual feedback
+- [x] Support different shot distances through live trajectory simulation
 
-**Completion:** Accuracy makes aiming easier without removing the need for skill.
+**Completion:** Accuracy provides a trajectory preview that helps the player judge an arrow's arc. The player still controls the aim completely. There is no auto-aim and the preview never changes the arrow's actual trajectory.
 
 ### Milestone 8 - First Playable Practice Loop
 
@@ -344,7 +344,7 @@ The MVP contains:
 - Bullseye detection
 - Strength progression
 - Accuracy progression
-- Basic aim assistance
+- Basic trajectory assistance
 - Basic practice HUD
 - Clear shot feedback
 
@@ -378,16 +378,16 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 6 - Accuracy Progression**
+**Current Stage: Milestone 7 - Aim Assistance**
 
-Milestones 0 through 6 are complete. Strength and Accuracy now live together in a single `PlayerStats` progression script rather than separate stat-specific progression classes. This gives the project one central place for player attributes and keeps future stats from spreading progression logic across multiple scripts.
+Milestones 0 through 7 are implemented. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy now improves from every successful target hit rather than requiring a bullseye.
 
-Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release, preventing frame-based or rapid low-effort progression exploits. Early levels require 100 XP, with the requirement increasing by 25 XP per level. Strength affects launch capability by adding 25 launch-speed points per Strength level above level 1.
+Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release. Early levels require 100 XP, with the requirement increasing by 25 XP per level. Strength affects launch capability by adding 25 launch-speed points per Strength level above level 1.
 
-Accuracy also starts at level 1 with 0 XP. Each bullseye awards 50 Accuracy XP, with the same 100 XP starting requirement and 25 XP growth per level. Accuracy has a defined aim-assistance strength value, but it does not currently steer the bow or arrow. The visible trajectory assistance is intentionally reserved for Milestone 7 so Accuracy does not become auto-aim.
+Accuracy starts at level 1 with 0 XP. Each successful target hit awards 25 Accuracy XP. Accuracy uses the same 100 XP starting requirement and 25 XP growth per level. Accuracy affects the trajectory preview rather than steering the bow or arrow.
 
-The HUD now displays both Strength and Accuracy levels, current XP, XP required for the next level, and progression feedback for earned XP.
+The trajectory preview is a visual simulation of the actual shot arc. It follows the current bow aim, draw strength, launch speed, and gravity. Higher Accuracy increases the useful prediction window and improves line visibility. The player still controls the aim completely. The system does not rotate the bow, alter the mouse aim, bend the arrow, or select a target automatically.
 
 The next major goal is:
 
-> **Make Accuracy visibly useful through a trajectory prediction system without removing player skill.**
+> **Milestone 8: Playtest and consolidate the complete practice loop before adding economy or equipment systems.**
