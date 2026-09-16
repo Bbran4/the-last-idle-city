@@ -27,4 +27,4 @@ position = Vector2(190, 1656)
 position = Vector2(2952, 1589)
 
 [node name="Ground" parent="WorldView" unique_id=1284974576 instance=ExtResource("6_85g3d")]
-position = Vector2(954, 1733)
+position = Vector2(364, 1733)
