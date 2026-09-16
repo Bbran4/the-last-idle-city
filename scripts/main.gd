@@ -11,6 +11,7 @@ const SHOT_RESULT_DURATION: float = 1.5
 @onready var hud: HUD = $HUD
 
 var stats: PlayerStats = PlayerStats.new()
+var economy: PlayerEconomy = PlayerEconomy.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
 var active_arrow: Arrow = null
@@ -25,6 +26,7 @@ var successful_hits: int = 0
 var bullseyes: int = 0
 
 func _ready() -> void:
+	hud.training_upgrade_pressed.connect(_on_training_upgrade_pressed)
 	_refresh_hud()
 
 func _process(delta: float) -> void:
@@ -81,7 +83,7 @@ func _release_arrow() -> void:
 	launch_speed = stats.get_max_launch_speed(launch_speed)
 	var direction: Vector2 = Vector2.RIGHT.rotated(aim_angle)
 
-	var strength_xp: int = stats.award_strength_release_xp(strength_ratio)
+	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
 	var arrow: Arrow = world_view.fire_arrow(direction, launch_speed)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
@@ -102,7 +104,7 @@ func _on_arrow_hit(position: Vector2) -> void:
 	total_score += score_result.score
 	successful_hits += 1
 
-	var accuracy_xp: int = stats.award_accuracy_hit_xp()
+	var accuracy_xp: int = stats.award_accuracy_hit_xp(economy.get_xp_multiplier())
 	if accuracy_xp > 0:
 		hud.show_accuracy_xp_gain(accuracy_xp)
 
@@ -118,6 +120,14 @@ func _on_arrow_missed() -> void:
 	active_arrow = null
 	_show_result("MISS")
 
+func _on_training_upgrade_pressed() -> void:
+	var cost: int = economy.get_training_manual_cost()
+	if economy.buy_training_manual():
+		hud.show_economy_feedback("TRAINING MANUAL %d  +%d%% XP" % [economy.training_manual_level, int((economy.get_xp_multiplier() - 1.0) * 100.0)])
+	else:
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
+	_refresh_hud()
+
 func _show_result(text: String) -> void:
 	shot_result_timer = SHOT_RESULT_DURATION
 	hud.show_shot_result(text)
@@ -128,8 +138,9 @@ func _refresh_hud() -> void:
 	hud.set_stats(shots_fired, successful_hits, bullseyes)
 	hud.set_strength(stats.strength_level, stats.strength_xp, stats.strength_xp_to_next_level(), stats.strength_progress_ratio())
 	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
+	hud.set_economy(economy.money, economy.training_manual_level, economy.get_training_manual_cost(), economy.can_buy_training_manual())
 
-## Resets the current practice session without resetting permanent Strength or Accuracy progression.
+## Resets the current practice session without resetting permanent progression or money.
 func _reset_session() -> void:
 	is_drawing = false
 	draw_strength = 0.0
