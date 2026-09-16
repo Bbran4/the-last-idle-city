@@ -62,7 +62,7 @@ func _create_equipment_panel() -> void:
 func _create_range_panel() -> void:
 	range_panel = PanelContainer.new()
 	range_panel.position = Vector2(954.0, 250.0)
-	range_panel.size = Vector2(306.0, 220.0)
+	range_panel.size = Vector2(306.0, 285.0)
 	range_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(range_panel)
 	var margin := MarginContainer.new()
@@ -115,11 +115,17 @@ func set_range_targets(targets: Array[Target], owned: Array[bool], costs: Array[
 		button.mouse_filter = Control.MOUSE_FILTER_STOP
 		var is_owned: bool = index < owned.size() and owned[index]
 		if is_owned:
-			button.text = "TARGET %d  +%d COINS  [ACTIVE]" % [index + 1, target.get_coin_reward()]
+			if target.is_ring_target:
+				button.text = "RING TARGET  +5 COINS  [ACTIVE]"
+			else:
+				button.text = "TARGET %d  +%d COINS  [ACTIVE]" % [index + 1, target.get_coin_reward()]
 			button.disabled = true
 		else:
 			var cost: int = costs[index] if index < costs.size() else 0
-			button.text = "TARGET %d  +%d COINS  $%d" % [index + 1, target.get_coin_reward(), cost]
+			if target.is_ring_target:
+				button.text = "RING TARGET  +5 COINS  $%d" % cost
+			else:
+				button.text = "TARGET %d  +%d COINS  $%d" % [index + 1, target.get_coin_reward(), cost]
 			button.disabled = money < cost
 			button.pressed.connect(_on_range_target_button_pressed.bind(index))
 		range_list.add_child(button)
