@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
 		_reset_session()
 		return
