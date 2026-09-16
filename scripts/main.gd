@@ -11,6 +11,7 @@ const DRAW_SPEED: float = 55.0
 const MIN_LAUNCH_SPEED: float = 360.0
 const MAX_LAUNCH_SPEED: float = 760.0
 const IMPACT_FLASH_DURATION: float = 0.18
+const SHOT_RESULT_DURATION: float = 1.5
 
 var draw_strength: float = 0.0
 var is_drawing: bool = false
@@ -18,6 +19,14 @@ var active_arrow: Arrow = null
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
 var aim_angle: float = 0.0
+var shot_result_timer: float = 0.0
+
+var total_score: int = 0
+var shots_fired: int = 0
+var successful_hits: int = 0
+var bullseyes: int = 0
+var last_shot_score: int = 0
+var last_shot_label: String = ""
 
 func _ready() -> void:
 	queue_redraw()
@@ -30,6 +39,9 @@ func _process(delta: float) -> void:
 
 	if impact_timer > 0.0:
 		impact_timer = max(impact_timer - delta, 0.0)
+
+	if shot_result_timer > 0.0:
+		shot_result_timer = max(shot_result_timer - delta, 0.0)
 
 	queue_redraw()
 
@@ -70,7 +82,6 @@ func _release_arrow() -> void:
 	var scale_factor: float = _get_scale_factor()
 	var offset: Vector2 = _get_view_offset(scale_factor)
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
-
 	arrow.position = offset + (BOW_POSITION + direction * 38.0) * scale_factor
 	arrow.scale = Vector2.ONE * scale_factor
 	add_child(arrow)
@@ -83,6 +94,9 @@ func _release_arrow() -> void:
 	)
 
 	active_arrow = arrow
+	shots_fired += 1
+	last_shot_label = "SHOT FIRED"
+	shot_result_timer = SHOT_RESULT_DURATION
 	draw_strength = 0.0
 	queue_redraw()
 
@@ -90,20 +104,50 @@ func _on_arrow_hit(position: Vector2) -> void:
 	if active_arrow == null:
 		return
 
+	var score_result: Dictionary = _calculate_score(position)
+	last_shot_score = score_result.score
+	last_shot_label = score_result.label
+	total_score += last_shot_score
+	successful_hits += 1
+	if score_result.is_bullseye:
+		bullseyes += 1
+
 	active_arrow = null
 	impact_position = position
 	impact_timer = IMPACT_FLASH_DURATION
+	shot_result_timer = SHOT_RESULT_DURATION
 	queue_redraw()
 
 func _on_arrow_missed() -> void:
 	active_arrow = null
+	last_shot_score = 0
+	last_shot_label = "MISS"
+	shot_result_timer = SHOT_RESULT_DURATION
 	queue_redraw()
+
+func _calculate_score(position: Vector2) -> Dictionary:
+	var scale_factor: float = _get_scale_factor()
+	var offset: Vector2 = _get_view_offset(scale_factor)
+	var target_center: Vector2 = offset + TARGET_POSITION * scale_factor
+	var distance: float = position.distance_to(target_center)
+	var normalized_distance: float = distance / scale_factor
+
+	if normalized_distance <= 14.0:
+		return {"score": 10, "label": "BULLSEYE  +10", "is_bullseye": true}
+	if normalized_distance <= 32.0:
+		return {"score": 9, "label": "9 RING  +9", "is_bullseye": false}
+	if normalized_distance <= 52.0:
+		return {"score": 8, "label": "8 RING  +8", "is_bullseye": false}
+	if normalized_distance <= 72.0:
+		return {"score": 7, "label": "7 RING  +7", "is_bullseye": false}
+	return {"score": 6, "label": "6 RING  +6", "is_bullseye": false}
 
 func _reset_arrows() -> void:
 	is_drawing = false
 	draw_strength = 0.0
 	active_arrow = null
 	impact_timer = 0.0
+	shot_result_timer = 0.0
 	for child: Node in get_children():
 		if child is Arrow:
 			child.queue_free()
@@ -130,6 +174,7 @@ func _draw() -> void:
 	_draw_target(offset + TARGET_POSITION * scale_factor, scale_factor)
 	_draw_impact(offset, scale_factor)
 	_draw_draw_strength(offset, scale_factor)
+	_draw_hud(offset, scale_factor)
 	_draw_title(offset, scale_factor)
 
 func _draw_range(offset: Vector2, scale_factor: float) -> void:
@@ -220,6 +265,16 @@ func _draw_impact(offset: Vector2, scale_factor: float) -> void:
 	var radius: float = lerp(10.0, 28.0, progress) * scale_factor
 	draw_circle(impact_position, radius, Color(0.84, 0.66, 0.29, 0.35 * (1.0 - progress)), false, 4.0 * scale_factor)
 	draw_circle(impact_position, 4.0 * scale_factor, Color("d7a449"))
+
+func _draw_hud(offset: Vector2, scale_factor: float) -> void:
+	var s: float = scale_factor
+	var hud_position: Vector2 = offset + Vector2(46.0, 120.0) * s
+	draw_string(ThemeDB.fallback_font, hud_position, "SCORE  %d" % total_score, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color("e8dfca"))
+	draw_string(ThemeDB.fallback_font, hud_position + Vector2(0.0, 28.0) * s, "SHOTS  %d    HITS  %d    BULLSEYES  %d" % [shots_fired, successful_hits, bullseyes], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("aeb6ad"))
+
+	if shot_result_timer > 0.0:
+		var result_position: Vector2 = offset + Vector2(520.0, 120.0) * s
+		draw_string(ThemeDB.fallback_font, result_position, last_shot_label, HORIZONTAL_ALIGNMENT_CENTER, 240.0 * s, 22, Color("d7a449"))
 
 func _draw_title(offset: Vector2, scale_factor: float) -> void:
 	var s: float = scale_factor
