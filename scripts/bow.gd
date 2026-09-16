@@ -1,9 +1,7 @@
 class_name Bow
 extends Node2D
 
-## The bow's own rotation IS the aim direction, and the arrow spawn marker
-## sits in front of it along local +X -- so aiming and firing automatically
-## stay correct no matter how this bow is positioned or nested in a scene.
+## Visual bow component. Gameplay values are supplied by BowData.
 
 const STRING_REST_X: float = 18.0
 const MAX_PULL: float = 24.0
@@ -11,6 +9,12 @@ const MAX_PULL: float = 24.0
 @onready var string_top: Line2D = $StringTop
 @onready var string_bottom: Line2D = $StringBottom
 @onready var arrow_spawn: Marker2D = $ArrowSpawn
+
+var data: BowData
+
+func set_data(bow_data: BowData) -> void:
+	data = bow_data
+	set_draw_ratio(0.0)
 
 func set_aim(angle: float) -> void:
 	rotation = angle
