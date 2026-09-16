@@ -1,23 +1,21 @@
 class_name Arrow
 extends Node2D
 
-signal hit_target(position: Vector2)
+signal hit_target(position: Vector2, target: Target)
 signal missed
 
 const GRAVITY: float = 180.0
 
 var velocity: Vector2 = Vector2.ZERO
-var target_position: Vector2 = Vector2.ZERO
-var target_radius: float = 100.0
+var targets: Array[Target] = []
 var ground_y: float = 0.0
 var window_left: float = 0.0
 var window_right: float = 1280.0
 var is_embedded: bool = false
 
-func launch(initial_velocity: Vector2, target: Vector2, radius: float, ground: float, left_bound: float, right_bound: float) -> void:
+func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: float, left_bound: float, right_bound: float) -> void:
 	velocity = initial_velocity
-	target_position = target
-	target_radius = radius
+	targets = active_targets
 	ground_y = ground
 	window_left = left_bound
 	window_right = right_bound
@@ -37,11 +35,12 @@ func _process(delta: float) -> void:
 	if velocity.length_squared() > 0.0:
 		rotation = velocity.angle()
 
-	var hit_position: Vector2 = _segment_circle_hit(previous_position, position, target_position, target_radius)
-	if hit_position != Vector2.INF:
-		position = hit_position
+	var hit_target_result: Dictionary = _find_target_hit(previous_position, position)
+	if not hit_target_result.is_empty():
+		var target: Target = hit_target_result.target
+		position = hit_target_result.position
 		embed()
-		hit_target.emit(position)
+		hit_target.emit(position, target)
 		return
 
 	if _crossed_ground(previous_position, position):
@@ -63,6 +62,25 @@ func embed() -> void:
 	is_embedded = true
 	velocity = Vector2.ZERO
 	queue_redraw()
+
+func _find_target_hit(start: Vector2, end: Vector2) -> Dictionary:
+	var closest_hit: Dictionary = {}
+	var closest_projection: float = INF
+	for target: Target in targets:
+		if not is_instance_valid(target) or not target.visible:
+			continue
+		var hit_position: Vector2 = _segment_circle_hit(start, end, target.position, target.get_radius())
+		if hit_position == Vector2.INF:
+			continue
+		var segment: Vector2 = end - start
+		var segment_length_squared: float = segment.length_squared()
+		var projection: float = 0.0
+		if segment_length_squared > 0.0:
+			projection = clamp((hit_position - start).dot(segment) / segment_length_squared, 0.0, 1.0)
+		if projection < closest_projection:
+			closest_projection = projection
+			closest_hit = {"position": hit_position, "target": target}
+	return closest_hit
 
 func _segment_circle_hit(start: Vector2, end: Vector2, center: Vector2, radius: float) -> Vector2:
 	var segment: Vector2 = end - start
