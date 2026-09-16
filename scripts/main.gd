@@ -3,7 +3,7 @@ extends Node2D
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
-const RANGE_TARGET_COSTS: Array[int] = [0, 50, 100]
+const RANGE_TARGET_COSTS: Array[int] = [0, 50, 100, 250]
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -18,7 +18,7 @@ var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
 var aim_angle: float = 0.0
 var shot_result_timer: float = 0.0
-var range_target_owned: Array[bool] = [true, false, false]
+var range_target_owned: Array[bool] = [true, false, false, false]
 
 var total_coins_earned: int = 0
 var shots_fired: int = 0
