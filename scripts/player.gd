@@ -8,7 +8,8 @@ const RECOVERY_START_ANGLE: float = -PI / 2.0
 const RECOVERY_BACKGROUND_COLOR := Color(0.12, 0.14, 0.17, 0.75)
 const RECOVERY_PROGRESS_COLOR := Color("d7a449")
 
-const MOVE_SPEED: float = 520.0
+const WALK_SPEED: float = 520.0
+const RUN_SPEED: float = 820.0
 const MIN_X: float = 80.0
 const MAX_X: float = 3200.0
 const GROUND_Y: float = 1656.0
@@ -26,10 +27,12 @@ var recovery_progress: float = 0.0
 var velocity: Vector2 = Vector2.ZERO
 var movement_wobble: float = 0.0
 var is_crouching: bool = false
+var facing_right: bool = true
 
 func _physics_process(delta: float) -> void:
 	var move_input: float = Input.get_axis("move_left", "move_right")
-	velocity.x = move_input * MOVE_SPEED
+	var move_speed: float = RUN_SPEED if Input.is_action_pressed("run") else WALK_SPEED
+	velocity.x = move_input * move_speed
 
 	if Input.is_action_just_pressed("jump") and is_on_ground():
 		velocity.y = JUMP_SPEED
@@ -71,6 +74,16 @@ func get_aim_wobble() -> float:
 	if abs(velocity.x) <= 0.01 or not is_on_ground():
 		return 0.0
 	return sin(movement_wobble) * MOVEMENT_WOBBLE_ANGLE
+
+func set_facing_from_mouse(mouse_world_position: Vector2) -> void:
+	var should_face_right: bool = mouse_world_position.x >= global_position.x
+	if should_face_right == facing_right:
+		return
+	facing_right = should_face_right
+	scale.x = 1.0 if facing_right else -1.0
+
+func get_bow_aim_angle(world_angle: float) -> float:
+	return world_angle if facing_right else PI - world_angle
 
 func get_bow() -> Bow:
 	return bow
