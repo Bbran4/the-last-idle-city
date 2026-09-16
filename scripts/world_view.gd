@@ -25,6 +25,7 @@ var trajectory_angle: float = 0.0
 var trajectory_speed: float = 0.0
 var trajectory_draw_ratio: float = 0.0
 var trajectory_quality: float = 0.0
+var trajectory_visible: bool = false
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
@@ -48,11 +49,12 @@ func aim_bow(angle: float) -> void:
 func set_draw_ratio(ratio: float) -> void:
 	player.get_bow().set_draw_ratio(ratio)
 
-func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, quality: float) -> void:
+func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, quality: float, visible: bool) -> void:
 	trajectory_angle = angle
 	trajectory_draw_ratio = clamp(draw_ratio, 0.0, 1.0)
 	trajectory_speed = max(launch_speed, 0.0)
 	trajectory_quality = clamp(quality, 0.0, 1.0)
+	trajectory_visible = visible and trajectory_draw_ratio > 0.0
 	queue_redraw()
 
 func get_target() -> Target:
@@ -95,7 +97,7 @@ func _draw() -> void:
 	draw_circle(impact_position, 2.0, Color("d7a449"))
 
 func _draw_trajectory() -> void:
-	if trajectory_speed <= 0.0:
+	if not trajectory_visible or trajectory_speed <= 0.0:
 		return
 
 	var origin: Vector2 = get_arrow_spawn_position()
@@ -105,13 +107,11 @@ func _draw_trajectory() -> void:
 
 	var points: PackedVector2Array = PackedVector2Array()
 	var steps: int = maxi(2, ceili(prediction_time / TRAJECTORY_STEP))
-	var visible_until: float = prediction_time
 
 	for index: int in range(steps + 1):
 		var t: float = min(float(index) * TRAJECTORY_STEP, prediction_time)
 		var point: Vector2 = origin + velocity * t + Vector2(0.0, 0.5 * GRAVITY * t * t)
 		if point.y >= ground.position.y:
-			visible_until = t
 			break
 		points.append(point)
 
