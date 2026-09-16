@@ -3,6 +3,7 @@ extends Node2D
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
+const RANGE_TARGET_COSTS: Array[int] = [0, 50, 100]
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -17,6 +18,7 @@ var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
 var aim_angle: float = 0.0
 var shot_result_timer: float = 0.0
+var range_target_owned: Array[bool] = [true, false, false]
 
 var total_coins_earned: int = 0
 var shots_fired: int = 0
@@ -27,6 +29,8 @@ func _ready() -> void:
 	world_view.configure_bow(bow_inventory.get_equipped())
 	hud.training_upgrade_pressed.connect(_on_training_upgrade_pressed)
 	hud.bow_action_requested.connect(_on_bow_action_requested)
+	hud.range_target_action_requested.connect(_on_range_target_action_requested)
+	world_view.set_active_targets(range_target_owned)
 	_refresh_hud()
 
 func _process(delta: float) -> void:
@@ -89,12 +93,13 @@ func _release_arrow() -> void:
 	draw_strength = 0.0
 	_refresh_hud()
 
-func _on_arrow_hit(position: Vector2) -> void:
-	var target: Target = world_view.get_target()
+func _on_arrow_hit(position: Vector2, target: Target) -> void:
 	var coin_reward: int = target.get_coin_reward()
 	economy.add_money(coin_reward)
 	total_coins_earned += coin_reward
 	successful_hits += 1
+	if target.is_bullseye_hit(position):
+		bullseyes += 1
 	var accuracy_xp: int = stats.award_accuracy_hit_xp(economy.get_xp_multiplier())
 	if accuracy_xp > 0:
 		hud.show_accuracy_xp_gain(accuracy_xp)
@@ -141,6 +146,20 @@ func _on_bow_action_requested(bow_id: String) -> void:
 			hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
 	_refresh_hud()
 
+func _on_range_target_action_requested(target_index: int) -> void:
+	if target_index < 0 or target_index >= range_target_owned.size():
+		return
+	if range_target_owned[target_index]:
+		return
+	var cost: int = RANGE_TARGET_COSTS[target_index]
+	if not economy.spend_money(cost):
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
+		return
+	range_target_owned[target_index] = true
+	world_view.set_active_targets(range_target_owned)
+	hud.show_economy_feedback("TARGET %d UNLOCKED  +%d COINS" % [target_index + 1, world_view.get_targets()[target_index].get_coin_reward()])
+	_refresh_hud()
+
 func _show_result(text: String) -> void:
 	shot_result_timer = SHOT_RESULT_DURATION
 	hud.show_shot_result(text)
@@ -153,6 +172,7 @@ func _refresh_hud() -> void:
 	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
 	hud.set_economy(economy.money, economy.training_manual_level, economy.get_training_manual_cost(), economy.can_buy_training_manual())
 	hud.set_bows(bow_inventory.get_all_bows(), bow_inventory.owned, bow_inventory.equipped_bow_id, economy.money, stats.strength_level)
+	hud.set_range_targets(world_view.get_targets(), range_target_owned, RANGE_TARGET_COSTS, economy.money)
 
 func _reset_session() -> void:
 	is_drawing = false
