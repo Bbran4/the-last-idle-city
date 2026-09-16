@@ -3,7 +3,7 @@ extends Node2D
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
-const PROJECTILE_SPEED_MULTIPLIER: float = 1.75
+const PROJECTILE_SPEED_MULTIPLIER: float = 10.0
 const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
