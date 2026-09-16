@@ -43,12 +43,12 @@ func can_purchase(bow_id: String, money: int, strength_level: int) -> bool:
 	var bow: BowData = get_bow(bow_id)
 	return bow != null and not is_owned(bow_id) and strength_level >= bow.required_strength and money >= bow.price
 
-func purchase(bow_id: String, money: int, strength_level: int) -> int:
+func unlock(bow_id: String) -> bool:
 	var bow: BowData = get_bow(bow_id)
-	if not can_purchase(bow_id, money, strength_level):
-		return -1
+	if bow == null or is_owned(bow_id):
+		return false
 	owned[bow_id] = true
-	return bow.price
+	return true
 
 func can_equip(bow_id: String, strength_level: int) -> bool:
 	var bow: BowData = get_bow(bow_id)
