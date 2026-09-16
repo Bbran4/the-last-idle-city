@@ -171,7 +171,7 @@ The game combines player skill with character progression. A skilled player with
 
 **Current implementation:** The economy is represented by a dedicated `PlayerEconomy` system. The practice range starts with 250 coins so the economy can be tested before tournaments exist. The first upgrade is a Training Manual with five levels. Each level costs more and increases Strength and Accuracy XP gains by 10%.
 
-Target hits now provide the first gameplay income source. The starting target awards 1 coin per successful hit. Range expansion will introduce higher-value targets, while tournament rewards will become the primary long-term money source when tournaments are implemented.
+Target hits now provide the first gameplay income source. The starting target awards 1 coin per successful hit. Range expansion adds higher-value targets, while tournament rewards will become the primary long-term money source when tournaments are implemented.
 
 **Completion:** The economy and purchase infrastructure work independently from shooting. Tournament reward integration remains for Milestones 12-13.
 
@@ -204,21 +204,23 @@ Bow prices are currently tuned for development testing because the game is only 
 
 **Goal:** Expand the practice environment and make the range itself part of the player's income progression.
 
-- [ ] Add additional target slots
-- [ ] Add target purchases
-- [ ] Add target distances
-- [ ] Add smaller targets
-- [ ] Add target reward tiers
-- [ ] Add ring targets worth 5 coins
+- [x] Add additional target slots
+- [x] Add target purchases
+- [x] Add target distances
+- [x] Add smaller targets
+- [x] Add target reward tiers
+- [x] Add ring targets worth 5 coins
 - [ ] Add range upgrade data
-- [ ] Add range upgrade UI
+- [x] Add range upgrade UI
 - [ ] Persist range upgrades
 - [ ] Visually evolve the range
 - [ ] Balance expansion costs and target income
 
-**Target reward direction:** A large, close target pays 1 coin. More difficult targets increase in value, with a small, distant target paying 3 coins. A special ring target can pay 5 coins when the player successfully shoots through it. The goal is to make better range investments create more opportunities and higher-value skill challenges rather than simply increasing a passive income number.
+**Current implementation:** The practice range now has four target slots. Target 1 is a large close target worth 1 coin and is available immediately. Target 2 is smaller and worth 2 coins for a 50-coin unlock. Target 3 is smaller again and worth 3 coins for a 100-coin unlock. The special Ring Target costs 250 coins and rewards 5 coins when an arrow passes cleanly through its opening.
 
-**Completion:** The practice range grows alongside the player and provides increasingly valuable shooting opportunities.
+Normal targets stop arrows on impact. The Ring Target is different: the arrow passes through the ring opening and continues flying. The game checks the arrow's movement segment against the ring's center line, so the reward requires the arrow to actually pass through the opening rather than merely touch the ring. The ring remains a skill challenge rather than another circular hit target.
+
+**Completion:** The range has its first expansion layer and multiple income-producing skill challenges. Persistent range progression, stronger visual evolution, and final balance remain to be completed.
 
 ### Milestone 12 - First Tournament
 
@@ -394,7 +396,7 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 **Current Stage: Milestone 11 - Practice Range Expansion**
 
-Milestones 0 through 10 are implemented, with tournament income intentionally deferred until the tournament systems are built. The core practice loop has been playtested. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy improves from every successful target hit.
+Milestones 0 through 10 are implemented, and Milestone 11 is now in progress with the first expansion layer implemented. Tournament income remains intentionally deferred until the tournament systems are built. The core practice loop has been playtested. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy improves from every successful target hit.
 
 Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality, with the current full-draw base reward balanced to 10 XP. XP is awarded once per arrow release. Early levels require 100 XP, with the requirement increasing by 25 XP per level. Strength affects launch capability by adding 25 launch-speed points per Strength level above level 1.
 
@@ -406,6 +408,8 @@ Milestone 9 adds a separate economy layer with coins, purchase validation, upgra
 
 Milestone 10 adds data-driven bow equipment using individual `.tres` resources. The player can purchase and equip the Training Bow, Recurve Bow, and War Bow. Each bow has independent performance and visual data, while Strength requirements prevent the player from equipping equipment that is currently beyond their progression.
 
+Milestone 11 now has three normal target tiers plus a special ring challenge. The first three targets progressively become smaller and more valuable. The ring target is a separate pass-through challenge worth 5 coins. Range purchases are currently session-based and are not yet persisted.
+
 The next goal is:
 
-> **Build Milestone 11: Practice Range Expansion.**
+> **Finish Milestone 11: range data, persistence, visual evolution, and balance.**
