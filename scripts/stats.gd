@@ -19,22 +19,24 @@ var strength_xp: int = 0
 var accuracy_level: int = STARTING_LEVEL
 var accuracy_xp: int = 0
 
-func award_strength_release_xp(draw_ratio: float) -> int:
+func award_strength_release_xp(draw_ratio: float, xp_multiplier: float = 1.0) -> int:
 	var ratio: float = clamp(draw_ratio, 0.0, 1.0)
 	if ratio < MINIMUM_STRENGTH_DRAW_RATIO or strength_level >= MAX_LEVEL:
 		return 0
 
 	var quality: float = (ratio - MINIMUM_STRENGTH_DRAW_RATIO) / (1.0 - MINIMUM_STRENGTH_DRAW_RATIO)
-	var awarded: int = max(1, roundi(quality * STRENGTH_XP_PER_FULL_DRAW))
+	var base_awarded: int = max(1, roundi(quality * STRENGTH_XP_PER_FULL_DRAW))
+	var awarded: int = max(1, roundi(float(base_awarded) * max(xp_multiplier, 1.0)))
 	_add_strength_xp(awarded)
 	return awarded
 
-func award_accuracy_hit_xp() -> int:
+func award_accuracy_hit_xp(xp_multiplier: float = 1.0) -> int:
 	if accuracy_level >= MAX_LEVEL:
 		return 0
 
-	_add_accuracy_xp(ACCURACY_XP_PER_HIT)
-	return ACCURACY_XP_PER_HIT
+	var awarded: int = max(1, roundi(float(ACCURACY_XP_PER_HIT) * max(xp_multiplier, 1.0)))
+	_add_accuracy_xp(awarded)
+	return awarded
 
 func _add_strength_xp(amount: int) -> void:
 	strength_xp += amount
