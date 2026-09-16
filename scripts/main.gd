@@ -5,6 +5,7 @@ const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
 const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
 const MAX_RANGE_LEVEL: int = 4
+const CROUCH_TRAJECTORY_BOOST: float = 0.35
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -52,7 +53,11 @@ func _process(delta: float) -> void:
 	if is_drawing:
 		preview_speed = stats.get_max_launch_speed(lerp(bow.min_launch_speed, bow.max_launch_speed, draw_ratio))
 	world_view.set_draw_ratio(draw_ratio)
-	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, stats.get_trajectory_prediction_quality(), is_drawing)
+	var trajectory_quality: float = stats.get_trajectory_prediction_quality()
+	if world_view.player.is_crouched():
+		trajectory_quality = clamp(trajectory_quality + CROUCH_TRAJECTORY_BOOST, 0.0, 1.0)
+	var trajectory_visible: bool = is_drawing and not world_view.player.is_airborne()
+	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, trajectory_quality, trajectory_visible)
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
 
@@ -70,7 +75,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _update_aim() -> void:
 	var aim_vector: Vector2 = world_view.get_world_mouse_position() - world_view.get_bow_position()
 	if aim_vector.length_squared() > 0.001:
-		aim_angle = aim_vector.angle()
+		aim_angle = aim_vector.angle() + world_view.player.get_aim_wobble()
 	world_view.aim_bow(aim_angle)
 
 func _release_arrow() -> void:
@@ -94,14 +99,15 @@ func _release_arrow() -> void:
 	draw_strength = 0.0
 	_refresh_hud()
 
-func _on_arrow_hit(position: Vector2, target: Target) -> void:
+func _on_arrow_hit(position: Vector2, target: Target, arrow: Arrow) -> void:
 	var coin_reward: int = target.get_coin_reward()
 	economy.add_money(coin_reward)
 	total_coins_earned += coin_reward
 	successful_hits += 1
 	if target.is_bullseye_hit(position):
 		bullseyes += 1
-	var accuracy_xp: int = stats.award_accuracy_hit_xp(economy.get_xp_multiplier())
+	var shot_distance: float = arrow.get_shot_distance_to_target(target)
+	var accuracy_xp: int = stats.award_accuracy_hit_xp(shot_distance, economy.get_xp_multiplier())
 	if accuracy_xp > 0:
 		hud.show_accuracy_xp_gain(accuracy_xp)
 	impact_position = position
