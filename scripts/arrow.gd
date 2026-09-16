@@ -5,19 +5,24 @@ signal hit_target(position: Vector2)
 signal missed
 
 const GRAVITY: float = 180.0
-const MAX_DISTANCE: float = 900.0
 
 var velocity: Vector2 = Vector2.ZERO
 var distance_traveled: float = 0.0
 var target_position: Vector2 = Vector2.ZERO
 var target_radius: float = 92.0
+var ground_y: float = 0.0
+var window_left: float = 0.0
+var window_right: float = 1280.0
 var is_embedded: bool = false
 
-func launch(initial_velocity: Vector2, target: Vector2, radius: float) -> void:
+func launch(initial_velocity: Vector2, target: Vector2, radius: float, ground: float, left_bound: float, right_bound: float) -> void:
 	velocity = initial_velocity
 	distance_traveled = 0.0
 	target_position = target
 	target_radius = radius
+	ground_y = ground
+	window_left = left_bound
+	window_right = right_bound
 	is_embedded = false
 	rotation = velocity.angle()
 	queue_redraw()
@@ -42,12 +47,20 @@ func _process(delta: float) -> void:
 		hit_target.emit(position)
 		return
 
-	if distance_traveled >= MAX_DISTANCE or position.y > 820.0:
+	if _crossed_ground(previous_position, position):
+		if position.x >= window_left and position.x <= window_right:
+			position.y = ground_y
+			embed()
+			missed.emit()
+			return
 		missed.emit()
 		queue_free()
 		return
 
 	queue_redraw()
+
+func _crossed_ground(start: Vector2, end: Vector2) -> bool:
+	return start.y < ground_y and end.y >= ground_y
 
 func embed() -> void:
 	is_embedded = true
