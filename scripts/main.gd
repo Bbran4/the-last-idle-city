@@ -18,7 +18,7 @@ var impact_timer: float = 0.0
 var aim_angle: float = 0.0
 var shot_result_timer: float = 0.0
 
-var total_score: int = 0
+var total_coins_earned: int = 0
 var shots_fired: int = 0
 var successful_hits: int = 0
 var bullseyes: int = 0
@@ -90,17 +90,17 @@ func _release_arrow() -> void:
 	_refresh_hud()
 
 func _on_arrow_hit(position: Vector2) -> void:
-	var score_result: Dictionary = world_view.get_target().calculate_score(position)
-	total_score += score_result.score
+	var target: Target = world_view.get_target()
+	var coin_reward: int = target.get_coin_reward()
+	economy.add_money(coin_reward)
+	total_coins_earned += coin_reward
 	successful_hits += 1
 	var accuracy_xp: int = stats.award_accuracy_hit_xp(economy.get_xp_multiplier())
 	if accuracy_xp > 0:
 		hud.show_accuracy_xp_gain(accuracy_xp)
-	if score_result.is_bullseye:
-		bullseyes += 1
 	impact_position = position
 	impact_timer = IMPACT_FLASH_DURATION
-	_show_result(score_result.label)
+	_show_result(target.get_reward_label())
 
 func _on_arrow_missed() -> void:
 	_show_result("MISS")
@@ -147,7 +147,7 @@ func _show_result(text: String) -> void:
 	_refresh_hud()
 
 func _refresh_hud() -> void:
-	hud.set_score(total_score)
+	hud.set_coins_earned(total_coins_earned)
 	hud.set_stats(shots_fired, successful_hits, bullseyes)
 	hud.set_strength(stats.strength_level, stats.strength_xp, stats.strength_xp_to_next_level(), stats.strength_progress_ratio())
 	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
@@ -162,7 +162,7 @@ func _reset_session() -> void:
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
-	total_score = 0
+	total_coins_earned = 0
 	shots_fired = 0
 	successful_hits = 0
 	bullseyes = 0
