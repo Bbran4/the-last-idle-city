@@ -42,7 +42,9 @@ func _process(delta: float) -> void:
 			hud.hide_shot_result()
 
 	var draw_ratio: float = draw_strength / MAX_DRAW_STRENGTH
-	var preview_speed: float = stats.get_max_launch_speed(lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, draw_ratio))
+	var preview_speed: float = 0.0
+	if is_drawing:
+		preview_speed = stats.get_max_launch_speed(lerp(MIN_LAUNCH_SPEED, MAX_LAUNCH_SPEED, draw_ratio))
 	world_view.set_draw_ratio(draw_ratio)
 	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, stats.get_trajectory_prediction_quality())
 	world_view.update_impact(impact_position, impact_timer)
