@@ -9,6 +9,8 @@ const RECOVERY_BACKGROUND_COLOR := Color(0.12, 0.14, 0.17, 0.75)
 const RECOVERY_PROGRESS_COLOR := Color("d7a449")
 
 const MOVE_SPEED: float = 520.0
+const MIN_X: float = 80.0
+const MAX_X: float = 3200.0
 const GROUND_Y: float = 1656.0
 const JUMP_SPEED: float = -760.0
 const GRAVITY: float = 1800.0
@@ -37,7 +39,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = 0.0
 
-	position.x += velocity.x * delta
+	position.x = clamp(position.x + velocity.x * delta, MIN_X, MAX_X)
 	position.y += velocity.y * delta
 	if position.y >= GROUND_Y:
 		position.y = GROUND_Y
