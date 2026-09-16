@@ -141,35 +141,37 @@ The game combines player skill with character progression. A skilled player with
 
 **Goal:** Combine shooting and progression into a satisfying practice loop.
 
-- [ ] Integrate bow, arrow, target, scoring, Strength, and Accuracy
-- [ ] Add practice HUD
-- [ ] Display Strength and Accuracy
-- [ ] Display shot results
-- [ ] Track practice statistics
-- [ ] Add session/reset support
-- [ ] Add progression feedback
-- [ ] Perform early balance pass
-- [ ] Playtest the full loop
-- [ ] Remove unnecessary complexity
+- [x] Integrate bow, arrow, target, scoring, Strength, and Accuracy
+- [x] Add practice HUD
+- [x] Display Strength and Accuracy
+- [x] Display shot results
+- [x] Track practice statistics
+- [x] Add session/reset support
+- [x] Add progression feedback
+- [x] Perform early balance pass
+- [x] Playtest the full loop
+- [x] Remove unnecessary complexity
 
-**Completion:** Repeated practice feels meaningful and satisfying.
-
-> **Important checkpoint:** If shooting is not fun here, stop and improve it before continuing.
+**Completion:** The practice loop is playable and has been playtested. Shooting, progression, trajectory assistance, feedback, and session reset work together without introducing auto-aim.
 
 ### Milestone 9 - Economy & Money
 
 **Goal:** Introduce the upgrade economy.
 
-- [ ] Add money system
-- [ ] Display money
+- [x] Add money system
+- [x] Display money
 - [ ] Make tournament rewards the primary money source
-- [ ] Add purchases
-- [ ] Add upgrade UI
-- [ ] Handle insufficient funds
-- [ ] Add purchase feedback
-- [ ] Keep economy separate from shooting logic
+- [x] Add purchases
+- [x] Add upgrade UI
+- [x] Handle insufficient funds
+- [x] Add purchase feedback
+- [x] Keep economy separate from shooting logic
 
-**Completion:** The game's economy functions independently from the shooting mechanics.
+**Current implementation:** The economy is represented by a dedicated `PlayerEconomy` system. The practice range starts with 250 coins so the economy can be tested before tournaments exist. The first upgrade is a Training Manual with five levels. Each level costs more and increases Strength and Accuracy XP gains by 10%.
+
+Tournament rewards remain intentionally deferred to the tournament systems. When tournaments are implemented, they will become the primary long-term source of money rather than adding unrelated money generation to practice shooting.
+
+**Completion:** The economy and purchase infrastructure work independently from shooting. Tournament reward integration remains for Milestones 12-13.
 
 ### Milestone 10 - Bows & Equipment
 
@@ -378,9 +380,9 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 7 - Aim Assistance**
+**Current Stage: Milestone 9 - Economy & Money**
 
-Milestones 0 through 7 are implemented. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy now improves from every successful target hit rather than requiring a bullseye.
+Milestones 0 through 8 are implemented and the core practice loop has been playtested. Strength and Accuracy live together in the central `PlayerStats` script. Strength progression rewards meaningful draw and release practice. Accuracy now improves from every successful target hit rather than requiring a bullseye.
 
 Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release. Early levels require 100 XP, with the requirement increasing by 25 XP per level. Strength affects launch capability by adding 25 launch-speed points per Strength level above level 1.
 
@@ -388,6 +390,8 @@ Accuracy starts at level 1 with 0 XP. Each successful target hit awards 25 Accur
 
 The trajectory preview is a visual simulation of the actual shot arc. It follows the current bow aim, draw strength, launch speed, and gravity. Higher Accuracy increases the useful prediction window and improves line visibility. The player still controls the aim completely. The system does not rotate the bow, alter the mouse aim, bend the arrow, or select a target automatically.
 
-The next major goal is:
+Milestone 9 now adds a separate economy layer with coins, purchase validation, upgrade feedback, and a Training Manual upgrade. The Training Manual has five levels and increases both Strength and Accuracy XP gains by 10% per level. The economy is intentionally separate from the shooting code. The current starting bankroll exists to test the purchase loop before tournaments are available.
 
-> **Milestone 8: Playtest and consolidate the complete practice loop before adding economy or equipment systems.**
+The next goal is:
+
+> **Finish the economy's tournament reward connection later, then build Milestone 10: Bows & Equipment.**
