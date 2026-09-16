@@ -6,6 +6,11 @@ const SHOT_RECOVERY_TIME: float = 1.0
 const MIN_PROJECTILE_SPEED_MULTIPLIER: float = 1.0
 const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
 const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
+const RIGHT_MOUSE_DRAW_DECAY: float = 0.45
+const FULL_DRAW_WOBBLE_DELAY: float = 0.35
+const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
+const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
+const FULL_DRAW_WOBBLE_SPEED: float = 18.0
 const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
@@ -18,6 +23,8 @@ var economy: PlayerEconomy = PlayerEconomy.new()
 var bow_inventory: BowInventory = BowInventory.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
+var right_mouse_held: bool = false
+var full_draw_timer: float = 0.0
 var shot_recovery_timer: float = 0.0
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
@@ -43,15 +50,29 @@ func _process(delta: float) -> void:
 	var bow: BowData = bow_inventory.get_equipped()
 	shot_recovery_timer = max(shot_recovery_timer - delta, 0.0)
 	world_view.set_recovery_progress(shot_recovery_timer / SHOT_RECOVERY_TIME)
+
 	if is_drawing:
-		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
+		if right_mouse_held:
+			draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
+		else:
+			draw_strength = max(draw_strength - bow.max_draw_strength * RIGHT_MOUSE_DRAW_DECAY * delta, 0.0)
+
+	var draw_ratio: float = draw_strength / bow.max_draw_strength
+	if draw_ratio >= 1.0:
+		full_draw_timer += delta
+	else:
+		full_draw_timer = 0.0
+
+	if is_drawing and full_draw_timer >= FULL_DRAW_AUTO_RELEASE_TIME:
+		_release_arrow()
+
 	if impact_timer > 0.0:
 		impact_timer = max(impact_timer - delta, 0.0)
 	if shot_result_timer > 0.0:
 		shot_result_timer = max(shot_result_timer - delta, 0.0)
 		if shot_result_timer <= 0.0:
 			hud.hide_shot_result()
-	var draw_ratio: float = draw_strength / bow.max_draw_strength
+
 	var projectile_speed_multiplier: float = _get_projectile_speed_multiplier(draw_ratio)
 	var preview_speed: float = 0.0
 	if is_drawing:
@@ -73,10 +94,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
 		_reset_session()
 		return
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if event.pressed:
+			right_mouse_held = true
+		elif not event.pressed:
+			right_mouse_held = false
+		return
+
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed and not is_drawing and shot_recovery_timer <= 0.0:
 			is_drawing = true
+			right_mouse_held = false
 			draw_strength = 0.0
+			full_draw_timer = 0.0
 		elif not event.pressed and is_drawing:
 			_release_arrow()
 
@@ -86,10 +117,19 @@ func _update_aim() -> void:
 	var aim_vector: Vector2 = mouse_world_position - world_view.get_bow_position()
 	if aim_vector.length_squared() > 0.001:
 		aim_angle = aim_vector.angle() + world_view.player.get_aim_wobble()
+		if draw_strength > 0.0:
+			var bow: BowData = bow_inventory.get_equipped()
+			var draw_ratio: float = draw_strength / bow.max_draw_strength
+			if draw_ratio >= 1.0:
+				var wobble_progress: float = clamp((full_draw_timer - FULL_DRAW_WOBBLE_DELAY) / max(FULL_DRAW_AUTO_RELEASE_TIME - FULL_DRAW_WOBBLE_DELAY, 0.001), 0.0, 1.0)
+				var wobble: float = sin(full_draw_timer * FULL_DRAW_WOBBLE_SPEED) * FULL_DRAW_WOBBLE_MAX_ANGLE * wobble_progress
+				aim_angle += wobble
 	world_view.aim_bow(world_view.player.get_bow_aim_angle(aim_angle))
 
 func _release_arrow() -> void:
 	is_drawing = false
+	right_mouse_held = false
+	full_draw_timer = 0.0
 	shot_recovery_timer = SHOT_RECOVERY_TIME
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
@@ -210,7 +250,9 @@ func _refresh_hud() -> void:
 
 func _reset_session() -> void:
 	is_drawing = false
+	right_mouse_held = false
 	draw_strength = 0.0
+	full_draw_timer = 0.0
 	shot_recovery_timer = 0.0
 	world_view.set_recovery_progress(0.0)
 	impact_position = Vector2.ZERO
