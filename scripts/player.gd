@@ -10,7 +10,7 @@ const RECOVERY_PROGRESS_COLOR := Color("d7a449")
 
 const WALK_SPEED: float = 520.0
 const RUN_SPEED: float = 820.0
-const MIN_X: float = 80.0
+const MIN_X: float = -700.0
 const MAX_X: float = 3200.0
 const GROUND_Y: float = 1656.0
 const JUMP_SPEED: float = -760.0
