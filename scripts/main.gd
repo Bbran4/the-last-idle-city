@@ -66,6 +66,11 @@ func _process(delta: float) -> void:
 	if is_drawing and full_draw_timer >= FULL_DRAW_AUTO_RELEASE_TIME:
 		_release_arrow()
 
+	if not is_drawing and shot_recovery_timer <= 0.0 and left_mouse_held:
+		_start_drawing()
+		bow = bow_inventory.get_equipped()
+		draw_ratio = draw_strength / bow.max_draw_strength
+
 	if impact_timer > 0.0:
 		impact_timer = max(impact_timer - delta, 0.0)
 	if shot_result_timer > 0.0:
@@ -96,20 +101,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			left_mouse_held = true
-		elif not event.pressed:
-			left_mouse_held = false
+		left_mouse_held = event.pressed
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed and not is_drawing and shot_recovery_timer <= 0.0:
-			is_drawing = true
-			left_mouse_held = false
-			draw_strength = 0.0
-			full_draw_timer = 0.0
-		elif not event.pressed and is_drawing:
+		if event.pressed:
+			if not is_drawing and shot_recovery_timer <= 0.0:
+				_start_drawing()
+		elif is_drawing:
 			_release_arrow()
+
+func _start_drawing() -> void:
+	if is_drawing or shot_recovery_timer > 0.0:
+		return
+	is_drawing = true
+	draw_strength = 0.0
+	full_draw_timer = 0.0
 
 func _update_aim() -> void:
 	var mouse_world_position: Vector2 = world_view.get_world_mouse_position()
@@ -130,10 +137,10 @@ func _release_arrow() -> void:
 	is_drawing = false
 	left_mouse_held = false
 	full_draw_timer = 0.0
-	shot_recovery_timer = SHOT_RECOVERY_TIME
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
 		return
+	shot_recovery_timer = SHOT_RECOVERY_TIME
 	var bow: BowData = bow_inventory.get_equipped()
 	var strength_ratio: float = draw_strength / bow.max_draw_strength
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
