@@ -7,9 +7,8 @@ signal missed
 const GRAVITY: float = 180.0
 
 var velocity: Vector2 = Vector2.ZERO
-var distance_traveled: float = 0.0
 var target_position: Vector2 = Vector2.ZERO
-var target_radius: float = 92.0
+var target_radius: float = 100.0
 var ground_y: float = 0.0
 var window_left: float = 0.0
 var window_right: float = 1280.0
@@ -17,7 +16,6 @@ var is_embedded: bool = false
 
 func launch(initial_velocity: Vector2, target: Vector2, radius: float, ground: float, left_bound: float, right_bound: float) -> void:
 	velocity = initial_velocity
-	distance_traveled = 0.0
 	target_position = target
 	target_radius = radius
 	ground_y = ground
@@ -34,7 +32,6 @@ func _process(delta: float) -> void:
 	var previous_position: Vector2 = position
 	var movement: Vector2 = velocity * delta
 	position += movement
-	distance_traveled += movement.length()
 	velocity.y += GRAVITY * delta
 
 	if velocity.length_squared() > 0.0:
@@ -83,14 +80,11 @@ func _segment_circle_hit(start: Vector2, end: Vector2, center: Vector2, radius: 
 	return Vector2.INF
 
 func _draw() -> void:
-	var arrow_length: float = 48.0
-	var arrow_head: float = 10.0
-	var head: Vector2 = Vector2(arrow_head, 0.0)
-	var tail: Vector2 = Vector2(-arrow_length, 0.0)
-
-	draw_line(tail, head, Color("d8d0bb"), 3.0)
+	var arrow_rect: Rect2 = Rect2(-45.0, -5.0, 90.0, 10.0)
+	draw_rect(arrow_rect, Color("d8d0bb"), true)
+	draw_rect(arrow_rect, Color("8f988f"), false, 2.0)
 	draw_colored_polygon(PackedVector2Array([
-		head,
-		head - Vector2(1.0, 0.0).rotated(0.55) * 14.0,
-		head - Vector2(1.0, 0.0).rotated(-0.55) * 14.0
-	]), Color("c7a875"))
+		Vector2(45.0, 0.0),
+		Vector2(30.0, -9.0),
+		Vector2(30.0, 9.0)
+	]), Color("d7a449"))
