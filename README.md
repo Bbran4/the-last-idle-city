@@ -1,521 +1,407 @@
-# 🏰 Castle Archer
+# 🏹 The Last Archer
 
-> **A simple incremental castle-defense game where you shoot enemies, earn coins, upgrade your archer, and survive increasingly ridiculous waves.**
+**The Last Archer** is a small archery practice and progression game built around a simple idea:
 
-Castle Archer is a small 2D Godot game written in GDScript, designed for a polished browser/indie release on Kongregate and itch.io.
+> **Practice. Improve. Compete. Become the champion.**
 
-The core loop is deliberately simple:
+You begin as an inexperienced archer practicing alone with a basic bow and a single target.
 
-**Shoot → Earn → Upgrade → Survive → Repeat.**
+As you practice, your archery skills improve. Better timing makes your shots stronger. Accurate shots improve your aim. Better equipment lets you fire faster and farther.
 
-The goal is to keep the project small, readable, fun, and actually finishable.
+Eventually, practice leads to competition.
+
+Enter tournaments, defeat increasingly skilled opponents, earn prize money, purchase better equipment, expand your practice range, and work your way toward becoming the greatest archer in the tournament.
+
+The game is designed to be small, accessible, and satisfying, with a mixture of **active skill-based gameplay, incremental progression, and idle-style upgrades**.
 
 ---
 
-# 🎯 Current Gameplay
+# 🎯 Core Gameplay
+
+The player controls an archer positioned on the **left side of the screen**, firing arrows toward targets.
+
+The basic shooting mechanic is deliberately simple:
+
+1. **Hold the left mouse button** to draw the bow.
+2. Holding the button increases the bow's draw strength.
+3. **Release the mouse button** to fire.
+4. The arrow travels toward the target.
+5. The quality of the shot determines the result.
+
+The player should immediately understand the mechanic without needing a tutorial.
+
+**Hold. Aim. Release.**
+
+---
+
+# 🏹 Archery Skill
+
+Practice is the primary way the player improves their character.
+
+Several statistics develop through gameplay.
+
+## Strength
+
+Strength represents how much force the archer can generate when drawing the bow.
+
+Releasing the bow at the correct draw point provides additional strength progression.
+
+Higher strength allows the player to:
+
+* Draw stronger bows
+* Fire arrows at greater velocity
+* Use heavier equipment
+* Eventually compete with more demanding bows
+
+Strength should improve naturally through repeated practice rather than simply being a number purchased from a menu.
+
+---
+
+## 🎯 Accuracy
+
+Accuracy represents the archer's ability to consistently place arrows where intended.
+
+Hitting the **bullseye** provides accuracy progression.
+
+As accuracy improves, the player receives increasingly useful visual assistance when aiming.
+
+The goal is for accuracy to feel like something the player has **earned through becoming a better archer**, rather than simply purchasing an aim upgrade.
+
+---
+
+# 👁️ Aim Assistance
+
+Accuracy provides a visible aiming aid.
+
+At low accuracy, the player must rely almost entirely on their own judgement.
+
+As accuracy improves, a trajectory/aiming line gradually becomes available.
+
+This could eventually develop into:
+
+* A basic trajectory line
+* More accurate trajectory prediction
+* Impact prediction
+* Wind compensation
+* Advanced targeting information
+
+The assistance should support the player without completely removing the skill involved in aiming.
+
+The ultimate goal is for progression to make the player feel increasingly capable.
+
+---
+
+# 🏆 Tournaments
+
+Practice eventually leads to competition.
+
+Once the player reaches the required level of progression, tournaments become available.
+
+Tournaments provide a structured goal beyond endlessly practicing against targets.
+
+A tournament could involve:
+
+* Multiple rounds
+* Different target distances
+* Different target sizes
+* Limited arrows
+* Increasingly difficult opponents
+* Score-based competition
+* Prize money
+
+Winning tournaments provides the money needed to continue improving the player's equipment and practice range.
+
+---
+
+# 💰 Money
+
+Money is primarily earned through tournament performance.
+
+Prize money can be spent on improving the player's archery setup.
+
+Possible purchases include:
+
+* Better bows
+* Better arrows
+* Additional targets
+* Practice equipment
+* Training upgrades
+* Range improvements
+* Tournament entry upgrades
+
+Money should create a meaningful progression loop:
+
+**Practice → Improve → Compete → Earn → Upgrade → Practice Better**
+
+---
+
+# 🏹 Bows
+
+Different bows provide different characteristics.
+
+A better bow does not simply mean a universally better weapon.
+
+Each bow should have its own requirements and advantages.
+
+Possible bow statistics include:
+
+* Maximum draw strength
+* Draw speed
+* Arrow velocity
+* Accuracy modifier
+* Strength requirement
+* Draw time
+* Special characteristics
+
+For example:
+
+> A powerful tournament bow may fire extremely fast arrows but require significantly more strength to use effectively.
+
+This creates an interesting progression choice.
+
+The player may own a powerful bow but still need to train enough strength before they can properly use it.
+
+---
+
+# 🎯 Practice Range
+
+The player's practice range can be expanded over time.
+
+The starting setup is intentionally simple:
+
+**One archer.
+One bow.
+One target.**
+
+As the player progresses, additional targets and training equipment can be purchased.
+
+Possible improvements include:
+
+* Additional targets
+* Targets at different distances
+* Smaller targets
+* Moving targets
+* Multiple targets
+* Long-distance targets
+* Strength training equipment
+* Accuracy training equipment
+
+The practice range should visually evolve alongside the player's progression.
+
+---
+
+# 📈 Progression
+
+The game uses a combination of **player skill** and **character progression**.
+
+The player becomes better because they learn the shooting mechanics.
+
+The character becomes better because they practice and develop statistics.
+
+These two systems should complement each other.
+
+A highly skilled player with weak equipment should still be able to perform well.
+
+A heavily upgraded archer should still require the player to actually shoot accurately.
+
+---
+
+# 🔄 Core Progression Loop
+
+The primary gameplay loop is:
 
 ```text
-		Enemies →     🏰 Castle + Archer     ← Enemies
-							  CENTER
+Practice
+   ↓
+Improve Strength & Accuracy
+   ↓
+Unlock Better Equipment
+   ↓
+Expand Practice Range
+   ↓
+Enter Tournament
+   ↓
+Earn Prize Money
+   ↓
+Purchase Upgrades
+   ↓
+Practice More Efficiently
+   ↓
+Enter More Difficult Tournaments
 ```
 
-- Castle sits in the center.
-- Player archer is positioned at the castle.
-- Enemies spawn from both sides and run along the ground toward the tower.
-- Player aims with the mouse and automatically fires during active waves.
-- The mouse determines the firing direction, while the target point is clamped to the archer's current maximum range.
-- The archer fires even when no enemy is currently in range.
-- Shots use up to **2.5° of random aim variance** while preserving the range limit.
-- Arrow targets can never be farther away than the archer's current range.
-- Arrows travel in a ballistic arc and fall toward the battlefield instead of moving in a straight line.
-- Enemy kills award coins.
-- Enemies reaching the castle deal damage.
-- Castle reaching 0 HP ends the run.
-
-Current starting combat values:
-
-- **1 Damage**
-- **1.0 attacks/sec**
-- **800 Arrow Speed**
-- **1000 Range**
-- **5% Critical Chance**
-- **2.0x Critical Damage**
-
-Critical hits are active.
+The game should always give the player something meaningful to work toward.
 
 ---
 
-# 💰 Progression
+# 🥇 Tournament Progression
 
-The first progression layer is implemented.
+Tournaments should gradually increase in difficulty.
 
-## First Passive
+Early tournaments may feature:
 
-After **6 total coins earned**:
+* Short distances
+* Large targets
+* Few rounds
+* Weak opponents
 
-**Sharpened Arrows: +1 Attack Damage**
+Later tournaments can introduce:
 
-## Purchasable Upgrades
+* Greater distances
+* Smaller targets
+* Moving targets
+* Stronger opponents
+* More rounds
+* Higher entry costs
+* Larger rewards
 
-| Upgrade | Effect | Cost |
-|---|---:|---:|
-| Damage | +1 Damage | 1 coin |
-| Attack Speed | +0.1 attacks/sec | 2 coins |
-| Critical Chance | +5% | 3 coins |
-| Critical Damage | +0.5x | 4 coins |
-| Arrow Speed | +100 | 5 coins |
-| Range | +100 | 6 coins |
-| Castle Health | +25 max/current HP | 7 coins |
+Eventually, the player reaches the highest level of competition.
 
-Upgrades are available during the **5 second intermission between waves** and are hidden while a wave is active.
-
-The current fixed costs are intentionally simple and are considered reasonably balanced for this development pass.
-
----
-
-# 🌊 Waves
-
-- Wave 1 starts with **5 enemies**.
-- Enemy count increases by **1 per wave**.
-- Enemy health starts at **3 HP**.
-- Enemy health increases by **15% per wave**.
-- A **5 second** intermission occurs between waves.
-- During the intermission, enemy spawning is stopped, archer firing is halted, and the upgrade controls become available.
-- Enemies spawn from both sides.
-- Normal enemies award **1 coin**.
-- Every **5th wave** contains a Mini Boss unless it is also a Major Boss wave.
-- Every **10th wave** contains a Major Boss instead of a Mini Boss.
-- Castle destruction ends the run.
-
-The starting **1 Damage vs 3 HP** balance is intentional. Damage upgrades therefore create clear combat breakpoints.
+The ultimate objective is to become the **champion archer**.
 
 ---
 
-# 🏹 Projectile & Movement Feel
+# 🌱 Future Progression Ideas
 
-- Arrows are fired using an initial ballistic velocity.
-- Arrow trajectories form visible arcs instead of straight-line projectiles.
-- Gravity continuously pulls arrows downward during flight.
-- Arrows rotate to follow their current flight direction.
-- Arrows expire when they hit the battlefield ground or exceed their flight-time limit.
-- Enemies spawn on the tower's ground line.
-- Enemies move horizontally toward the castle's ground position.
-- The castle exposes a shared ground position so enemies and arrows can use the same battlefield reference.
-- The archer fires continuously during active waves.
-- The mouse controls the firing direction, but the target point is clamped to the archer's maximum range.
-- Aim variance is applied after range clamping, keeping the firing distance bounded.
-- Range upgrades directly increase how far the archer can send an arrow.
+The following systems are potential additions and are **not yet finalized**.
 
-This keeps the combat readable while making the battlefield feel more like a lane defense game.
+## Wind
+
+Environmental wind could affect arrow trajectory.
+
+Higher accuracy could eventually allow the player to receive information about wind direction and strength.
 
 ---
 
-# ❤️ Enemy Health Bars
+## Different Arrow Types
 
-Enemy health bars are implemented for **all enemies and bosses**.
+Different arrows could provide different characteristics.
 
-- Health bars are hidden by default.
-- The first time an enemy takes damage, its health bar appears.
-- The bar updates as the enemy takes additional damage.
-- The bar remains visible for that enemy after it has been revealed.
-- Health bars disappear when the enemy dies.
-- Mini Bosses and Major Bosses use the same system automatically.
+Potential examples:
 
----
-
-# 💥 Combat Feedback
-
-Current feedback includes:
-
-- Enemy health bars appear after the first hit.
-- Enemies flash when hit.
-- Enemies shrink and fade when killed.
-- Bosses use stronger entrance and death animations.
-- Wave status communicates incoming and cleared waves.
-- Mini Boss and Major Boss waves announce themselves.
-- Active boss health is displayed while a boss is alive.
-- Boss enrage displays a warning.
-- Major Boss shields display their remaining shield in the boss UI.
-- Major Boss shields display as a pulsing blue circular glow around the boss.
-- Upgrade purchases display confirmation.
-- Passive unlocks display confirmation.
-- Skill card choices appear during the appropriate intermission.
-- Skill acquisition is confirmed in the wave status UI.
-- Power Shot and Multi Shot activation/cooldown states are displayed in the UI.
+* Standard arrows
+* Heavy arrows
+* Lightweight arrows
+* Long-distance arrows
+* Precision arrows
 
 ---
 
-# 👹 Bosses
+## Target Variety
 
-Bosses are progression events rather than ordinary enemies with huge health pools.
+Targets could eventually introduce additional challenges.
 
-## Mini Bosses
+Examples:
 
-- Appear every **5 waves** except on Major Boss waves.
-- Spawn alongside normal enemies.
-- Have **10x normal enemy health** for that wave.
-- Move at **45 speed** before enraging.
-- Deal **25 castle damage** before enraging.
-- Award **10 coins** when killed.
-- Appear at **1.6x scale**.
-- Enter with a scale-up and fade-in animation.
-- Have a stronger death animation than normal enemies.
-- Have the normal enemy health bar plus a dedicated UI health display.
-
-### Mini Boss Enrage
-
-At **50% health**:
-
-- Movement speed increases from **45 to 80**.
-- Castle damage increases from **25 to 35**.
-- The boss pulses and changes appearance.
-- The UI announces the enrage state.
-
-## Major Bosses
-
-- Appear every **10 waves**.
-- Replace the Mini Boss on those waves.
-- Have **20x normal enemy health** for that wave.
-- Award **25 coins** when killed.
-- Move at **40 speed** before enraging.
-- Deal **40 castle damage** before enraging.
-- Appear at **2.2x scale**.
-- Have distinct entrance and death feedback.
-- Use the dedicated boss health UI.
-
-### Major Boss Enrage & Shield
-
-At **50% health**, a Major Boss enters its special second phase:
-
-- Movement speed changes to **70**.
-- Castle damage increases to **60**.
-- A shield activates with **25% of the boss's maximum health** as shield strength.
-- Incoming damage is absorbed by the shield before it reaches boss health.
-- The UI displays the remaining shield value.
-- The UI announces the shield phase.
-- The shield appears as a **pulsing blue circular glow** around the Major Boss.
-- Once the shield is broken, the UI announces the enraged state and the boss remains in its stronger combat state.
-- The phase happens once per boss.
-
-The current boss values are considered balanced for this development pass. Further tuning can wait until broader progression is implemented.
+* Standard stationary targets
+* Smaller targets
+* Moving targets
+* Long-distance targets
+* Timed targets
+* Multi-target challenges
 
 ---
 
-# 🎯 Skills
+## Training
 
-Skills are implemented as **card choices** rather than a traditional RPG skill tree.
+Additional training activities could improve specific statistics.
 
-- After every **5 completed waves**, the player receives up to **3 skill cards** during the between-wave intermission.
-- The cards are selected from skills the player does not already own.
-- The player chooses one card to add that skill to their owned skill list.
-- Duplicate skills are not offered.
-- Major Boss waves do not trigger a second skill choice because they occur on the same 10-wave cadence.
+For example:
 
-## Active Skills
+**Strength Training**
 
-### Power Shot
+Improves maximum draw strength.
 
-Implemented as the first active skill.
+**Accuracy Training**
 
-- Activated manually from the UI during an active wave.
-- Arms the next arrow.
-- The next arrow deals **3x damage**.
-- Critical hit calculation still applies.
-- Has a **10 second cooldown**.
-- Cannot be activated during intermission.
-- The UI shows Ready, Armed, and cooldown states.
+Improves accuracy and aim assistance.
 
-### Multi Shot
+**Speed Training**
 
-Implemented as the second active skill.
+Improves draw and release speed.
 
-- Activated manually from the UI during an active wave.
-- Arms the next attack.
-- The next attack fires **3 arrows**.
-- Arrows are spread across a **20° total firing arc**.
-- Each arrow uses the normal damage and critical-hit rules.
-- Has a **12 second cooldown**.
-- Cannot be activated during intermission.
-- The UI shows Ready, Armed, and cooldown states.
+**Endurance Training**
 
-Planned remaining active skills:
+Allows the player to maintain performance through longer competitions.
 
-- Piercing Arrow
-- Explosive Arrow
-- Rapid Fire
-- Rain of Arrows
-
-Skills remain intentionally smaller than a traditional RPG skill tree.
+These systems are subject to further design.
 
 ---
 
-# 🤖 Automation
+# 🎮 Design Philosophy
 
-Planned progression includes:
+The game should remain **small and focused**.
 
-- Auto Aim
-- Automatic target selection
-- Target priority
-- Automatic firing
-- Auto Aim upgrades
-- Additional archers
-- Archer recruitment
-- Archer upgrades
+The core experience should always revolve around shooting a bow.
 
-Automation should feel like a major progression milestone rather than another small percentage bonus.
+Upgrades and progression should enhance that experience rather than bury it beneath dozens of menus and disconnected systems.
 
----
+The player should be able to sit down, pick up the mouse, and immediately understand what they are doing.
 
-# 🏰 Castle Defense
+### Simple to learn.
 
-Current castle systems:
+### Satisfying to master.
 
-- Health
-- Armor support
-- Health regeneration support
-- Damage handling
-- Destruction/game-over state
-- Maximum Health upgrades
-- Shared ground position for battlefield movement
-
-Current development castle health is **100 HP**.
-
-Planned upgrades include Armor, Health Regeneration, Damage Reduction, and Starting Health.
+### Meaningful progression.
 
 ---
 
-# 💵 Economy
+# 🛠️ Development Goals
 
-Coins are the primary currency.
+The project will be developed in small milestones.
 
-Currently:
+Each milestone should result in a playable improvement rather than building large amounts of invisible infrastructure.
 
-- Enemies award coins when killed.
-- Current coins are displayed.
-- Total coins earned are tracked for progression unlocks.
-- Coins buy the current upgrades.
-- Mini Bosses award **10 coins**.
-- Major Bosses award **25 coins**.
+The initial development focus should be:
 
-Avoid adding currencies or complicated scaling unless they genuinely improve progression.
-
----
-
-# 🚀 DEVELOPMENT ROADMAP
-
-## 🏁 Milestone 0 - Foundation
-
-**Status: Mostly complete**
-
-- [x] Main scene
-- [x] Game state/controller
-- [x] Folder/script structure
-- [x] Basic UI
-- [x] Clean startup
-- [ ] Save/load foundation
-
-## 🏹 Milestone 1 - First Arrow
-
-**Status: Complete**
-
-- [x] Castle
-- [x] Player archer
-- [x] Mouse aiming
-- [x] Ballistic arrow firing/movement
-- [x] Ground-based enemy movement
-- [x] Enemy health/movement/death
-- [x] Castle damage
-- [x] Basic hit/death feedback
-- [x] Range-clamped automatic firing
-
-## 🌊 Milestone 2 - Waves
-
-**Status: Complete for the current development pass**
-
-- [x] Wave manager
-- [x] Multiple enemies
-- [x] Both spawn sides
-- [x] Ground-line spawning
-- [x] Wave completion
-- [x] Enemy count scaling
-- [x] Enemy health scaling
-- [x] Wave UI
-- [x] Coin rewards
-- [x] Automatic next waves
-- [x] Five-second between-wave intermission
-- [x] Archer firing halted during intermission
-- [x] Upgrade controls available only during intermission
-- [x] Game over on castle destruction
-- [x] Mini Boss every 5 waves
-- [x] Major Boss every 10 waves
-
-## 💰 Milestone 3 - Upgrades
-
-**Status: Basic upgrade set complete**
-
-- [x] Damage
-- [x] Attack Speed
-- [x] Critical Chance
-- [x] Critical Damage
-- [x] Arrow Speed
-- [x] Range
-- [x] Castle Health
-- [x] First passive
-- [x] Critical hit calculation
-- [x] Basic upgrade feedback
-- [x] Upgrades hidden during active waves
-- [x] Upgrades available during intermission
-
-Remaining polish can wait until later systems expose actual problems.
-
-## 👹 Milestone 4 - Bosses
-
-**Status: Complete for the current development pass**
-
-- [x] Mini Boss every 5 waves
-- [x] Major Boss every 10 waves
-- [x] Mini Boss rewards
-- [x] Major Boss rewards
-- [x] Boss health display
-- [x] Existing Enemy framework reused
-- [x] Visual distinction between boss tiers
-- [x] Enrage phase at 50% health
-- [x] Mini Boss enrage speed/damage increase
-- [x] Major Boss enrage behavior
-- [x] Major Boss shield phase
-- [x] Enrage UI feedback
-- [x] Major Boss shield UI feedback
-- [x] Major Boss blue shield glow
-- [x] Enemy/boss health bars that appear after first damage
-- [x] Stronger boss entrance feedback
-- [x] Stronger boss death feedback
-- [x] Initial balance pass
-
-## ⚡ Milestone 5 - Skills
-
-**Status: In progress**
-
-- [x] Skill card selection after every 5 waves
-- [x] Skill ownership/state
-- [x] Basic skill card UI/feedback
-- [x] Active skill system
-- [x] Cooldowns
-- [x] Power Shot
-- [x] Multi Shot
-- [ ] Piercing Arrow
-- [ ] Explosive Arrow
-- [ ] Rapid Fire
-- [ ] Rain of Arrows
-
-The first two active skills are intentionally small and manually activated. Each skill is being implemented and verified independently before moving to the next one.
-
-## 🤖 Milestone 6 - Automation
-
-**Status: Not started**
-
-- [ ] Auto Aim
-- [ ] Automatic targeting
-- [ ] Target priority
-- [ ] Automatic firing
-- [ ] Auto Aim upgrades
-- [ ] Additional archers
-- [ ] Archer recruitment/upgrades
-
-## 💾 Milestone 7 - Persistence & Polish
-
-**Status: Not started**
-
-- [ ] Save system
-- [ ] Settings
-- [ ] Audio
-- [ ] Better animations
-- [ ] UI polish
-- [ ] Achievements
-- [ ] Menus
-- [ ] Pause
-- [ ] Browser resolution testing
-- [ ] Performance testing
-- [ ] Final balancing
-
-## 🌐 Milestone 8 - Release
-
-**Status: Not started**
-
-- [ ] Final balance
-- [ ] Final UI/audio pass
-- [ ] Browser testing
-- [ ] Kongregate build
-- [ ] itch.io build
-- [ ] Store artwork/description
-- [ ] Screenshots
-- [ ] Gameplay video/GIF
-- [ ] Publish
+1. Basic archer scene
+2. Bow drawing mechanic
+3. Mouse-controlled firing
+4. Arrow physics
+5. Target collision
+6. Bullseye detection
+7. Strength progression
+8. Accuracy progression
+9. Basic aim assistance
+10. Money system
+11. Bow upgrades
+12. Additional practice targets
+13. Basic tournament system
+14. Tournament rewards
+15. Progression balancing
+16. Polish and presentation
 
 ---
 
-# 📋 IMMEDIATE TASK LIST
+# 🎯 Initial MVP
 
-Work on one system at a time.
+The first playable version should contain only the essentials:
 
-### Current Focus
+* One archer
+* One bow
+* One target
+* Mouse-controlled drawing
+* Arrow physics
+* Target collision
+* Bullseye detection
+* Strength progression
+* Accuracy progression
+* Basic visual feedback
 
-**Milestone 5: Active skills**
-
-- [x] Skill-card selection UI
-- [x] Skill ownership/state
-- [x] Active skill framework
-- [x] Cooldown handling
-- [x] Power Shot
-- [x] Multi Shot
-- [ ] Piercing Arrow
-- [ ] Explosive Arrow
-- [ ] Rapid Fire
-- [ ] Rain of Arrows
-
-### Later
-
-- [ ] Auto Aim
-- [ ] Additional archers
-- [ ] Persistence
-- [ ] Final polish
-- [ ] Release
-
-**Do not build prestige, complex meta-progression, large skill trees, or complicated economy systems yet.**
+If this is fun, everything else can be built on top of it.
 
 ---
 
-# 🧭 Design Rules
+# 📌 Project Status
 
-1. **Keep It Small.**
-2. **Make Every Upgrade Feel Useful.**
-3. **Bosses Must Be Events.** More health alone is not enough.
-4. **Automation Is Progression.**
-5. **Do Not Build Complexity Before Fun.**
+**Current Stage:** Concept / Pre-Production
 
-```text
-Fun Shooting
-	↓
-Fun Waves
-	↓
-Fun Upgrades
-	↓
-Bosses
-	↓
-Skills
-	↓
-Automation
-	↓
-Polish
-	↓
-Release
-```
+The game concept has been redesigned around **active archery gameplay and tournament progression**.
 
----
+No major gameplay systems should be considered final until the basic shooting mechanic has been implemented and tested.
 
-# ⭐ The Goal
+The most important question at this stage is simple:
 
-A player should immediately understand:
+> **Is firing an arrow fun?**
 
-**Shoot. Earn. Upgrade. Defend. Repeat.**
-
-Start with one archer, survive increasingly dangerous waves, and gradually build toward automation, skills, and a polished small-scale incremental game.
+If the answer is yes, we build the tournament around it.
