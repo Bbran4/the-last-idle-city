@@ -112,15 +112,15 @@ The game combines player skill with character progression. A skilled player with
 
 **Goal:** Accurate shooting improves the character's ability to aim.
 
-- [ ] Add Accuracy stat
-- [ ] Award Accuracy XP for bullseyes
-- [ ] Add Accuracy levels
-- [ ] Display Accuracy and XP
-- [ ] Define Accuracy's effect on aim assistance
-- [ ] Balance progression
-- [ ] Ensure Accuracy does not auto-aim
+- [x] Add Accuracy stat
+- [x] Award Accuracy XP for bullseyes
+- [x] Add Accuracy levels
+- [x] Display Accuracy and XP
+- [x] Define Accuracy's effect on aim assistance
+- [x] Balance progression
+- [x] Ensure Accuracy does not auto-aim
 
-**Completion:** Bullseyes develop Accuracy and produce a tangible progression benefit.
+**Completion:** Bullseyes develop Accuracy and prepare the stat for the visible aim-assistance system in Milestone 7.
 
 ### Milestone 7 - Aim Assistance
 
@@ -378,16 +378,16 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 5 - Strength Progression**
+**Current Stage: Milestone 6 - Accuracy Progression**
 
-Milestones 0 through 5 are complete. The project now has a dedicated Strength progression system layered on top of the existing shooting loop without changing the core bow, arrow, target, or collision architecture.
+Milestones 0 through 6 are complete. Strength and Accuracy now live together in a single `PlayerStats` progression script rather than separate stat-specific progression classes. This gives the project one central place for player attributes and keeps future stats from spreading progression logic across multiple scripts.
 
-Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release, preventing frame-based or rapid low-effort progression exploits. Early levels require 100 XP, with the requirement increasing by 25 XP per level.
+Strength starts at level 1 with 0 XP. Valid releases begin at 60% draw strength. XP scales with release quality up to 25 XP for a full draw, while weak releases receive no XP. XP is awarded once per arrow release, preventing frame-based or rapid low-effort progression exploits. Early levels require 100 XP, with the requirement increasing by 25 XP per level. Strength affects launch capability by adding 25 launch-speed points per Strength level above level 1.
 
-Strength currently affects launch capability by adding 25 launch-speed points per Strength level above level 1. It does not affect aim or scoring, so player shooting skill remains important.
+Accuracy also starts at level 1 with 0 XP. Each bullseye awards 50 Accuracy XP, with the same 100 XP starting requirement and 25 XP growth per level. Accuracy has a defined aim-assistance strength value, but it does not currently steer the bow or arrow. The visible trajectory assistance is intentionally reserved for Milestone 7 so Accuracy does not become auto-aim.
 
-The HUD now displays Strength level, current XP, XP required for the next level, and XP gained from successful practice releases.
+The HUD now displays both Strength and Accuracy levels, current XP, XP required for the next level, and progression feedback for earned XP.
 
 The next major goal is:
 
-> **Turn accurate shooting into meaningful character progression with Accuracy.**
+> **Make Accuracy visibly useful through a trajectory prediction system without removing player skill.**
