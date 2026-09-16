@@ -25,7 +25,6 @@ position = Vector2(190, 1656)
 
 [node name="Target" parent="WorldView" unique_id=529700850 instance=ExtResource("5_tipki")]
 position = Vector2(2493, 1589)
-coin_reward = 1
 
 [node name="TargetTwo" parent="WorldView" unique_id=882783016 instance=ExtResource("5_tipki")]
 position = Vector2(2827, 1589)
@@ -37,8 +36,8 @@ position = Vector2(3100, 1589)
 scale = Vector2(0.6, 0.6)
 coin_reward = 3
 
-[node name="RingTarget" parent="WorldView" instance=ExtResource("5_tipki")]
-position = Vector2(2925, 1410)
+[node name="RingTarget" parent="WorldView" unique_id=69051130 instance=ExtResource("5_tipki")]
+position = Vector2(1930, 905)
 is_ring_target = true
 ring_inner_radius = 30.0
 
