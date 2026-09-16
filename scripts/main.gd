@@ -33,6 +33,7 @@ func _process(delta: float) -> void:
 	_update_aim()
 	var bow: BowData = bow_inventory.get_equipped()
 	shot_recovery_timer = max(shot_recovery_timer - delta, 0.0)
+	world_view.set_recovery_progress(shot_recovery_timer / SHOT_RECOVERY_TIME)
 	if is_drawing:
 		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
 	if impact_timer > 0.0:
@@ -157,6 +158,7 @@ func _reset_session() -> void:
 	is_drawing = false
 	draw_strength = 0.0
 	shot_recovery_timer = 0.0
+	world_view.set_recovery_progress(0.0)
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
