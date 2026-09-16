@@ -2,10 +2,12 @@ extends Node2D
 
 const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
 const VIEW_SIZE: Vector2 = Vector2(1280.0, 720.0)
+const ZOOM: float = 0.55
 const ARCHER_POSITION: Vector2 = Vector2(190.0, 500.0)
 const BOW_POSITION: Vector2 = Vector2(245.0, 435.0)
 const TARGET_POSITION: Vector2 = Vector2(965.0, 360.0)
 const TARGET_RADIUS: float = 92.0
+const GROUND_Y: float = 570.0
 const MAX_DRAW_STRENGTH: float = 100.0
 const DRAW_SPEED: float = 55.0
 const MIN_LAUNCH_SPEED: float = 360.0
@@ -90,7 +92,10 @@ func _release_arrow() -> void:
 	arrow.launch(
 		direction * launch_speed * scale_factor,
 		offset + TARGET_POSITION * scale_factor,
-		TARGET_RADIUS * scale_factor
+		TARGET_RADIUS * scale_factor,
+		offset.y + GROUND_Y * scale_factor,
+		offset.x,
+		offset.x + VIEW_SIZE.x * scale_factor
 	)
 
 	active_arrow = arrow
@@ -155,7 +160,7 @@ func _reset_arrows() -> void:
 
 func _get_scale_factor() -> float:
 	var size: Vector2 = get_viewport_rect().size
-	return min(size.x / VIEW_SIZE.x, size.y / VIEW_SIZE.y)
+	return min(size.x / VIEW_SIZE.x, size.y / VIEW_SIZE.y) * ZOOM
 
 func _get_view_offset(scale_factor: float) -> Vector2:
 	var size: Vector2 = get_viewport_rect().size
@@ -179,11 +184,11 @@ func _draw() -> void:
 
 func _draw_range(offset: Vector2, scale_factor: float) -> void:
 	var origin: Vector2 = offset
-	var ground_y: float = 570.0 * scale_factor + offset.y
+	var ground_y: float = GROUND_Y * scale_factor + offset.y
 	var right: float = offset.x + VIEW_SIZE.x * scale_factor
 
-	draw_rect(Rect2(origin, Vector2(VIEW_SIZE.x * scale_factor, 570.0 * scale_factor)), Color("1b2428"))
-	draw_rect(Rect2(Vector2(offset.x, ground_y), Vector2(VIEW_SIZE.x * scale_factor, 150.0 * scale_factor)), Color("293126"))
+	draw_rect(Rect2(origin, Vector2(VIEW_SIZE.x * scale_factor, GROUND_Y * scale_factor)), Color("1b2428"))
+	draw_rect(Rect2(Vector2(offset.x, ground_y), Vector2(VIEW_SIZE.x * scale_factor, (VIEW_SIZE.y - GROUND_Y) * scale_factor)), Color("293126"))
 	draw_line(Vector2(offset.x, ground_y), Vector2(right, ground_y), Color("4d5948"), 3.0 * scale_factor)
 
 	for i in range(1, 8):
@@ -278,11 +283,5 @@ func _draw_hud(offset: Vector2, scale_factor: float) -> void:
 
 func _draw_title(offset: Vector2, scale_factor: float) -> void:
 	var s: float = scale_factor
-	draw_string(ThemeDB.fallback_font, offset + Vector2(46.0, 54.0) * s, "THE LAST ARCHER", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("e8dfca"))
-	draw_string(ThemeDB.fallback_font, offset + Vector2(48.0, 82.0) * s, "PRACTICE RANGE", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("aeb6ad"))
-	draw_string(ThemeDB.fallback_font, offset + Vector2(875.0, 640.0) * s, "Practice Target", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("d8d0bb"))
-	draw_string(ThemeDB.fallback_font, offset + Vector2(92.0, 655.0) * s, "ARCHER", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("aeb6ad"))
-	draw_string(ThemeDB.fallback_font, offset + Vector2(40.0, 690.0) * s, "R  RESET ARROWS", HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("7f8982"))
-
-	if not is_drawing and active_arrow == null:
-		draw_string(ThemeDB.fallback_font, offset + Vector2(450.0, 680.0) * s, "HOLD LEFT MOUSE BUTTON TO DRAW", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("aeb6ad"))
+	draw_string(ThemeDB.fallback_font, offset + Vector2(46.0, 58.0) * s, "THE LAST ARCHER", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, Color("e8dfca"))
+	draw_string(ThemeDB.fallback_font, offset + Vector2(48.0, 82.0) * s, "PRACTICE RANGE", HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color("8f988f"))
