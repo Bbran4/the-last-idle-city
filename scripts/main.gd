@@ -132,8 +132,12 @@ func _on_bow_action_requested(bow_id: String) -> void:
 				hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
 			return
 		if economy.spend_money(bow.price):
-			bow_inventory.purchase(bow_id, economy.money + bow.price, stats.strength_level)
-			hud.show_economy_feedback("PURCHASED  %s" % bow.display_name)
+			var purchased_cost: int = bow_inventory.purchase(bow_id, economy.money + bow.price, stats.strength_level)
+			if purchased_cost >= 0 and bow_inventory.equip(bow_id, stats.strength_level):
+				world_view.configure_bow(bow)
+				hud.show_economy_feedback("PURCHASED AND EQUIPPED  %s" % bow.display_name)
+			else:
+				hud.show_economy_feedback("PURCHASE FAILED")
 		else:
 			hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
 	_refresh_hud()
