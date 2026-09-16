@@ -1,10 +1,7 @@
 class_name WorldView
 extends Node2D
 
-## This node is scaled down so a wide practice range fits on screen. Its
-## children (Ground, Player, Target) are real scene objects the user places
-## in the editor. This script reads their actual transforms/sizes and handles
-## world-space shooting and trajectory visualization.
+## World-space practice range and projectile visualization.
 
 const WORLD_SCALE: float = 0.40
 const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
@@ -33,7 +30,6 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	queue_redraw()
 
-## Converts a screen mouse position into this node's local ("world") space.
 func get_world_mouse_position() -> Vector2:
 	return to_local(get_viewport().get_mouse_position())
 
@@ -45,6 +41,9 @@ func get_arrow_spawn_position() -> Vector2:
 
 func aim_bow(angle: float) -> void:
 	player.get_bow().set_aim(angle)
+
+func configure_bow(data: BowData) -> void:
+	player.get_bow().set_data(data)
 
 func set_draw_ratio(ratio: float) -> void:
 	player.get_bow().set_draw_ratio(ratio)
@@ -64,21 +63,12 @@ func update_impact(position: Vector2, timer: float) -> void:
 	impact_position = position
 	impact_timer = timer
 
-## Spawns an arrow at the bow's ArrowSpawn marker, using the exact same
-## velocity and gravity values represented by the trajectory preview.
 func fire_arrow(direction: Vector2, launch_speed: float) -> Arrow:
 	var bow: Bow = player.get_bow()
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
 	arrow.position = to_local(bow.get_arrow_spawn_position())
 	add_child(arrow)
-	arrow.launch(
-		direction * launch_speed,
-		target.position,
-		target.get_radius(),
-		ground.position.y,
-		0.0,
-		to_local(Vector2(get_viewport_rect().size.x, 0.0)).x
-	)
+	arrow.launch(direction * launch_speed, target.position, target.get_radius(), ground.position.y, 0.0, to_local(Vector2(get_viewport_rect().size.x, 0.0)).x)
 	return arrow
 
 func clear_arrows() -> void:
@@ -88,7 +78,6 @@ func clear_arrows() -> void:
 
 func _draw() -> void:
 	_draw_trajectory()
-
 	if impact_timer <= 0.0:
 		return
 	var progress: float = 1.0 - impact_timer / IMPACT_FLASH_DURATION
@@ -99,29 +88,21 @@ func _draw() -> void:
 func _draw_trajectory() -> void:
 	if not trajectory_visible or trajectory_speed <= 0.0:
 		return
-
 	var origin: Vector2 = get_arrow_spawn_position()
 	var velocity: Vector2 = Vector2.RIGHT.rotated(trajectory_angle) * trajectory_speed
-	var prediction_time: float = TRAJECTORY_BASE_TIME + TRAJECTORY_EXTRA_TIME * trajectory_quality
-	prediction_time = min(prediction_time, TRAJECTORY_MAX_TIME)
-
+	var prediction_time: float = min(TRAJECTORY_BASE_TIME + TRAJECTORY_EXTRA_TIME * trajectory_quality, TRAJECTORY_MAX_TIME)
 	var points: PackedVector2Array = PackedVector2Array()
 	var steps: int = maxi(2, ceili(prediction_time / TRAJECTORY_STEP))
-
 	for index: int in range(steps + 1):
 		var t: float = min(float(index) * TRAJECTORY_STEP, prediction_time)
 		var point: Vector2 = origin + velocity * t + Vector2(0.0, 0.5 * GRAVITY * t * t)
 		if point.y >= ground.position.y:
 			break
 		points.append(point)
-
 	if points.size() < 2:
 		return
-
 	var line_width: float = lerp(2.0, 3.5, trajectory_quality)
 	var alpha: float = lerp(0.30, 0.85, trajectory_quality)
 	draw_polyline(points, Color(0.85, 0.82, 0.70, alpha), line_width, true)
-
 	var final_point: Vector2 = points[points.size() - 1]
-	var marker_radius: float = lerp(3.0, 5.0, trajectory_quality)
-	draw_circle(final_point, marker_radius, Color(0.85, 0.82, 0.70, alpha), false, line_width)
+	draw_circle(final_point, lerp(3.0, 5.0, trajectory_quality), Color(0.85, 0.82, 0.70, alpha), false, line_width)
