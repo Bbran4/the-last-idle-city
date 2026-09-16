@@ -3,12 +3,17 @@ extends Node2D
 
 ## This node is scaled down so a wide practice range fits on screen. Its
 ## children (Ground, Player, Target) are real scene objects the user places
-## in the editor -- this script no longer draws or positions any of them.
-## It just reads their actual transforms/sizes and spawns arrows accordingly.
+## in the editor. This script reads their actual transforms/sizes and handles
+## world-space shooting and trajectory visualization.
 
 const WORLD_SCALE: float = 0.40
 const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
 const IMPACT_FLASH_DURATION: float = 0.18
+const GRAVITY: float = 180.0
+const TRAJECTORY_STEP: float = 0.055
+const TRAJECTORY_MAX_TIME: float = 4.0
+const TRAJECTORY_BASE_TIME: float = 0.65
+const TRAJECTORY_EXTRA_TIME: float = 2.75
 
 @onready var player: Player = $Player
 @onready var target: Target = $Target
@@ -16,6 +21,10 @@ const IMPACT_FLASH_DURATION: float = 0.18
 
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
+var trajectory_angle: float = 0.0
+var trajectory_speed: float = 0.0
+var trajectory_draw_ratio: float = 0.0
+var trajectory_quality: float = 0.0
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
@@ -30,11 +39,21 @@ func get_world_mouse_position() -> Vector2:
 func get_bow_position() -> Vector2:
 	return to_local(player.get_bow().global_position)
 
+func get_arrow_spawn_position() -> Vector2:
+	return to_local(player.get_bow().get_arrow_spawn_position())
+
 func aim_bow(angle: float) -> void:
 	player.get_bow().set_aim(angle)
 
 func set_draw_ratio(ratio: float) -> void:
 	player.get_bow().set_draw_ratio(ratio)
+
+func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, quality: float) -> void:
+	trajectory_angle = angle
+	trajectory_draw_ratio = clamp(draw_ratio, 0.0, 1.0)
+	trajectory_speed = max(launch_speed, 0.0)
+	trajectory_quality = clamp(quality, 0.0, 1.0)
+	queue_redraw()
 
 func get_target() -> Target:
 	return target
@@ -43,9 +62,8 @@ func update_impact(position: Vector2, timer: float) -> void:
 	impact_position = position
 	impact_timer = timer
 
-## Spawns an arrow at wherever the bow's ArrowSpawn marker currently is
-## (which already accounts for the bow's aim rotation), aimed at wherever
-## the Target and Ground nodes actually sit in the scene.
+## Spawns an arrow at the bow's ArrowSpawn marker, using the exact same
+## velocity and gravity values represented by the trajectory preview.
 func fire_arrow(direction: Vector2, launch_speed: float) -> Arrow:
 	var bow: Bow = player.get_bow()
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
@@ -67,9 +85,43 @@ func clear_arrows() -> void:
 			child.queue_free()
 
 func _draw() -> void:
+	_draw_trajectory()
+
 	if impact_timer <= 0.0:
 		return
 	var progress: float = 1.0 - impact_timer / IMPACT_FLASH_DURATION
 	var radius: float = lerp(5.0, 14.0, progress)
 	draw_circle(impact_position, radius, Color("d7a449"), false, 2.0 / WORLD_SCALE)
 	draw_circle(impact_position, 2.0, Color("d7a449"))
+
+func _draw_trajectory() -> void:
+	if trajectory_speed <= 0.0:
+		return
+
+	var origin: Vector2 = get_arrow_spawn_position()
+	var velocity: Vector2 = Vector2.RIGHT.rotated(trajectory_angle) * trajectory_speed
+	var prediction_time: float = TRAJECTORY_BASE_TIME + TRAJECTORY_EXTRA_TIME * trajectory_quality
+	prediction_time = min(prediction_time, TRAJECTORY_MAX_TIME)
+
+	var points: PackedVector2Array = PackedVector2Array()
+	var steps: int = maxi(2, ceili(prediction_time / TRAJECTORY_STEP))
+	var visible_until: float = prediction_time
+
+	for index: int in range(steps + 1):
+		var t: float = min(float(index) * TRAJECTORY_STEP, prediction_time)
+		var point: Vector2 = origin + velocity * t + Vector2(0.0, 0.5 * GRAVITY * t * t)
+		if point.y >= ground.position.y:
+			visible_until = t
+			break
+		points.append(point)
+
+	if points.size() < 2:
+		return
+
+	var line_width: float = lerp(2.0, 3.5, trajectory_quality)
+	var alpha: float = lerp(0.30, 0.85, trajectory_quality)
+	draw_polyline(points, Color(0.85, 0.82, 0.70, alpha), line_width, true)
+
+	var final_point: Vector2 = points[points.size() - 1]
+	var marker_radius: float = lerp(3.0, 5.0, trajectory_quality)
+	draw_circle(final_point, marker_radius, Color(0.85, 0.82, 0.70, alpha), false, line_width)
