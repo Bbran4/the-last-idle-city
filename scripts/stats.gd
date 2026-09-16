@@ -3,7 +3,7 @@ extends RefCounted
 
 ## Central player stat progression.
 ## Strength improves physical output through draw/release practice.
-## Accuracy improves through bullseyes and will power aim assistance later.
+## Accuracy improves through successful target hits and powers trajectory prediction.
 
 const STARTING_LEVEL: int = 1
 const BASE_XP_TO_LEVEL: int = 100
@@ -12,7 +12,7 @@ const MAX_LEVEL: int = 100
 
 const STRENGTH_XP_PER_FULL_DRAW: int = 25
 const MINIMUM_STRENGTH_DRAW_RATIO: float = 0.60
-const ACCURACY_XP_PER_BULLSEYE: int = 50
+const ACCURACY_XP_PER_HIT: int = 25
 
 var strength_level: int = STARTING_LEVEL
 var strength_xp: int = 0
@@ -29,12 +29,12 @@ func award_strength_release_xp(draw_ratio: float) -> int:
 	_add_strength_xp(awarded)
 	return awarded
 
-func award_accuracy_bullseye_xp() -> int:
+func award_accuracy_hit_xp() -> int:
 	if accuracy_level >= MAX_LEVEL:
 		return 0
 
-	_add_accuracy_xp(ACCURACY_XP_PER_BULLSEYE)
-	return ACCURACY_XP_PER_BULLSEYE
+	_add_accuracy_xp(ACCURACY_XP_PER_HIT)
+	return ACCURACY_XP_PER_HIT
 
 func _add_strength_xp(amount: int) -> void:
 	strength_xp += amount
@@ -63,9 +63,10 @@ func accuracy_progress_ratio() -> float:
 func get_max_launch_speed(base_speed: float) -> float:
 	return base_speed + float(strength_level - 1) * 25.0
 
-## Reserved for Milestone 7. Accuracy will improve trajectory prediction,
-## not automatically steer the bow or arrow.
-func get_aim_assist_strength() -> float:
-	if accuracy_level <= 1:
+## Accuracy level 1 has no trajectory assistance. Assistance unlocks at level 2.
+## Higher Accuracy increases both prediction distance and visual resolution.
+## The prediction never changes the actual arrow trajectory or aims for the player.
+func get_trajectory_prediction_quality() -> float:
+	if accuracy_level < 2:
 		return 0.0
-	return clamp(float(accuracy_level - 1) / 20.0, 0.0, 1.0)
+	return clamp(float(accuracy_level - 1) / 19.0, 0.0, 1.0)
