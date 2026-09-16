@@ -3,6 +3,7 @@ extends Node2D
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
 const SHOT_RECOVERY_TIME: float = 1.0
+const PROJECTILE_SPEED_MULTIPLIER: float = 1.75
 const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
@@ -51,7 +52,7 @@ func _process(delta: float) -> void:
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
 	var preview_speed: float = 0.0
 	if is_drawing:
-		preview_speed = stats.get_max_launch_speed(lerp(bow.min_launch_speed, bow.max_launch_speed, draw_ratio))
+		preview_speed = stats.get_max_launch_speed(lerp(bow.min_launch_speed, bow.max_launch_speed, draw_ratio)) * PROJECTILE_SPEED_MULTIPLIER
 	world_view.set_draw_ratio(draw_ratio)
 	var trajectory_quality: float = stats.get_trajectory_prediction_quality()
 	if world_view.player.is_crouched():
@@ -89,7 +90,7 @@ func _release_arrow() -> void:
 	var bow: BowData = bow_inventory.get_equipped()
 	var strength_ratio: float = draw_strength / bow.max_draw_strength
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
-	launch_speed = stats.get_max_launch_speed(launch_speed)
+	launch_speed = stats.get_max_launch_speed(launch_speed) * PROJECTILE_SPEED_MULTIPLIER
 	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
 	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(aim_angle), launch_speed)
 	arrow.hit_target.connect(_on_arrow_hit)
