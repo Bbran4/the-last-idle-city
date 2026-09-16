@@ -2,25 +2,39 @@ class_name BowInventory
 extends RefCounted
 
 const STARTING_BOW_ID: String = "training_bow"
+const BOW_RESOURCE_PATHS: Array[String] = [
+	"res://resources/bows/training_bow.tres",
+	"res://resources/bows/recurve_bow.tres",
+	"res://resources/bows/war_bow.tres"
+]
 
 var bows: Dictionary = {}
 var owned: Dictionary = {}
 var equipped_bow_id: String = STARTING_BOW_ID
 
 func _init() -> void:
-	_register_defaults()
+	_load_bow_resources()
 	owned[STARTING_BOW_ID] = true
 
-func _register_defaults() -> void:
-	bows["training_bow"] = BowData.new("training_bow", "Training Bow", 0, 1, 100.0, 55.0, 360.0, 760.0, "Reliable and forgiving.")
-	bows["recurve_bow"] = BowData.new("recurve_bow", "Recurve Bow", 350, 2, 110.0, 65.0, 410.0, 860.0, "Faster draw with stronger launch power.")
-	bows["war_bow"] = BowData.new("war_bow", "War Bow", 900, 5, 125.0, 45.0, 470.0, 980.0, "Heavy draw and excellent range.")
+func _load_bow_resources() -> void:
+	for resource_path: String in BOW_RESOURCE_PATHS:
+		var bow: BowData = load(resource_path) as BowData
+		if bow == null or bow.id.is_empty():
+			push_error("Unable to load bow resource: %s" % resource_path)
+			continue
+		bows[bow.id] = bow
 
 func get_equipped() -> BowData:
-	return bows[equipped_bow_id]
+	return bows.get(equipped_bow_id, null)
 
 func get_bow(bow_id: String) -> BowData:
 	return bows.get(bow_id, null)
+
+func get_all_bows() -> Array[BowData]:
+	var result: Array[BowData] = []
+	for bow_id: String in bows:
+		result.append(bows[bow_id])
+	return result
 
 func is_owned(bow_id: String) -> bool:
 	return owned.get(bow_id, false)
