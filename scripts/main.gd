@@ -6,9 +6,9 @@ func _ready() -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	var size := get_viewport_rect().size
-	var scale_factor := min(size.x / VIEW_SIZE.x, size.y / VIEW_SIZE.y)
-	var offset := (size - VIEW_SIZE * scale_factor) * 0.5
+	var size : Vector2 = get_viewport_rect().size
+	var scale_factor : float = min(size.x / VIEW_SIZE.x, size.y / VIEW_SIZE.y)
+	var offset : Vector2 = (size - VIEW_SIZE * scale_factor) * 0.5
 
 	draw_rect(Rect2(Vector2.ZERO, size), Color("11161b"))
 
