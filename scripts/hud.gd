@@ -183,6 +183,9 @@ func show_accuracy_xp_gain(amount: int) -> void:
 	accuracy_gain_label.text = "+%d ACCURACY XP" % amount
 	accuracy_gain_label.visible = true
 
+func show_stat_level_up(stat_name: String, level: int) -> void:
+	show_shot_result("%s LEVEL UP  %d" % [stat_name, level])
+
 func show_shot_result(text: String) -> void:
 	shot_result_label.text = text
 	shot_result_label.visible = true
