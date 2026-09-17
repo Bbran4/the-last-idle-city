@@ -14,6 +14,11 @@ const TRAJECTORY_EXTRA_TIME: float = 2.75
 const NOCK_HIT_RADIUS: float = 12.0
 const MID_AIR_ARROW_RADIUS: float = 7.0
 const MID_AIR_KNOCKBACK: float = 0.35
+const MID_AIR_STRUCK_PUSH: float = 120.0
+const MID_AIR_STRUCK_PUSH_SCALE: float = 0.45
+const MID_AIR_INCOMING_RETENTION: float = 0.55
+const MID_AIR_INCOMING_PUSH: float = 80.0
+const MID_AIR_INCOMING_PUSH_SCALE: float = 0.35
 
 @onready var player: Player = $Player
 @onready var target: Target = $TrainingGrounds/PracticeTargets/Target
@@ -157,26 +162,33 @@ func _on_arrow_flight_segment(start: Vector2, end: Vector2, incoming_arrow: Arro
 
 	var embedded_arrow: Arrow = _find_nock_hit(start, end, incoming_arrow)
 	if is_instance_valid(embedded_arrow):
-		var nock_position: Vector2 = embedded_arrow.get_section_world_position("nock")
-		var replacement_position: Vector2 = to_local(nock_position)
-		var replacement_target: Target = embedded_arrow.get_embedded_target()
-		var replacement_rotation: float = incoming_arrow.rotation
-
+		# The struck arrow is simply destroyed. The incoming arrow is left
+		# completely untouched here -- no position, rotation or velocity
+		# change -- so it behaves exactly as if the destroyed arrow had
+		# never been there. Its own normal flight processing (target/ring/
+		# ground checks, already queued for later this same frame in
+		# arrow.gd) resolves what happens to it next.
 		embedded_arrow.break_arrow()
 		embedded_arrow.queue_free()
-		incoming_arrow.position = replacement_position
-		incoming_arrow.rotation = replacement_rotation
-		incoming_arrow.embed(replacement_target, replacement_position)
 		return
 
 	var struck_arrow: Arrow = _find_flying_arrow_hit(start, end, incoming_arrow)
 	if is_instance_valid(struck_arrow):
 		var incoming_velocity: Vector2 = incoming_arrow.velocity
+		var struck_velocity: Vector2 = struck_arrow.velocity
 		var collision_direction: Vector2 = (struck_arrow.global_position - incoming_arrow.global_position).normalized()
 		if collision_direction == Vector2.ZERO:
 			collision_direction = Vector2.UP
-		var knock_velocity: Vector2 = incoming_velocity * MID_AIR_KNOCKBACK + collision_direction * max(incoming_velocity.length() * 0.45, 120.0)
-		struck_arrow.knock_away(knock_velocity)
+
+		# Both arrows are affected, like a real glancing mid-air collision:
+		# the struck arrow is knocked away carrying some of the incoming
+		# arrow's momentum, while the incoming arrow loses some of its own
+		# velocity and gets nudged off its original line.
+		var struck_knock_velocity: Vector2 = incoming_velocity * MID_AIR_KNOCKBACK + collision_direction * max(incoming_velocity.length() * MID_AIR_STRUCK_PUSH_SCALE, MID_AIR_STRUCK_PUSH)
+		var incoming_knock_velocity: Vector2 = incoming_velocity * MID_AIR_INCOMING_RETENTION - collision_direction * max(struck_velocity.length() * MID_AIR_INCOMING_PUSH_SCALE, MID_AIR_INCOMING_PUSH)
+
+		struck_arrow.knock_away(struck_knock_velocity)
+		incoming_arrow.knock_away(incoming_knock_velocity)
 
 func _find_nock_hit(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> Arrow:
 	var closest_arrow: Arrow = null
