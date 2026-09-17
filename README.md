@@ -53,6 +53,10 @@ Holding Right Mouse Button draws the bow. Releasing it does not fire. Left Mouse
 - [x] Gravity and flight rotation
 - [x] Target collision and embedded arrows
 - [x] Miss handling and reset support
+- [x] Arrow point, shaft and nock collision sections
+- [x] Flying-arrow collision and knock-away behavior
+- [x] Nock-hit arrow replacement behavior
+- [x] Training dummy collision and arrow embedding
 
 ### Milestone 4 - Scoring & Bullseye
 
@@ -132,8 +136,9 @@ Final bow prices will be balanced after the range and tournament economies are e
 - [x] Distance-based Accuracy XP
 - [x] 20% crouch trajectory bonus
 - [x] Tent is a standalone scene with editor-based visuals
+- [x] Range decoration and progression markers
+- [x] Training dummy at Range Level 3+
 - [ ] Persist range upgrades
-- [ ] Visually evolve the range
 - [ ] Final expansion balance pass
 
 Current range progression:
@@ -265,7 +270,9 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 **Current Stage: Milestone 11 - Practice Range Expansion**
 
-Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, and the 20% crouch trajectory bonus. The tent is now also a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
+Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, and the training dummy. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, and dummy embedding.
+
+The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
 
 The core practice loop has been playtested. Strength and Accuracy live together in `PlayerStats`. Strength progression rewards meaningful draw and release practice. Accuracy improves from successful target hits and scales with shot distance.
 
@@ -273,6 +280,6 @@ The trajectory preview remains informational. It follows the current bow aim and
 
 ### Next Step
 
-**Finish Milestone 11, then complete Milestone 12: Pre-Tournament Foundation before beginning Milestone 13: First Tournament.**
+**Persist range upgrades, then continue through the remaining Milestone 11 balance work before completing Milestone 12: Pre-Tournament Foundation.**
 
 The immediate priority is not adding tournament mechanics. It is making the practice range feel like a complete, persistent game loop that can support tournaments without needing its foundations rebuilt afterward.
