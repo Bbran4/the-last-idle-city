@@ -11,6 +11,7 @@ const TRAJECTORY_STEP: float = 0.055
 const TRAJECTORY_MAX_TIME: float = 4.0
 const TRAJECTORY_BASE_TIME: float = 0.65
 const TRAJECTORY_EXTRA_TIME: float = 2.75
+const NOCK_HIT_RADIUS: float = 12.0
 
 @onready var player: Player = $Player
 @onready var target: Target = $TrainingGrounds/PracticeTargets/Target
@@ -106,6 +107,7 @@ func fire_arrow(direction: Vector2, launch_speed: float) -> Arrow:
 	add_child(arrow)
 	arrows.append(arrow)
 	arrow.tree_exited.connect(_on_arrow_tree_exited.bind(arrow), CONNECT_ONE_SHOT)
+	arrow.flight_segment.connect(_on_arrow_flight_segment)
 	arrow.launch(
 		direction * launch_speed,
 		get_active_targets(),
@@ -129,7 +131,7 @@ func get_arrows() -> Array[Arrow]:
 func get_embedded_arrows() -> Array[Arrow]:
 	var embedded: Array[Arrow] = []
 	for arrow: Arrow in arrows:
-		if is_instance_valid(arrow) and arrow.is_embedded:
+		if is_instance_valid(arrow) and arrow.is_embedded():
 			embedded.append(arrow)
 	return embedded
 
@@ -146,6 +148,51 @@ func _cleanup_arrows() -> void:
 
 func _on_arrow_tree_exited(arrow: Arrow) -> void:
 	arrows.erase(arrow)
+
+func _on_arrow_flight_segment(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> void:
+	if not is_instance_valid(incoming_arrow) or not incoming_arrow.is_flying():
+		return
+	var embedded_arrow: Arrow = _find_nock_hit(start, end, incoming_arrow)
+	if not is_instance_valid(embedded_arrow):
+		return
+
+	var nock_position: Vector2 = embedded_arrow.get_section_world_position("nock")
+	var replacement_position: Vector2 = to_local(nock_position)
+	var replacement_target: Target = embedded_arrow.get_embedded_target()
+	var replacement_rotation: float = incoming_arrow.rotation
+
+	embedded_arrow.break_arrow()
+	embedded_arrow.queue_free()
+	incoming_arrow.position = replacement_position
+	incoming_arrow.rotation = replacement_rotation
+	incoming_arrow.embed(replacement_target, replacement_position)
+
+func _find_nock_hit(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> Arrow:
+	var closest_arrow: Arrow = null
+	var closest_projection: float = INF
+	for embedded_arrow: Arrow in get_embedded_arrows():
+		if embedded_arrow == incoming_arrow:
+			continue
+		if not embedded_arrow.is_embedded() or not is_instance_valid(embedded_arrow.get_embedded_target()):
+			continue
+		var nock_position: Vector2 = embedded_arrow.get_section_world_position("nock")
+		var projection: float = _segment_point_projection(start, end, nock_position)
+		if projection < 0.0 or projection > 1.0:
+			continue
+		var closest_point: Vector2 = start.lerp(end, projection)
+		if closest_point.distance_to(nock_position) > NOCK_HIT_RADIUS:
+			continue
+		if projection < closest_projection:
+			closest_projection = projection
+			closest_arrow = embedded_arrow
+	return closest_arrow
+
+func _segment_point_projection(start: Vector2, end: Vector2, point: Vector2) -> float:
+	var segment: Vector2 = end - start
+	var length_squared: float = segment.length_squared()
+	if length_squared <= 0.0:
+		return 0.0
+	return clamp((point - start).dot(segment) / length_squared, 0.0, 1.0)
 
 func _update_range_decor(range_level: int) -> void:
 	range_decor.get_node("Level2").visible = range_level >= 2
