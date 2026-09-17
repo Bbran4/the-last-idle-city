@@ -2,12 +2,14 @@ class_name Arrow
 extends Node2D
 
 signal hit_target(position: Vector2, target: Target, arrow: Arrow)
+signal hit_dummy(position: Vector2, dummy: Area2D, arrow: Arrow)
 signal missed
 signal flight_segment(start: Vector2, end: Vector2, arrow: Arrow)
 
 const GRAVITY: float = 2500.0
 const POINT_SECTION_START: float = 28.0
 const NOCK_SECTION_END: float = -34.0
+const DUMMY_HIT_PADDING: float = 8.0
 
 enum ArrowState {
 	FLYING,
@@ -27,8 +29,9 @@ var shot_origin: Vector2 = Vector2.ZERO
 var state: ArrowState = ArrowState.FLYING
 var embedded_target: Target = null
 var embedded_position: Vector2 = Vector2.ZERO
+var collision_dummy: Area2D = null
 
-func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: float, left_bound: float, right_bound: float) -> void:
+func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: float, left_bound: float, right_bound: float, dummy: Area2D = null) -> void:
 	velocity = initial_velocity
 	targets = active_targets
 	passed_ring_targets.clear()
@@ -39,6 +42,7 @@ func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: fl
 	state = ArrowState.FLYING
 	embedded_target = null
 	embedded_position = Vector2.ZERO
+	collision_dummy = dummy
 	rotation = velocity.angle()
 	queue_redraw()
 
@@ -112,13 +116,6 @@ func _process(delta: float) -> void:
 		rotation = velocity.angle()
 
 	if state == ArrowState.FLYING:
-		# previous_position/position are already expressed in the PARENT's
-		# (WorldView's) local coordinate space, not in this arrow's own local
-		# space. Converting them with self.to_global() would incorrectly
-		# re-apply this arrow's own rotation and position on top of them.
-		# Convert via the parent's transform instead so the emitted segment
-		# lines up with the world-space nock/point positions other arrows
-		# compute via their own to_global() calls.
 		var parent_node: Node2D = get_parent() as Node2D
 		var global_previous_position: Vector2 = parent_node.to_global(previous_position) if parent_node != null else previous_position
 		var global_position: Vector2 = parent_node.to_global(position) if parent_node != null else position
@@ -138,6 +135,13 @@ func _process(delta: float) -> void:
 			position = hit_target_result.position
 			embed(target, position)
 			hit_target.emit(position, target, self)
+			return
+
+		var dummy_hit: Vector2 = _find_dummy_hit(previous_position, position)
+		if dummy_hit != Vector2.INF:
+			position = dummy_hit
+			embed(null, position)
+			hit_dummy.emit(position, collision_dummy, self)
 			return
 
 	if _crossed_ground(previous_position, position):
@@ -190,6 +194,50 @@ func _find_target_hit(start: Vector2, end: Vector2) -> Dictionary:
 			closest_projection = projection
 			closest_hit = {"position": hit_position, "target": target}
 	return closest_hit
+
+func _find_dummy_hit(start: Vector2, end: Vector2) -> Vector2:
+	if not is_instance_valid(collision_dummy) or not collision_dummy.visible:
+		return Vector2.INF
+	var shape_node: CollisionShape2D = collision_dummy.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape_node == null or shape_node.shape == null:
+		return Vector2.INF
+	var rect: Rect2 = shape_node.shape.get_rect()
+	rect.position += collision_dummy.position + shape_node.position
+	rect = rect.grow(DUMMY_HIT_PADDING)
+	return _segment_rect_hit(start, end, rect)
+
+func _segment_rect_hit(start: Vector2, end: Vector2, rect: Rect2) -> Vector2:
+	if rect.has_point(start):
+		return start
+	var direction: Vector2 = end - start
+	if direction.length_squared() <= 0.000001:
+		return Vector2.INF
+	var best_t: float = INF
+	var best_point: Vector2 = Vector2.INF
+	var edges: Array = [
+		[Vector2(rect.position.x, rect.position.y), Vector2(rect.end.x, rect.position.y)],
+		[Vector2(rect.end.x, rect.position.y), Vector2(rect.end.x, rect.end.y)],
+		[Vector2(rect.end.x, rect.end.y), Vector2(rect.position.x, rect.end.y)],
+		[Vector2(rect.position.x, rect.end.y), Vector2(rect.position.x, rect.position.y)]
+	]
+	for edge in edges:
+		var hit: Dictionary = _segment_intersection(start, end, edge[0], edge[1])
+		if not hit.is_empty() and hit.t < best_t:
+			best_t = hit.t
+			best_point = hit.position
+	return best_point
+
+func _segment_intersection(a: Vector2, b: Vector2, c: Vector2, d: Vector2) -> Dictionary:
+	var r: Vector2 = b - a
+	var s: Vector2 = d - c
+	var denominator: float = r.cross(s)
+	if abs(denominator) <= 0.000001:
+		return {}
+	var t: float = (c - a).cross(s) / denominator
+	var u: float = (c - a).cross(r) / denominator
+	if t < 0.0 or t > 1.0 or u < 0.0 or u > 1.0:
+		return {}
+	return {"t": t, "position": a + r * t}
 
 func _segment_circle_hit(start: Vector2, end: Vector2, center: Vector2, radius: float) -> Vector2:
 	var segment: Vector2 = end - start
