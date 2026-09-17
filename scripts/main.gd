@@ -11,7 +11,7 @@ const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
 const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
 const FULL_DRAW_WOBBLE_SPEED: float = 18.0
-const RANGE_LEVEL_COSTS: Array[int] = [0, 50, 100, 250]
+const RANGE_LEVEL_COSTS: Array[int] = [0, 75, 175, 350]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
 
