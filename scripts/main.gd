@@ -14,6 +14,7 @@ const FULL_DRAW_WOBBLE_SPEED: float = 18.0
 const RANGE_LEVEL_COSTS: Array[int] = [0, 75, 175, 350]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
+const TENT_INTERACTION_RADIUS: float = 300.0
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -31,6 +32,7 @@ var impact_timer: float = 0.0
 var aim_angle: float = 0.0
 var shot_result_timer: float = 0.0
 var range_level: int = 1
+var equipment_open: bool = false
 
 var total_coins_earned: int = 0
 var shots_fired: int = 0
@@ -43,6 +45,7 @@ func _ready() -> void:
 	hud.training_upgrade_pressed.connect(_on_training_upgrade_pressed)
 	hud.bow_action_requested.connect(_on_bow_action_requested)
 	hud.range_upgrade_requested.connect(_on_range_upgrade_requested)
+	hud.set_equipment_visible(false)
 	world_view.set_active_targets(range_level)
 	_refresh_hud()
 
@@ -91,6 +94,11 @@ func _process(delta: float) -> void:
 	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, trajectory_quality, trajectory_visible)
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
+	var near_tent: bool = _is_near_tent()
+	if not near_tent and equipment_open:
+		equipment_open = false
+		hud.set_equipment_visible(false)
+	hud.set_tent_prompt(near_tent, equipment_open)
 
 func _get_projectile_speed_multiplier(draw_ratio: float) -> float:
 	var normalized_draw: float = clamp((draw_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0)
@@ -99,6 +107,10 @@ func _get_projectile_speed_multiplier(draw_ratio: float) -> float:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
 		_reset_session()
+		return
+
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
+		_toggle_equipment()
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
@@ -110,6 +122,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		right_mouse_held = event.pressed
 		if event.pressed and not is_drawing and shot_recovery_timer <= 0.0:
 			_start_drawing()
+
+func _toggle_equipment() -> void:
+	if not _is_near_tent():
+		return
+	equipment_open = not equipment_open
+	hud.set_equipment_visible(equipment_open)
+
+func _is_near_tent() -> bool:
+	var tent: Node2D = world_view.get_node("CustomizationTent") as Node2D
+	return world_view.player.position.distance_to(tent.position) <= TENT_INTERACTION_RADIUS
 
 func _start_drawing() -> void:
 	if is_drawing or shot_recovery_timer > 0.0:
@@ -268,6 +290,8 @@ func _reset_session() -> void:
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
+	equipment_open = false
+	hud.set_equipment_visible(false)
 	total_coins_earned = 0
 	shots_fired = 0
 	successful_hits = 0
