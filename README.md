@@ -58,6 +58,7 @@ Holding Right Mouse Button draws the bow. Releasing it does not fire. Left Mouse
 - [x] Flying-arrow collision and knock-away behavior
 - [x] Nock-hit arrow replacement behavior
 - [x] Training dummy collision and arrow embedding
+- [x] Training dummy nock replacement behavior
 
 ### Milestone 4 - Scoring & Bullseye
 
@@ -154,7 +155,9 @@ Current range progression:
 | 3 | Smaller/farther target | 175 coins | 3 coins |
 | 4 | Ring Target | 350 coins | 5 coins |
 
-The first three targets stop arrows on impact. The Ring Target rewards an arrow that passes cleanly through its opening and lets the arrow continue flying. Ring rewards are limited to once per arrow.
+The first three targets stop arrows on impact. The Ring Target rewards an arrow that passes cleanly through its opening and lets the arrow continue flying. Ring rewards are limited to once per arrow, and a successful ring pass no longer produces a later false MISS when the arrow eventually reaches the ground.
+
+The training dummy uses the same embedded-arrow interaction model as targets. An arrow embedded in the dummy can be replaced by a new arrow striking its nock, while the old arrow is removed.
 
 Range progression initially used a small dedicated save file. It is now migrated into the unified player save data, while existing range-only saves are still read for compatibility.
 
@@ -168,7 +171,7 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 - [x] Save and load money, Strength, Accuracy, bows and range progression
 - [x] Add a deliberate reset-save flow for testing
 - [x] Visually evolve the practice range with each range level
-- [ ] Make the training tent a proper practice-range hub and establish its future customization role
+- [x] Make the training tent a proper practice-range hub and establish its future customization role
 - [x] Finalize practice income and equipment costs for the current practice phase
 - [ ] Finalize Strength and Accuracy progression pacing
 - [x] Finalize range upgrade costs and target rewards for the current practice phase
@@ -178,7 +181,11 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 
 The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions. `Ctrl + Shift + R` deliberately deletes saved progression and reloads a fresh game for testing.
 
+The training tent is now a functional practice-range hub. It can be approached and opened with `E`, providing the existing bow equipment flow while leaving room for future customization systems.
+
 The current practice economy deliberately creates choices between equipment, Training Manuals and range expansion. Range upgrades now cost 75, 175 and 350 coins, while the Recurve and War Bows cost 100 and 250 coins respectively. The target rewards remain 1, 2, 3 and 5 coins. These values are intended as the stable practice-phase baseline before tournament rewards are introduced.
+
+Recent stability work also hardened projectile interactions around the training dummy and ring target. Embedded dummy arrows are tracked explicitly, nock replacement works against both targets and the dummy, and successful ring passes no longer report a contradictory MISS after the reward has already been granted.
 
 **Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
 
@@ -280,9 +287,9 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 **Current Stage: Milestone 12 - Pre-Tournament Foundation**
 
-Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, and persistent range upgrades. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, and dummy embedding.
+Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, and persistent range upgrades. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, dummy embedding and dummy nock replacement.
 
-The practice range now visibly develops through Range I to Range IV with additional range structures, equipment areas, training infrastructure and advanced-range banners. The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
+The practice range now visibly develops through Range I to Range IV with additional range structures, equipment areas, training infrastructure and advanced-range banners. The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing, and it now serves as the equipment/customization hub.
 
 The core practice loop has been playtested. Strength and Accuracy live together in `PlayerStats`. Strength progression rewards meaningful draw and release practice. Accuracy improves from successful target hits and scales with shot distance.
 
@@ -291,6 +298,8 @@ The trajectory preview remains informational. It follows the current bow aim and
 The unified save foundation now restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow is available for testing.
 
 The current practice economy has also received its first focused balancing pass. Range costs, Training Manual costs and bow prices now create a more deliberate progression of spending choices while keeping the target rewards unchanged. These values still need to be validated through a long-session playtest before tournament economics are introduced.
+
+Projectile interaction stability has also improved. The training dummy now tracks embedded arrows so nock replacement behaves consistently with regular targets. Ring-target passes are treated as successful scoring events without producing a later contradictory MISS.
 
 ### Next Step
 
