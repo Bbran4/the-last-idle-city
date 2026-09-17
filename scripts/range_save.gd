@@ -6,6 +6,10 @@ const SAVE_SECTION: String = "range"
 const RANGE_LEVEL_KEY: String = "level"
 
 static func load_range_level(default_level: int, max_level: int) -> int:
+	var data: Dictionary = SaveGame.load_data()
+	if data.has("range_level"):
+		return clamp(int(data["range_level"]), default_level, max_level)
+
 	var config := ConfigFile.new()
 	if config.load(SAVE_PATH) != OK:
 		return default_level
@@ -13,9 +17,9 @@ static func load_range_level(default_level: int, max_level: int) -> int:
 	return clamp(saved_level, default_level, max_level)
 
 static func save_range_level(level: int) -> bool:
-	var config := ConfigFile.new()
-	var load_result: int = config.load(SAVE_PATH)
-	if load_result != OK and load_result != ERR_FILE_NOT_FOUND:
-		return false
-	config.set_value(SAVE_SECTION, RANGE_LEVEL_KEY, level)
-	return config.save(SAVE_PATH) == OK
+	var data: Dictionary = SaveGame.load_data()
+	data["range_level"] = level
+	var save_ok: bool = SaveGame.save_data(data)
+	if save_ok:
+		DirAccess.remove_absolute(SAVE_PATH)
+	return save_ok
