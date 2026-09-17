@@ -15,13 +15,10 @@ const MAX_X: float = 3200.0
 const GROUND_Y: float = 1656.0
 const JUMP_SPEED: float = -760.0
 const GRAVITY: float = 2500.0
-const CROUCH_BODY_SCALE: float = 0.65
 const MOVEMENT_WOBBLE_ANGLE: float = 0.045
 const MOVEMENT_WOBBLE_SPEED: float = 10.0
 
 @onready var bow: Bow = $Bow
-@onready var body: Polygon2D = $Body
-@onready var body_outline: Line2D = $BodyOutline
 
 var recovery_progress: float = 0.0
 var velocity: Vector2 = Vector2.ZERO
@@ -49,10 +46,6 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 
 	is_crouching = Input.is_action_pressed("crouch") and is_on_ground()
-	var target_scale: float = CROUCH_BODY_SCALE if is_crouching else 1.0
-	body.scale.y = move_toward(body.scale.y, target_scale, delta * 8.0)
-	body_outline.scale.y = body.scale.y
-	bow.position.y = lerp(-45.0, -20.0, 1.0 - body.scale.y)
 
 	if abs(move_input) > 0.01 and is_on_ground():
 		movement_wobble += delta * MOVEMENT_WOBBLE_SPEED
@@ -76,11 +69,7 @@ func get_aim_wobble() -> float:
 	return sin(movement_wobble) * MOVEMENT_WOBBLE_ANGLE
 
 func set_facing_from_mouse(mouse_world_position: Vector2) -> void:
-	var should_face_right: bool = mouse_world_position.x >= global_position.x
-	if should_face_right == facing_right:
-		return
-	facing_right = should_face_right
-	scale.x = 1.0 if facing_right else -1.0
+	facing_right = mouse_world_position.x >= global_position.x
 
 func get_bow_aim_angle(world_angle: float) -> float:
 	return world_angle if facing_right else PI - world_angle
