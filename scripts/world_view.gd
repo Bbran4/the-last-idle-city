@@ -12,6 +12,8 @@ const TRAJECTORY_MAX_TIME: float = 4.0
 const TRAJECTORY_BASE_TIME: float = 0.65
 const TRAJECTORY_EXTRA_TIME: float = 2.75
 const NOCK_HIT_RADIUS: float = 12.0
+const MID_AIR_ARROW_RADIUS: float = 7.0
+const MID_AIR_KNOCKBACK: float = 0.35
 
 @onready var player: Player = $Player
 @onready var target: Target = $TrainingGrounds/PracticeTargets/Target
@@ -152,20 +154,29 @@ func _on_arrow_tree_exited(arrow: Arrow) -> void:
 func _on_arrow_flight_segment(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> void:
 	if not is_instance_valid(incoming_arrow) or not incoming_arrow.is_flying():
 		return
+
 	var embedded_arrow: Arrow = _find_nock_hit(start, end, incoming_arrow)
-	if not is_instance_valid(embedded_arrow):
+	if is_instance_valid(embedded_arrow):
+		var nock_position: Vector2 = embedded_arrow.get_section_world_position("nock")
+		var replacement_position: Vector2 = to_local(nock_position)
+		var replacement_target: Target = embedded_arrow.get_embedded_target()
+		var replacement_rotation: float = incoming_arrow.rotation
+
+		embedded_arrow.break_arrow()
+		embedded_arrow.queue_free()
+		incoming_arrow.position = replacement_position
+		incoming_arrow.rotation = replacement_rotation
+		incoming_arrow.embed(replacement_target, replacement_position)
 		return
 
-	var nock_position: Vector2 = embedded_arrow.get_section_world_position("nock")
-	var replacement_position: Vector2 = to_local(nock_position)
-	var replacement_target: Target = embedded_arrow.get_embedded_target()
-	var replacement_rotation: float = incoming_arrow.rotation
-
-	embedded_arrow.break_arrow()
-	embedded_arrow.queue_free()
-	incoming_arrow.position = replacement_position
-	incoming_arrow.rotation = replacement_rotation
-	incoming_arrow.embed(replacement_target, replacement_position)
+	var struck_arrow: Arrow = _find_flying_arrow_hit(start, end, incoming_arrow)
+	if is_instance_valid(struck_arrow):
+		var incoming_velocity: Vector2 = incoming_arrow.velocity
+		var collision_direction: Vector2 = (struck_arrow.global_position - incoming_arrow.global_position).normalized()
+		if collision_direction == Vector2.ZERO:
+			collision_direction = Vector2.UP
+		var knock_velocity: Vector2 = incoming_velocity * MID_AIR_KNOCKBACK + collision_direction * max(incoming_velocity.length() * 0.45, 120.0)
+		struck_arrow.knock_away(knock_velocity)
 
 func _find_nock_hit(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> Arrow:
 	var closest_arrow: Arrow = null
@@ -187,12 +198,79 @@ func _find_nock_hit(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> Arro
 			closest_arrow = embedded_arrow
 	return closest_arrow
 
+func _find_flying_arrow_hit(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> Arrow:
+	var closest_arrow: Arrow = null
+	var closest_projection: float = INF
+	for other_arrow: Arrow in get_arrows():
+		if other_arrow == incoming_arrow or not other_arrow.is_flying():
+			continue
+
+		var other_point: Vector2 = other_arrow.get_section_world_position("point")
+		var other_nock: Vector2 = other_arrow.get_section_world_position("nock")
+		var collision: Dictionary = _segment_segment_closest_points(start, end, other_nock, other_point)
+		if collision.is_empty():
+			continue
+		if collision.distance > MID_AIR_ARROW_RADIUS:
+			continue
+		if collision.incoming_projection < closest_projection:
+			closest_projection = collision.incoming_projection
+			closest_arrow = other_arrow
+	return closest_arrow
+
 func _segment_point_projection(start: Vector2, end: Vector2, point: Vector2) -> float:
 	var segment: Vector2 = end - start
 	var length_squared: float = segment.length_squared()
 	if length_squared <= 0.0:
 		return 0.0
 	return clamp((point - start).dot(segment) / length_squared, 0.0, 1.0)
+
+func _segment_segment_closest_points(start_a: Vector2, end_a: Vector2, start_b: Vector2, end_b: Vector2) -> Dictionary:
+	var direction_a: Vector2 = end_a - start_a
+	var direction_b: Vector2 = end_b - start_b
+	var offset: Vector2 = start_a - start_b
+	var length_a: float = direction_a.length_squared()
+	var length_b: float = direction_b.length_squared()
+
+	if length_a <= 0.000001 and length_b <= 0.000001:
+		return {
+			"distance": start_a.distance_to(start_b),
+			"incoming_projection": 0.0
+		}
+
+	if length_a <= 0.000001:
+		var projection_b: float = clamp((start_a - start_b).dot(direction_b) / length_b, 0.0, 1.0)
+		return {
+			"distance": start_a.distance_to(start_b.lerp(end_b, projection_b)),
+			"incoming_projection": 0.0
+		}
+
+	if length_b <= 0.000001:
+		var projection_a: float = clamp((start_b - start_a).dot(direction_a) / length_a, 0.0, 1.0)
+		return {
+			"distance": start_b.distance_to(start_a.lerp(end_a, projection_a)),
+			"incoming_projection": projection_a
+		}
+
+	var a_dot_b: float = direction_a.dot(direction_b)
+	var a_dot_offset: float = direction_a.dot(offset)
+	var b_dot_offset: float = direction_b.dot(offset)
+	var denominator: float = length_a * length_b - a_dot_b * a_dot_b
+	var projection_a: float
+	var projection_b: float
+
+	if abs(denominator) <= 0.000001:
+		projection_a = 0.0
+		projection_b = clamp(b_dot_offset / length_b, 0.0, 1.0)
+	else:
+		projection_a = clamp((a_dot_b * b_dot_offset - a_dot_offset * length_b) / denominator, 0.0, 1.0)
+		projection_b = clamp((a_dot_b * projection_a + b_dot_offset) / length_b, 0.0, 1.0)
+
+	var point_a: Vector2 = start_a.lerp(end_a, projection_a)
+	var point_b: Vector2 = start_b.lerp(end_b, projection_b)
+	return {
+		"distance": point_a.distance_to(point_b),
+		"incoming_projection": projection_a
+	}
 
 func _update_range_decor(range_level: int) -> void:
 	range_decor.get_node("Level2").visible = range_level >= 2
