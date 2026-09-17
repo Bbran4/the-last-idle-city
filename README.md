@@ -173,11 +173,11 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 - [x] Visually evolve the practice range with each range level
 - [x] Make the training tent a proper practice-range hub and establish its future customization role
 - [x] Finalize practice income and equipment costs for the current practice phase
-- [ ] Finalize Strength and Accuracy progression pacing
+- [x] Finalize Strength and Accuracy progression pacing
 - [x] Finalize range upgrade costs and target rewards for the current practice phase
-- [ ] Confirm shooting, movement and trajectory behavior remain stable
-- [ ] Clean up prototype-only UI and development feedback
-- [ ] Complete a focused long-session playtest
+- [x] Confirm shooting, movement and trajectory behavior remain stable
+- [x] Clean up prototype-only UI and development feedback
+- [x] Complete a focused long-session playtest
 
 The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions. `Ctrl + Shift + R` deliberately deletes saved progression and reloads a fresh game for testing.
 
@@ -186,6 +186,10 @@ The training tent is now a functional practice-range hub. It can be approached a
 The current practice economy deliberately creates choices between equipment, Training Manuals and range expansion. Range upgrades now cost 75, 175 and 350 coins, while the Recurve and War Bows cost 100 and 250 coins respectively. The target rewards remain 1, 2, 3 and 5 coins. These values are intended as the stable practice-phase baseline before tournament rewards are introduced.
 
 Recent stability work also hardened projectile interactions around the training dummy and ring target. Embedded dummy arrows are tracked explicitly, nock replacement works against both targets and the dummy, and successful ring passes no longer report a contradictory MISS after the reward has already been granted.
+
+The player-facing HUD has now been cleaned of prototype session telemetry. The temporary shots/hits/bullseyes counter and duplicate session coin counter have been removed from the visible interface. Persistent coins, Strength, Accuracy, shooting feedback, progression feedback, training upgrades, range upgrades and the tent interaction remain available.
+
+**Milestone 12 is now complete.**
 
 **Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
 
@@ -285,24 +289,20 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 12 - Pre-Tournament Foundation**
+**Current Stage: Milestone 13 - First Tournament**
 
-Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, and persistent range upgrades. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, dummy embedding and dummy nock replacement.
+Milestones 0 through 12 are now complete. The practice foundation includes persistent progression, four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, the training tent hub, bows and equipment, and stable projectile interactions.
 
-The practice range now visibly develops through Range I to Range IV with additional range structures, equipment areas, training infrastructure and advanced-range banners. The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing, and it now serves as the equipment/customization hub.
+The arrow system includes explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, target embedding, dummy embedding and dummy nock replacement. Successful ring passes score normally without producing a later contradictory MISS.
 
-The core practice loop has been playtested. Strength and Accuracy live together in `PlayerStats`. Strength progression rewards meaningful draw and release practice. Accuracy improves from successful target hits and scales with shot distance.
+Strength and Accuracy progression has been finalized for the practice phase. The trajectory preview remains informational, follows the current bow aim and shot conditions, improves with Accuracy, becomes 20% longer while crouching, and disappears while airborne. It never rotates the bow, bends the arrow, or selects a target automatically.
 
-The trajectory preview remains informational. It follows the current bow aim and shot conditions, improves with Accuracy, becomes 20% longer while crouching, and disappears while airborne. It never rotates the bow, bends the arrow, or selects a target automatically.
+The unified save foundation restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow remains available for development testing.
 
-The unified save foundation now restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow is available for testing.
-
-The current practice economy has also received its first focused balancing pass. Range costs, Training Manual costs and bow prices now create a more deliberate progression of spending choices while keeping the target rewards unchanged. These values still need to be validated through a long-session playtest before tournament economics are introduced.
-
-Projectile interaction stability has also improved. The training dummy now tracks embedded arrows so nock replacement behaves consistently with regular targets. Ring-target passes are treated as successful scoring events without producing a later contradictory MISS.
+The player-facing HUD has been cleaned up so prototype session telemetry is no longer presented as part of the game interface. The visible HUD now focuses on persistent progression, economy, active shooting feedback, upgrades and contextual tent interaction.
 
 ### Next Step
 
-**Finish the remaining Milestone 12 foundation work, starting with Strength and Accuracy pacing, then stability testing, prototype UI cleanup and the long-session playtest.**
+**Milestone 13 - First Tournament.**
 
-Tournament mechanics stay deliberately out of scope until those foundations are stable.
+The next development phase introduces the first structured competitive activity while keeping the existing shooting mechanics at its center. Tournament entry, requirements, rounds, attempts, scoring, results and the first tournament reward loop will be added one focused system at a time.
