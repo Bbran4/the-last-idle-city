@@ -28,6 +28,7 @@ var trajectory_speed: float = 0.0
 var trajectory_draw_ratio: float = 0.0
 var trajectory_quality: float = 0.0
 var trajectory_visible: bool = false
+var arrows: Array[Arrow] = []
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
@@ -35,6 +36,7 @@ func _ready() -> void:
 	_update_camera()
 
 func _process(_delta: float) -> void:
+	_cleanup_arrows()
 	_update_camera()
 	queue_redraw()
 
@@ -102,6 +104,8 @@ func fire_arrow(direction: Vector2, launch_speed: float) -> Arrow:
 	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
 	arrow.position = to_local(bow.get_arrow_spawn_position())
 	add_child(arrow)
+	arrows.append(arrow)
+	arrow.tree_exited.connect(_on_arrow_tree_exited.bind(arrow), CONNECT_ONE_SHOT)
 	arrow.launch(
 		direction * launch_speed,
 		get_active_targets(),
@@ -118,10 +122,30 @@ func get_active_targets() -> Array[Target]:
 			active.append(range_target)
 	return active
 
+func get_arrows() -> Array[Arrow]:
+	_cleanup_arrows()
+	return arrows.duplicate()
+
+func get_embedded_arrows() -> Array[Arrow]:
+	var embedded: Array[Arrow] = []
+	for arrow: Arrow in arrows:
+		if is_instance_valid(arrow) and arrow.is_embedded:
+			embedded.append(arrow)
+	return embedded
+
 func clear_arrows() -> void:
-	for child: Node in get_children():
-		if child is Arrow:
-			child.queue_free()
+	for arrow: Arrow in arrows:
+		if is_instance_valid(arrow):
+			arrow.queue_free()
+	arrows.clear()
+
+func _cleanup_arrows() -> void:
+	for index: int in range(arrows.size() - 1, -1, -1):
+		if not is_instance_valid(arrows[index]):
+			arrows.remove_at(index)
+
+func _on_arrow_tree_exited(arrow: Arrow) -> void:
+	arrows.erase(arrow)
 
 func _update_range_decor(range_level: int) -> void:
 	range_decor.get_node("Level2").visible = range_level >= 2
