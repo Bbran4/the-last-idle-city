@@ -38,6 +38,7 @@ var successful_hits: int = 0
 var bullseyes: int = 0
 
 func _ready() -> void:
+	range_level = RangeSave.load_range_level(range_level, MAX_RANGE_LEVEL)
 	world_view.configure_bow(bow_inventory.get_equipped())
 	hud.training_upgrade_pressed.connect(_on_training_upgrade_pressed)
 	hud.bow_action_requested.connect(_on_bow_action_requested)
@@ -238,6 +239,7 @@ func _on_range_upgrade_requested() -> void:
 		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
 		return
 	range_level = next_level
+	RangeSave.save_range_level(range_level)
 	world_view.set_active_targets(range_level)
 	hud.show_economy_feedback("RANGE LEVEL %d  NEW TARGET UNLOCKED" % range_level)
 	_refresh_hud()
