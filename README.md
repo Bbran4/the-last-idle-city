@@ -152,7 +152,7 @@ Current range progression:
 
 The first three targets stop arrows on impact. The Ring Target rewards an arrow that passes cleanly through its opening and lets the arrow continue flying. Ring rewards are limited to once per arrow.
 
-Range progression now persists between sessions using a small local save file. This is intentionally limited to range progression for Milestone 11; the complete player save system is part of Milestone 12.
+Range progression initially used a small dedicated save file. It is now migrated into the unified player save data, while existing range-only saves are still read for compatibility.
 
 Accuracy XP now scales with the original shot distance. Point-blank hits provide the minimum XP, while shots reaching 1000 distance or more provide the base maximum of 25 XP. The Training Manual multiplier is then applied, with XP capped by the current progression rules.
 
@@ -160,8 +160,8 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 
 **Goal:** Finish the practice experience and establish a stable foundation before introducing tournament rules. The tournament should be built on a polished, persistent practice loop rather than becoming a second unfinished system.**
 
-- [ ] Persist player progression between sessions
-- [ ] Save and load money, Strength, Accuracy, bows and range progression
+- [x] Persist player progression between sessions
+- [x] Save and load money, Strength, Accuracy, bows and range progression
 - [ ] Add a deliberate reset-save flow for testing
 - [ ] Visually evolve the practice range with each range level
 - [ ] Make the training tent a proper practice-range hub and establish its future customization role
@@ -171,6 +171,8 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 - [ ] Confirm shooting, movement and trajectory behavior remain stable
 - [ ] Clean up prototype-only UI and development feedback
 - [ ] Complete a focused long-session playtest
+
+The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions.
 
 **Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
 
@@ -270,7 +272,7 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 ## Current Status
 
-**Current Stage: Milestone 11 - Practice Range Expansion**
+**Current Stage: Milestone 12 - Pre-Tournament Foundation**
 
 Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, and persistent range upgrades. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, and dummy embedding.
 
@@ -280,8 +282,10 @@ The core practice loop has been playtested. Strength and Accuracy live together 
 
 The trajectory preview remains informational. It follows the current bow aim and shot conditions, improves with Accuracy, becomes 20% longer while crouching, and disappears while airborne. It never rotates the bow, bends the arrow, or selects a target automatically.
 
+The unified save foundation now restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved.
+
 ### Next Step
 
-**Complete the final Milestone 11 expansion balance pass, then move into Milestone 12: Pre-Tournament Foundation.**
+**Add a deliberate reset-save flow, then complete the remaining Milestone 12 practice-foundation work before any tournament implementation.**
 
-The immediate priority is not adding tournament mechanics. It is making the practice range feel like a complete, persistent game loop that can support tournaments without needing its foundations rebuilt afterward.
+The immediate priority remains the persistent practice loop, balance, visual range evolution and save reliability. Tournament mechanics stay deliberately out of scope until those foundations are stable.
