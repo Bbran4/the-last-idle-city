@@ -22,7 +22,8 @@ func _init() -> void:
 				owned[bow_id] = true
 	owned[STARTING_BOW_ID] = true
 	var saved_equipped: String = str(data.get("equipped_bow_id", STARTING_BOW_ID))
-	if can_equip(saved_equipped, 1):
+	var saved_strength_level: int = max(1, int(data.get("strength_level", 1)))
+	if can_equip(saved_equipped, saved_strength_level):
 		equipped_bow_id = saved_equipped
 
 func _load_bow_resources() -> void:
