@@ -12,11 +12,6 @@
 [node name="Main" type="Node2D" unique_id=324881482]
 script = ExtResource("1_main")
 
-[node name="HUD" parent="." unique_id=1532080037 instance=ExtResource("2_tefeu")]
-custom_minimum_size = Vector2(500, 500)
-offset_right = 1284.0
-offset_bottom = 714.0
-
 [node name="WorldView" type="Node2D" parent="." unique_id=107804532]
 script = ExtResource("2_world_view")
 
@@ -24,7 +19,6 @@ script = ExtResource("2_world_view")
 position = Vector2(364, 1664)
 
 [node name="RangeDecor" parent="WorldView" unique_id=1947352116 instance=ExtResource("8_range_decor")]
-z_index = 0
 
 [node name="Player" parent="WorldView" unique_id=641124038 instance=ExtResource("4_o6xl0")]
 position = Vector2(190, 1656)
@@ -50,3 +44,9 @@ coin_reward = 3
 position = Vector2(1835, 734)
 is_ring_target = true
 ring_inner_radius = 30.0
+
+[node name="HUD" parent="." unique_id=1532080037 instance=ExtResource("2_tefeu")]
+z_index = 5
+custom_minimum_size = Vector2(500, 500)
+offset_right = 1284.0
+offset_bottom = 714.0
