@@ -201,10 +201,22 @@ func _find_dummy_hit(start: Vector2, end: Vector2) -> Vector2:
 	var shape_node: CollisionShape2D = collision_dummy.get_node_or_null("CollisionShape2D") as CollisionShape2D
 	if shape_node == null or shape_node.shape == null:
 		return Vector2.INF
+
+	var arrow_parent: Node2D = get_parent() as Node2D
+	if arrow_parent == null:
+		return Vector2.INF
+
+	var global_start: Vector2 = arrow_parent.to_global(start)
+	var global_end: Vector2 = arrow_parent.to_global(end)
+	var dummy_start: Vector2 = collision_dummy.to_local(global_start)
+	var dummy_end: Vector2 = collision_dummy.to_local(global_end)
 	var rect: Rect2 = shape_node.shape.get_rect()
-	rect.position += collision_dummy.position + shape_node.position
+	rect.position += shape_node.position
 	rect = rect.grow(DUMMY_HIT_PADDING)
-	return _segment_rect_hit(start, end, rect)
+	var dummy_hit: Vector2 = _segment_rect_hit(dummy_start, dummy_end, rect)
+	if dummy_hit == Vector2.INF:
+		return Vector2.INF
+	return arrow_parent.to_local(collision_dummy.to_global(dummy_hit))
 
 func _segment_rect_hit(start: Vector2, end: Vector2, rect: Rect2) -> Vector2:
 	if rect.has_point(start):
