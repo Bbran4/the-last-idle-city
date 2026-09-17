@@ -188,7 +188,11 @@ func _find_nock_hit(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> Arro
 	for embedded_arrow: Arrow in get_embedded_arrows():
 		if embedded_arrow == incoming_arrow:
 			continue
-		if not embedded_arrow.is_embedded() or not is_instance_valid(embedded_arrow.get_embedded_target()):
+		var embedded_target: Target = embedded_arrow.get_embedded_target()
+		var embedded_dummy: Area2D = embedded_arrow.get_embedded_dummy()
+		if not embedded_arrow.is_embedded():
+			continue
+		if not is_instance_valid(embedded_target) and not is_instance_valid(embedded_dummy):
 			continue
 		var nock_position: Vector2 = embedded_arrow.get_section_world_position("nock")
 		var projection: float = _segment_point_projection(start, end, nock_position)
