@@ -22,6 +22,7 @@ const DRAW_BAR_WIDTH: float = 360.0
 @onready var draw_bar: Control = $DrawBar
 @onready var draw_bar_fill: ColorRect = $DrawBar/Fill
 @onready var draw_label: Label = $DrawBar/DrawLabel
+@onready var interaction_label: Label = $InteractionLabel
 
 var equipment_panel: PanelContainer
 var equipment_list: VBoxContainer
@@ -35,9 +36,11 @@ func _ready() -> void:
 	strength_gain_label.visible = false
 	accuracy_gain_label.visible = false
 	economy_feedback_label.visible = false
+	interaction_label.visible = false
 	training_upgrade_button.pressed.connect(_on_training_upgrade_pressed)
 	_create_equipment_panel()
 	_create_range_panel()
+	equipment_panel.visible = false
 
 func _create_equipment_panel() -> void:
 	equipment_panel = PanelContainer.new()
@@ -78,6 +81,19 @@ func _create_range_panel() -> void:
 	title.text = "PRACTICE RANGE"
 	title.add_theme_font_size_override("font_size", 18)
 	range_list.add_child(title)
+
+func set_equipment_visible(visible: bool) -> void:
+	if equipment_panel != null:
+		equipment_panel.visible = visible
+
+func set_tent_prompt(near_tent: bool, equipment_open: bool) -> void:
+	if interaction_label == null:
+		return
+	if not near_tent:
+		interaction_label.visible = false
+		return
+	interaction_label.visible = true
+	interaction_label.text = "E  CLOSE EQUIPMENT" if equipment_open else "E  OPEN EQUIPMENT"
 
 func set_bows(bows: Array[BowData], owned: Dictionary, equipped_id: String, money: int, strength_level: int) -> void:
 	if equipment_list == null:
