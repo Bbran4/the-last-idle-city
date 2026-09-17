@@ -13,10 +13,10 @@ const TRAJECTORY_BASE_TIME: float = 0.65
 const TRAJECTORY_EXTRA_TIME: float = 2.75
 
 @onready var player: Player = $Player
-@onready var target: Target = $Target
-@onready var target_two: Target = $TargetTwo
-@onready var target_three: Target = $TargetThree
-@onready var ring_target: Target = $RingTarget
+@onready var target: Target = $TrainingGrounds/PracticeTargets/Target
+@onready var target_two: Target = $TrainingGrounds/PracticeTargets/TargetTwo
+@onready var target_three: Target = $TrainingGrounds/PracticeTargets/TargetThree
+@onready var ring_target: Target = $TrainingGrounds/PracticeTargets/RingTarget
 @onready var ground: Node2D = $Ground
 @onready var range_decor: Node2D = $RangeDecor
 
