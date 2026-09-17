@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/target.tscn" id="1_target"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dummy"]
+size = Vector2(150, 320)
+
+[node name="TrainingGrounds" type="Node2D"]
+
+[node name="PracticeTargets" type="Node2D" parent="."]
+
+[node name="Target" parent="PracticeTargets" instance=ExtResource("1_target")]
+position = Vector2(1623, 1566)
+
+[node name="TargetTwo" parent="PracticeTargets" instance=ExtResource("1_target")]
+position = Vector2(2432, 1111)
+scale = Vector2(0.8, 0.8)
+coin_reward = 2
+
+[node name="TargetThree" parent="PracticeTargets" instance=ExtResource("1_target")]
+position = Vector2(2800, 317)
+scale = Vector2(0.6, 0.6)
+coin_reward = 3
+
+[node name="RingTarget" parent="PracticeTargets" instance=ExtResource("1_target")]
+position = Vector2(1835, 734)
+is_ring_target = true
+ring_inner_radius = 30.0
+
+[node name="TrainingDummy" type="Area2D" parent="."]
+position = Vector2(3300, 1480)
+
+[node name="Body" type="Polygon2D" parent="TrainingDummy"]
+polygon = PackedVector2Array(-75, -160, 75, -160, 75, 120, -75, 120)
+color = Color(0.47, 0.31, 0.19, 1)
+
+[node name="Head" type="Polygon2D" parent="TrainingDummy"]
+polygon = PackedVector2Array(-55, -220, 55, -220, 55, -110, -55, -110)
+color = Color(0.65, 0.46, 0.29, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TrainingDummy"]
+shape = SubResource("RectangleShape2D_dummy")
+position = Vector2(0, -20)
+
+[node name="Label" type="Label" parent="TrainingDummy"]
+offset_left = -120.0
+offset_top = 145.0
+offset_right = 120.0
+offset_bottom = 180.0
+text = "TRAINING DUMMY"
+horizontal_alignment = 1
