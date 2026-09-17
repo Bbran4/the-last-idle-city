@@ -28,6 +28,7 @@ var window_right: float = 1280.0
 var shot_origin: Vector2 = Vector2.ZERO
 var state: ArrowState = ArrowState.FLYING
 var embedded_target: Target = null
+var embedded_dummy: Area2D = null
 var embedded_position: Vector2 = Vector2.ZERO
 var collision_dummy: Area2D = null
 
@@ -41,6 +42,7 @@ func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: fl
 	shot_origin = position
 	state = ArrowState.FLYING
 	embedded_target = null
+	embedded_dummy = null
 	embedded_position = Vector2.ZERO
 	collision_dummy = dummy
 	rotation = velocity.angle()
@@ -66,6 +68,9 @@ func get_state() -> ArrowState:
 func get_embedded_target() -> Target:
 	return embedded_target
 
+func get_embedded_dummy() -> Area2D:
+	return embedded_dummy
+
 func get_section_at_local_position(local_position: Vector2) -> String:
 	if local_position.x >= POINT_SECTION_START:
 		return "point"
@@ -84,10 +89,11 @@ func get_section_world_position(section: String) -> Vector2:
 			local_position = Vector2.ZERO
 	return to_global(local_position)
 
-func embed(target: Target = null, impact_position: Vector2 = Vector2.ZERO) -> void:
+func embed(target: Target = null, impact_position: Vector2 = Vector2.ZERO, dummy: Area2D = null) -> void:
 	state = ArrowState.EMBEDDED
 	velocity = Vector2.ZERO
 	embedded_target = target
+	embedded_dummy = dummy
 	embedded_position = position if impact_position == Vector2.ZERO else impact_position
 	queue_redraw()
 
@@ -101,6 +107,7 @@ func knock_away(knock_velocity: Vector2) -> void:
 		return
 	state = ArrowState.KNOCKED_AWAY
 	embedded_target = null
+	embedded_dummy = null
 	velocity = knock_velocity
 
 func _process(delta: float) -> void:
@@ -140,7 +147,7 @@ func _process(delta: float) -> void:
 		var dummy_hit: Vector2 = _find_dummy_hit(previous_position, position)
 		if dummy_hit != Vector2.INF:
 			position = dummy_hit
-			embed(null, position)
+			embed(null, position, collision_dummy)
 			hit_dummy.emit(position, collision_dummy, self)
 			return
 
@@ -148,9 +155,11 @@ func _process(delta: float) -> void:
 		if position.x >= window_left and position.x <= window_right:
 			position.y = ground_y
 			embed()
-			missed.emit()
+			if passed_ring_targets.is_empty():
+				missed.emit()
 			return
-		missed.emit()
+		if passed_ring_targets.is_empty():
+			missed.emit()
 		queue_free()
 		return
 
