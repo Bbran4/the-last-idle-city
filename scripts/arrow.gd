@@ -3,6 +3,7 @@ extends Node2D
 
 signal hit_target(position: Vector2, target: Target, arrow: Arrow)
 signal missed
+signal flight_segment(start: Vector2, end: Vector2, arrow: Arrow)
 
 const GRAVITY: float = 2500.0
 const POINT_SECTION_START: float = 28.0
@@ -108,6 +109,10 @@ func _process(delta: float) -> void:
 		rotation = velocity.angle()
 
 	if state == ArrowState.FLYING:
+		flight_segment.emit(to_global(previous_position), to_global(position), self)
+		if state != ArrowState.FLYING:
+			return
+
 		var ring_pass: Dictionary = _find_ring_pass(previous_position, position)
 		if not ring_pass.is_empty():
 			var ring_target: Target = ring_pass.target
