@@ -59,6 +59,9 @@ func is_broken() -> bool:
 func get_state() -> ArrowState:
 	return state
 
+func get_embedded_target() -> Target:
+	return embedded_target
+
 func get_section_at_local_position(local_position: Vector2) -> String:
 	if local_position.x >= POINT_SECTION_START:
 		return "point"
