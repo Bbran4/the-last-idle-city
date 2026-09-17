@@ -69,7 +69,11 @@ func get_aim_wobble() -> float:
 	return sin(movement_wobble) * MOVEMENT_WOBBLE_ANGLE
 
 func set_facing_from_mouse(mouse_world_position: Vector2) -> void:
-	facing_right = mouse_world_position.x >= global_position.x
+	var should_face_right: bool = mouse_world_position.x >= global_position.x
+	if should_face_right == facing_right:
+		return
+	facing_right = should_face_right
+	scale.x = 1.0 if facing_right else -1.0
 
 func get_bow_aim_angle(world_angle: float) -> float:
 	return world_angle if facing_right else PI - world_angle
