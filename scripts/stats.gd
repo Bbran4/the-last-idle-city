@@ -5,6 +5,8 @@ extends RefCounted
 ## Strength improves physical output through draw/release practice.
 ## Accuracy improves through successful target hits and powers trajectory prediction.
 
+signal stat_levelled_up(stat_name: String, new_level: int)
+
 const STARTING_LEVEL: int = 1
 const BASE_XP_TO_LEVEL: int = 100
 const XP_GROWTH_PER_LEVEL: int = 25
@@ -54,6 +56,7 @@ func _add_strength_xp(amount: int) -> void:
 	while strength_level < MAX_LEVEL and strength_xp >= strength_xp_to_next_level():
 		strength_xp -= strength_xp_to_next_level()
 		strength_level += 1
+		stat_levelled_up.emit("STRENGTH", strength_level)
 	_save()
 
 func _add_accuracy_xp(amount: int) -> void:
@@ -61,6 +64,7 @@ func _add_accuracy_xp(amount: int) -> void:
 	while accuracy_level < MAX_LEVEL and accuracy_xp >= accuracy_xp_to_next_level():
 		accuracy_xp -= accuracy_xp_to_next_level()
 		accuracy_level += 1
+		stat_levelled_up.emit("ACCURACY", accuracy_level)
 	_save()
 
 func _save() -> void:
