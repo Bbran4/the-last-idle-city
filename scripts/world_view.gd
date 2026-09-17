@@ -11,7 +11,10 @@ const TRAJECTORY_STEP: float = 0.055
 const TRAJECTORY_MAX_TIME: float = 4.0
 const TRAJECTORY_BASE_TIME: float = 0.65
 const TRAJECTORY_EXTRA_TIME: float = 2.75
-const NOCK_HIT_RADIUS: float = 12.0
+# The nock itself is only a small section at the rear of the arrow. Keep this
+# radius tight so a shot must actually pass over the nock instead of merely
+# flying nearby.
+const NOCK_HIT_RADIUS: float = 4.0
 const MID_AIR_ARROW_RADIUS: float = 7.0
 const MID_AIR_KNOCKBACK: float = 0.35
 const MID_AIR_STRUCK_PUSH: float = 120.0
