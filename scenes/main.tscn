@@ -4,10 +4,10 @@
 [ext_resource type="PackedScene" uid="uid://b7gu0tctntb1q" path="res://scenes/hud.tscn" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://genlf37jkqhy" path="res://scripts/world_view.gd" id="2_world_view"]
 [ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="4_o6xl0"]
-[ext_resource type="PackedScene" path="res://scenes/target.tscn" id="5_tipki"]
 [ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/ground.tscn" id="6_85g3d"]
 [ext_resource type="PackedScene" path="res://scenes/tent.tscn" id="7_tent"]
 [ext_resource type="PackedScene" path="res://scenes/range_decor.tscn" id="8_range_decor"]
+[ext_resource type="PackedScene" path="res://scenes/training_grounds.tscn" id="9_training_grounds"]
 
 [node name="Main" type="Node2D" unique_id=324881482]
 script = ExtResource("1_main")
@@ -27,23 +27,7 @@ position = Vector2(190, 1656)
 z_index = 1
 position = Vector2(-600, 1656)
 
-[node name="Target" parent="WorldView" unique_id=529700850 instance=ExtResource("5_tipki")]
-position = Vector2(1623, 1566)
-
-[node name="TargetTwo" parent="WorldView" unique_id=882783016 instance=ExtResource("5_tipki")]
-position = Vector2(2432, 1111)
-scale = Vector2(0.8, 0.8)
-coin_reward = 2
-
-[node name="TargetThree" parent="WorldView" unique_id=434040889 instance=ExtResource("5_tipki")]
-position = Vector2(2800, 317)
-scale = Vector2(0.6, 0.6)
-coin_reward = 3
-
-[node name="RingTarget" parent="WorldView" unique_id=69051130 instance=ExtResource("5_tipki")]
-position = Vector2(1835, 734)
-is_ring_target = true
-ring_inner_radius = 30.0
+[node name="TrainingGrounds" parent="WorldView" instance=ExtResource("9_training_grounds")]
 
 [node name="HUD" parent="." unique_id=1532080037 instance=ExtResource("2_tefeu")]
 z_index = 5
