@@ -2,8 +2,8 @@ class_name PlayerEconomy
 extends RefCounted
 
 const STARTING_MONEY: int = 250
-const TRAINING_MANUAL_BASE_COST: int = 100
-const TRAINING_MANUAL_COST_GROWTH: int = 75
+const TRAINING_MANUAL_BASE_COST: int = 125
+const TRAINING_MANUAL_COST_GROWTH: int = 125
 const MAX_TRAINING_MANUAL_LEVEL: int = 5
 const TRAINING_MANUAL_XP_BONUS: float = 0.10
 
