@@ -130,7 +130,178 @@ func _toggle_equipment() -> void:
 	equipment_open = not equipment_open
 	hud.set_equipment_visible(equipment_open)
 
+func _is_near_tent() -> bool:
+	var tent: Node2D = world_view.get_node("CustomizationTent") as Node2D
+	return world_view.player.position.distance_to(tent.position) <= TENT_INTERACTION_RADIUS
+
+func _start_drawing() -> void:
+	if is_drawing or shot_recovery_timer > 0.0:
+		return
+	is_drawing = true
+	draw_strength = 0.0
+	full_draw_timer = 0.0
+
+func _update_aim() -> void:
+	var mouse_world_position: Vector2 = world_view.get_world_mouse_position()
+	world_view.player.set_facing_from_mouse(mouse_world_position)
+	var aim_vector: Vector2 = mouse_world_position - world_view.get_bow_position()
+	if aim_vector.length_squared() > 0.001:
+		aim_angle = aim_vector.angle() + world_view.player.get_aim_wobble()
+		if draw_strength > 0.0:
+			var bow: BowData = bow_inventory.get_equipped()
+			var draw_ratio: float = draw_strength / bow.max_draw_strength
+			if draw_ratio >= 1.0:
+				var wobble_progress: float = clamp((full_draw_timer - FULL_DRAW_WOBBLE_DELAY) / max(FULL_DRAW_AUTO_RELEASE_TIME - FULL_DRAW_WOBBLE_DELAY, 0.001), 0.0, 1.0)
+				var wobble: float = sin(full_draw_timer * FULL_DRAW_WOBBLE_SPEED) * FULL_DRAW_WOBBLE_MAX_ANGLE * wobble_progress
+				aim_angle += wobble
+	world_view.aim_bow(world_view.player.get_bow_aim_angle(aim_angle))
+
+func _fire_arrow() -> void:
+	if not is_drawing or shot_recovery_timer > 0.0:
+		return
+
+	is_drawing = false
+	full_draw_timer = 0.0
+	if draw_strength <= 0.0:
+		draw_strength = 0.0
+		return
+	shot_recovery_timer = SHOT_RECOVERY_TIME
+	var bow: BowData = bow_inventory.get_equipped()
+	var strength_ratio: float = draw_strength / bow.max_draw_strength
+	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
+	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
+	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
+	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(aim_angle), launch_speed)
+	arrow.hit_target.connect(_on_arrow_hit)
+	arrow.missed.connect(_on_arrow_missed)
+	shots_fired += 1
+	_show_result("SHOT FIRED")
+	if strength_xp > 0:
+		hud.show_strength_xp_gain(strength_xp)
+	draw_strength = 0.0
+	_refresh_hud()
+
+func _on_arrow_hit(position: Vector2, target: Target, arrow: Arrow) -> void:
+	var coin_reward: int = target.get_coin_reward()
+	economy.add_money(coin_reward)
+	total_coins_earned += coin_reward
+	successful_hits += 1
+	if target.is_bullseye_hit(position):
+		bullseyes += 1
+	var shot_distance: float = arrow.get_shot_distance_to_target(target)
+	var accuracy_xp: int = stats.award_accuracy_hit_xp(shot_distance, economy.get_xp_multiplier())
+	if accuracy_xp > 0:
+		hud.show_accuracy_xp_gain(accuracy_xp)
+	impact_position = position
+	impact_timer = IMPACT_FLASH_DURATION
+	_show_result(target.get_reward_label())
+
+func _on_arrow_missed() -> void:
+	_show_result("MISS")
+
+func _on_training_upgrade_pressed() -> void:
+	var cost: int = economy.get_training_manual_cost()
+	if economy.buy_training_manual():
+		hud.show_economy_feedback("TRAINING MANUAL %d  +%d%% XP" % [economy.training_manual_level, int((economy.get_xp_multiplier() - 1.0) * 100.0)])
+	else:
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
+	_refresh_hud()
+
+func _on_bow_action_requested(bow_id: String) -> void:
+	var bow: BowData = bow_inventory.get_bow(bow_id)
+	if bow == null:
+		return
+
+	if bow_inventory.is_owned(bow_id):
+		if bow_inventory.equip(bow_id, stats.strength_level):
+			world_view.configure_bow(bow)
+			hud.show_economy_feedback("EQUIPPED  %s" % bow.display_name)
+		else:
+			hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
+		_refresh_hud()
+		return
+
+	if stats.strength_level < bow.required_strength:
+		hud.show_economy_feedback("REQUIRES STRENGTH %d" % bow.required_strength)
+		return
+
+	if economy.money < bow.price:
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+		return
+
+	if not bow_inventory.can_purchase(bow_id, economy.money, stats.strength_level):
+		hud.show_economy_feedback("PURCHASE UNAVAILABLE")
+		return
+
+	if not economy.spend_money(bow.price):
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % bow.price)
+		return
+
+	if not bow_inventory.unlock(bow_id):
+		economy.add_money(bow.price)
+		hud.show_economy_feedback("PURCHASE FAILED")
+		_refresh_hud()
+		return
+
+	if not bow_inventory.equip(bow_id, stats.strength_level):
+		economy.add_money(bow.price)
+		hud.show_economy_feedback("EQUIP FAILED")
+		_refresh_hud()
+		return
+
+	world_view.configure_bow(bow)
+	hud.show_economy_feedback("PURCHASED AND EQUIPPED  %s" % bow.display_name)
+	_refresh_hud()
+
+func _on_range_upgrade_requested() -> void:
+	if range_level >= MAX_RANGE_LEVEL:
+		return
+	var next_level: int = range_level + 1
+	var cost: int = RANGE_LEVEL_COSTS[next_level - 1]
+	if not economy.spend_money(cost):
+		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
+		return
+	range_level = next_level
+	RangeSave.save_range_level(range_level)
+	world_view.set_active_targets(range_level)
+	hud.show_economy_feedback("RANGE LEVEL %d  NEW TARGET UNLOCKED" % range_level)
+	_refresh_hud()
+
+func _show_result(text: String) -> void:
+	shot_result_timer = SHOT_RESULT_DURATION
+	hud.show_shot_result(text)
+	_refresh_hud()
+
 func _on_stat_levelled_up(stat_name: String, new_level: int) -> void:
 	hud.show_stat_level_up(stat_name, new_level)
 	shot_result_timer = SHOT_RESULT_DURATION
+	_refresh_hud()
+
+func _refresh_hud() -> void:
+	hud.set_coins_earned(total_coins_earned)
+	hud.set_stats(shots_fired, successful_hits, bullseyes)
+	hud.set_strength(stats.strength_level, stats.strength_xp, stats.strength_xp_to_next_level(), stats.strength_progress_ratio())
+	hud.set_accuracy(stats.accuracy_level, stats.accuracy_xp, stats.accuracy_xp_to_next_level(), stats.accuracy_progress_ratio())
+	hud.set_economy(economy.money, economy.training_manual_level, economy.get_training_manual_cost(), economy.can_buy_training_manual())
+	hud.set_bows(bow_inventory.get_all_bows(), bow_inventory.owned, bow_inventory.equipped_bow_id, economy.money, stats.strength_level)
+	hud.set_range_level(range_level, MAX_RANGE_LEVEL, RANGE_LEVEL_COSTS, economy.money)
+
+func _reset_session() -> void:
+	is_drawing = false
+	right_mouse_held = false
+	draw_strength = 0.0
+	full_draw_timer = 0.0
+	shot_recovery_timer = 0.0
+	world_view.set_recovery_progress(0.0)
+	impact_position = Vector2.ZERO
+	impact_timer = 0.0
+	shot_result_timer = 0.0
+	equipment_open = false
+	hud.set_equipment_visible(false)
+	total_coins_earned = 0
+	shots_fired = 0
+	successful_hits = 0
+	bullseyes = 0
+	world_view.clear_arrows()
+	hud.hide_shot_result()
 	_refresh_hud()
