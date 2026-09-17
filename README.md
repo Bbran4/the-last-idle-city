@@ -138,7 +138,7 @@ Final bow prices will be balanced after the range and tournament economies are e
 - [x] Tent is a standalone scene with editor-based visuals
 - [x] Range decoration and progression markers
 - [x] Training dummy at Range Level 3+
-- [ ] Persist range upgrades
+- [x] Persist range upgrades between sessions
 - [ ] Final expansion balance pass
 
 Current range progression:
@@ -151,6 +151,8 @@ Current range progression:
 | 4 | Ring Target | 250 coins | 5 coins |
 
 The first three targets stop arrows on impact. The Ring Target rewards an arrow that passes cleanly through its opening and lets the arrow continue flying. Ring rewards are limited to once per arrow.
+
+Range progression now persists between sessions using a small local save file. This is intentionally limited to range progression for Milestone 11; the complete player save system is part of Milestone 12.
 
 Accuracy XP now scales with the original shot distance. Point-blank hits provide the minimum XP, while shots reaching 1000 distance or more provide the base maximum of 25 XP. The Training Manual multiplier is then applied, with XP capped by the current progression rules.
 
@@ -270,7 +272,7 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 **Current Stage: Milestone 11 - Practice Range Expansion**
 
-Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, and the training dummy. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, and dummy embedding.
+Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, and persistent range upgrades. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, and dummy embedding.
 
 The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
 
@@ -280,6 +282,6 @@ The trajectory preview remains informational. It follows the current bow aim and
 
 ### Next Step
 
-**Persist range upgrades, then continue through the remaining Milestone 11 balance work before completing Milestone 12: Pre-Tournament Foundation.**
+**Complete the final Milestone 11 expansion balance pass, then move into Milestone 12: Pre-Tournament Foundation.**
 
 The immediate priority is not adding tournament mechanics. It is making the practice range feel like a complete, persistent game loop that can support tournaments without needing its foundations rebuilt afterward.
