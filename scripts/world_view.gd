@@ -17,6 +17,7 @@ const TRAJECTORY_EXTRA_TIME: float = 2.75
 @onready var target_two: Target = $TrainingGrounds/PracticeTargets/TargetTwo
 @onready var target_three: Target = $TrainingGrounds/PracticeTargets/TargetThree
 @onready var ring_target: Target = $TrainingGrounds/PracticeTargets/RingTarget
+@onready var training_dummy: Area2D = $TrainingGrounds/TrainingDummy
 @onready var ground: Node2D = $Ground
 @onready var range_decor: Node2D = $RangeDecor
 
@@ -79,6 +80,7 @@ func set_active_targets(range_level: int) -> void:
 	var targets: Array[Target] = get_targets()
 	for index: int in range(targets.size()):
 		targets[index].visible = index < range_level
+	training_dummy.visible = range_level >= 3
 	_update_range_decor(range_level)
 
 func set_range_level(level: int) -> void:
