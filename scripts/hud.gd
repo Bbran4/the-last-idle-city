@@ -7,8 +7,6 @@ signal range_upgrade_requested
 
 const DRAW_BAR_WIDTH: float = 360.0
 
-@onready var score_label: Label = $ScoreLabel
-@onready var stats_label: Label = $StatsLabel
 @onready var strength_label: Label = $StrengthLabel
 @onready var strength_xp_label: Label = $StrengthXPLabel
 @onready var accuracy_label: Label = $AccuracyLabel
@@ -161,11 +159,14 @@ func _on_bow_button_pressed(bow_id: String) -> void:
 func _on_range_upgrade_button_pressed() -> void:
 	range_upgrade_requested.emit()
 
-func set_coins_earned(amount: int) -> void:
-	score_label.text = "EARNED  %d COINS" % amount
+func set_coins_earned(_amount: int) -> void:
+	# Kept as a compatibility hook for the practice-session statistics code.
+	# The persistent economy display is now the only coin counter shown to the player.
+	pass
 
-func set_stats(shots: int, hits: int, bullseyes: int) -> void:
-	stats_label.text = "SHOTS  %d    HITS  %d    BULLSEYES  %d" % [shots, hits, bullseyes]
+func set_stats(_shots: int, _hits: int, _bullseyes: int) -> void:
+	# Session shot counters are development telemetry and are intentionally not shown in the release HUD.
+	pass
 
 func set_strength(level: int, xp: int, xp_to_next: int, _progress_ratio: float) -> void:
 	strength_label.text = "STRENGTH  %d" % level
