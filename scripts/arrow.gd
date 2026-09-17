@@ -5,6 +5,16 @@ signal hit_target(position: Vector2, target: Target, arrow: Arrow)
 signal missed
 
 const GRAVITY: float = 2500.0
+const POINT_SECTION_START: float = 28.0
+const NOCK_SECTION_END: float = -34.0
+
+enum ArrowState {
+	FLYING,
+	EMBEDDED,
+	KNOCKED_AWAY,
+	BROKEN,
+	FALLING
+}
 
 var velocity: Vector2 = Vector2.ZERO
 var targets: Array[Target] = []
@@ -13,7 +23,9 @@ var ground_y: float = 0.0
 var window_left: float = 0.0
 var window_right: float = 1280.0
 var shot_origin: Vector2 = Vector2.ZERO
-var is_embedded: bool = false
+var state: ArrowState = ArrowState.FLYING
+var embedded_target: Target = null
+var embedded_position: Vector2 = Vector2.ZERO
 
 func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: float, left_bound: float, right_bound: float) -> void:
 	velocity = initial_velocity
@@ -23,7 +35,9 @@ func launch(initial_velocity: Vector2, active_targets: Array[Target], ground: fl
 	window_left = left_bound
 	window_right = right_bound
 	shot_origin = position
-	is_embedded = false
+	state = ArrowState.FLYING
+	embedded_target = null
+	embedded_position = Vector2.ZERO
 	rotation = velocity.angle()
 	queue_redraw()
 
@@ -32,8 +46,57 @@ func get_shot_distance_to_target(target: Target) -> float:
 		return 0.0
 	return shot_origin.distance_to(target.position)
 
+func is_flying() -> bool:
+	return state == ArrowState.FLYING
+
+func is_embedded() -> bool:
+	return state == ArrowState.EMBEDDED
+
+func is_broken() -> bool:
+	return state == ArrowState.BROKEN
+
+func get_state() -> ArrowState:
+	return state
+
+func get_section_at_local_position(local_position: Vector2) -> String:
+	if local_position.x >= POINT_SECTION_START:
+		return "point"
+	if local_position.x <= NOCK_SECTION_END:
+		return "nock"
+	return "shaft"
+
+func get_section_world_position(section: String) -> Vector2:
+	var local_position: Vector2 = Vector2.ZERO
+	match section:
+		"point":
+			local_position = Vector2(35.0, 0.0)
+		"nock":
+			local_position = Vector2(-39.0, 0.0)
+		_:
+			local_position = Vector2.ZERO
+	return to_global(local_position)
+
+func embed(target: Target = null, impact_position: Vector2 = Vector2.ZERO) -> void:
+	state = ArrowState.EMBEDDED
+	velocity = Vector2.ZERO
+	embedded_target = target
+	embedded_position = position if impact_position == Vector2.ZERO else impact_position
+	queue_redraw()
+
+func break_arrow() -> void:
+	state = ArrowState.BROKEN
+	velocity = Vector2.ZERO
+	queue_redraw()
+
+func knock_away(knock_velocity: Vector2) -> void:
+	if state == ArrowState.BROKEN:
+		return
+	state = ArrowState.KNOCKED_AWAY
+	embedded_target = null
+	velocity = knock_velocity
+
 func _process(delta: float) -> void:
-	if is_embedded:
+	if state == ArrowState.EMBEDDED or state == ArrowState.BROKEN:
 		return
 
 	var previous_position: Vector2 = position
@@ -44,19 +107,20 @@ func _process(delta: float) -> void:
 	if velocity.length_squared() > 0.0:
 		rotation = velocity.angle()
 
-	var ring_pass: Dictionary = _find_ring_pass(previous_position, position)
-	if not ring_pass.is_empty():
-		var ring_target: Target = ring_pass.target
-		passed_ring_targets.append(ring_target)
-		hit_target.emit(ring_pass.position, ring_target, self)
+	if state == ArrowState.FLYING:
+		var ring_pass: Dictionary = _find_ring_pass(previous_position, position)
+		if not ring_pass.is_empty():
+			var ring_target: Target = ring_pass.target
+			passed_ring_targets.append(ring_target)
+			hit_target.emit(ring_pass.position, ring_target, self)
 
-	var hit_target_result: Dictionary = _find_target_hit(previous_position, position)
-	if not hit_target_result.is_empty():
-		var target: Target = hit_target_result.target
-		position = hit_target_result.position
-		embed()
-		hit_target.emit(position, target, self)
-		return
+		var hit_target_result: Dictionary = _find_target_hit(previous_position, position)
+		if not hit_target_result.is_empty():
+			var target: Target = hit_target_result.target
+			position = hit_target_result.position
+			embed(target, position)
+			hit_target.emit(position, target, self)
+			return
 
 	if _crossed_ground(previous_position, position):
 		if position.x >= window_left and position.x <= window_right:
@@ -72,11 +136,6 @@ func _process(delta: float) -> void:
 
 func _crossed_ground(start: Vector2, end: Vector2) -> bool:
 	return start.y < ground_y and end.y >= ground_y
-
-func embed() -> void:
-	is_embedded = true
-	velocity = Vector2.ZERO
-	queue_redraw()
 
 func _find_ring_pass(start: Vector2, end: Vector2) -> Dictionary:
 	var segment: Vector2 = end - start
