@@ -112,7 +112,17 @@ func _process(delta: float) -> void:
 		rotation = velocity.angle()
 
 	if state == ArrowState.FLYING:
-		flight_segment.emit(to_global(previous_position), to_global(position), self)
+		# previous_position/position are already expressed in the PARENT's
+		# (WorldView's) local coordinate space, not in this arrow's own local
+		# space. Converting them with self.to_global() would incorrectly
+		# re-apply this arrow's own rotation and position on top of them.
+		# Convert via the parent's transform instead so the emitted segment
+		# lines up with the world-space nock/point positions other arrows
+		# compute via their own to_global() calls.
+		var parent_node: Node2D = get_parent() as Node2D
+		var global_previous_position: Vector2 = parent_node.to_global(previous_position) if parent_node != null else previous_position
+		var global_position: Vector2 = parent_node.to_global(position) if parent_node != null else position
+		flight_segment.emit(global_previous_position, global_position, self)
 		if state != ArrowState.FLYING:
 			return
 

@@ -27,7 +27,7 @@ position = Vector2(190, 1656)
 z_index = 1
 position = Vector2(-600, 1656)
 
-[node name="TrainingGrounds" parent="WorldView" instance=ExtResource("9_training_grounds")]
+[node name="TrainingGrounds" parent="WorldView" unique_id=484459895 instance=ExtResource("9_training_grounds")]
 
 [node name="HUD" parent="." unique_id=1532080037 instance=ExtResource("2_tefeu")]
 z_index = 5
