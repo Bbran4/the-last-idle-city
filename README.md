@@ -101,7 +101,9 @@ Holding Right Mouse Button draws the bow. Releasing it does not fire. Left Mouse
 - [x] Target hits provide practice income
 - [ ] Tournament rewards become the primary long-term money source
 
-The Training Manual has five levels. Each level increases Strength and Accuracy XP gains by 10%. The range currently starts with 250 coins for development testing.
+The Training Manual has five levels. Each level increases Strength and Accuracy XP gains by 10%. The current development starting balance remains 250 coins so the practice systems can be tested without an artificial grind.
+
+Training Manual costs are now 125, 250, 375, 500 and 625 coins for levels 1 through 5.
 
 ### Milestone 10 - Bows & Equipment
 
@@ -114,7 +116,7 @@ The Training Manual has five levels. Each level increases Strength and Accuracy 
 - [x] Switching between owned bows
 - [x] Equipped bow data drives shooting behavior
 
-Final bow prices will be balanced after the range and tournament economies are established.
+Current practice-phase bow prices are 100 coins for the Recurve Bow and 250 coins for the War Bow. These remain subject to the later tournament economy pass.
 
 ### Milestone 11 - Practice Range Expansion
 
@@ -140,16 +142,17 @@ Final bow prices will be balanced after the range and tournament economies are e
 - [x] Range decoration and progression markers
 - [x] Training dummy at Range Level 3+
 - [x] Persist range upgrades between sessions
-- [ ] Final expansion balance pass
+- [x] Visual range evolution
+- [x] Practice economy and range-cost balance pass
 
 Current range progression:
 
 | Range Level | New Challenge | Unlock Cost | Reward |
 |---|---|---:|---:|
 | 1 | Large close target | Free | 1 coin |
-| 2 | Smaller target | 50 coins | 2 coins |
-| 3 | Smaller/farther target | 100 coins | 3 coins |
-| 4 | Ring Target | 250 coins | 5 coins |
+| 2 | Smaller target | 75 coins | 2 coins |
+| 3 | Smaller/farther target | 175 coins | 3 coins |
+| 4 | Ring Target | 350 coins | 5 coins |
 
 The first three targets stop arrows on impact. The Ring Target rewards an arrow that passes cleanly through its opening and lets the arrow continue flying. Ring rewards are limited to once per arrow.
 
@@ -164,16 +167,18 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 - [x] Persist player progression between sessions
 - [x] Save and load money, Strength, Accuracy, bows and range progression
 - [x] Add a deliberate reset-save flow for testing
-- [ ] Visually evolve the practice range with each range level
+- [x] Visually evolve the practice range with each range level
 - [ ] Make the training tent a proper practice-range hub and establish its future customization role
-- [ ] Finalize practice income and equipment costs
+- [x] Finalize practice income and equipment costs for the current practice phase
 - [ ] Finalize Strength and Accuracy progression pacing
-- [ ] Finalize range upgrade costs and target rewards
+- [x] Finalize range upgrade costs and target rewards for the current practice phase
 - [ ] Confirm shooting, movement and trajectory behavior remain stable
 - [ ] Clean up prototype-only UI and development feedback
 - [ ] Complete a focused long-session playtest
 
 The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions. `Ctrl + Shift + R` deliberately deletes saved progression and reloads a fresh game for testing.
+
+The current practice economy deliberately creates choices between equipment, Training Manuals and range expansion. Range upgrades now cost 75, 175 and 350 coins, while the Recurve and War Bows cost 100 and 250 coins respectively. The target rewards remain 1, 2, 3 and 5 coins. These values are intended as the stable practice-phase baseline before tournament rewards are introduced.
 
 **Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
 
@@ -277,7 +282,7 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 Milestones 0 through 10 are implemented. Milestone 11 has its core expansion gameplay implemented, including four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, bow flipping, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, and persistent range upgrades. Arrow interactions now also include explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, and dummy embedding.
 
-The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
+The practice range now visibly develops through Range I to Range IV with additional range structures, equipment areas, training infrastructure and advanced-range banners. The tent is a standalone scene with its visuals represented by scene nodes rather than code-based drawing.
 
 The core practice loop has been playtested. Strength and Accuracy live together in `PlayerStats`. Strength progression rewards meaningful draw and release practice. Accuracy improves from successful target hits and scales with shot distance.
 
@@ -285,8 +290,10 @@ The trajectory preview remains informational. It follows the current bow aim and
 
 The unified save foundation now restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow is available for testing.
 
+The current practice economy has also received its first focused balancing pass. Range costs, Training Manual costs and bow prices now create a more deliberate progression of spending choices while keeping the target rewards unchanged. These values still need to be validated through a long-session playtest before tournament economics are introduced.
+
 ### Next Step
 
-**Finish the remaining Milestone 12 practice-foundation work, starting with visual range evolution and then the final economy/progression balance pass.**
+**Finish the remaining Milestone 12 foundation work, starting with Strength and Accuracy pacing, then stability testing, prototype UI cleanup and the long-session playtest.**
 
-The immediate priority remains the persistent practice loop, balance, visual range evolution and save reliability. Tournament mechanics stay deliberately out of scope until those foundations are stable.
+Tournament mechanics stay deliberately out of scope until those foundations are stable.
