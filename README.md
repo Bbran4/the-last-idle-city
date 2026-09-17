@@ -22,6 +22,7 @@ The game combines player skill with character progression. Upgrades improve capa
 | Right Mouse Button | Hold to draw bow |
 | Left Mouse Button | Fire current draw strength |
 | R | Reset practice session |
+| Ctrl + Shift + R | Reset saved progression and reload |
 
 The archer faces the mouse cursor and the bow follows the facing direction. Moving while aiming introduces a small amount of bow wobble, while crouching extends the trajectory preview by 20%. The trajectory preview is disabled while airborne.
 
@@ -162,7 +163,7 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 
 - [x] Persist player progression between sessions
 - [x] Save and load money, Strength, Accuracy, bows and range progression
-- [ ] Add a deliberate reset-save flow for testing
+- [x] Add a deliberate reset-save flow for testing
 - [ ] Visually evolve the practice range with each range level
 - [ ] Make the training tent a proper practice-range hub and establish its future customization role
 - [ ] Finalize practice income and equipment costs
@@ -172,7 +173,7 @@ Accuracy XP now scales with the original shot distance. Point-blank hits provide
 - [ ] Clean up prototype-only UI and development feedback
 - [ ] Complete a focused long-session playtest
 
-The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions.
+The unified save foundation uses `user://player_progress.cfg` and stores progression as versioned save data. Strength, Accuracy, economy, bow ownership/equipment and range progression now restore between sessions. `Ctrl + Shift + R` deliberately deletes saved progression and reloads a fresh game for testing.
 
 **Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
 
@@ -282,10 +283,10 @@ The core practice loop has been playtested. Strength and Accuracy live together 
 
 The trajectory preview remains informational. It follows the current bow aim and shot conditions, improves with Accuracy, becomes 20% longer while crouching, and disappears while airborne. It never rotates the bow, bends the arrow, or selects a target automatically.
 
-The unified save foundation now restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved.
+The unified save foundation now restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow is available for testing.
 
 ### Next Step
 
-**Add a deliberate reset-save flow, then complete the remaining Milestone 12 practice-foundation work before any tournament implementation.**
+**Finish the remaining Milestone 12 practice-foundation work, starting with visual range evolution and then the final economy/progression balance pass.**
 
 The immediate priority remains the persistent practice loop, balance, visual range evolution and save reliability. Tournament mechanics stay deliberately out of scope until those foundations are stable.
