@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://genlf37jkqhy" path="res://scripts/world_view.gd" id="2_world_view"]
 [ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="4_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/ground.tscn" id="6_85g3d"]
-[ext_resource type="PackedScene" path="res://scenes/tent.tscn" id="7_tent"]
+[ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/tent.tscn" id="7_tent"]
 [ext_resource type="PackedScene" path="res://scenes/range_decor.tscn" id="8_range_decor"]
 [ext_resource type="PackedScene" path="res://scenes/training_grounds.tscn" id="9_training_grounds"]
 
@@ -16,16 +16,17 @@ script = ExtResource("1_main")
 script = ExtResource("2_world_view")
 
 [node name="Ground" parent="WorldView" unique_id=1284974576 instance=ExtResource("6_85g3d")]
-position = Vector2(364, 1664)
+position = Vector2(364, 1401)
 
 [node name="RangeDecor" parent="WorldView" unique_id=1947352116 instance=ExtResource("8_range_decor")]
 
 [node name="Player" parent="WorldView" unique_id=641124038 instance=ExtResource("4_o6xl0")]
-position = Vector2(190, 1656)
+z_index = 2
+position = Vector2(-378, 1584)
 
 [node name="CustomizationTent" parent="WorldView" unique_id=509816865 instance=ExtResource("7_tent")]
 z_index = 1
-position = Vector2(-600, 1656)
+position = Vector2(-989, 1292)
 
 [node name="TrainingGrounds" parent="WorldView" unique_id=484459895 instance=ExtResource("9_training_grounds")]
 

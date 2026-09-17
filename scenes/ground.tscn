@@ -4,7 +4,7 @@
 
 [node name="Fill" type="Polygon2D" parent="." unique_id=1251783165]
 position = Vector2(3059.233, 239.40201)
-scale = Vector2(1.5808002, 1.014)
+scale = Vector2(5, 1.014)
 color = Color(0.160784, 0.192157, 0.14902, 1)
 offset = Vector2(-2165, -243)
 polygon = PackedVector2Array(-1000, 0, 4000, 0, 3999.9995, 237.66113, 4000, 500, -1000, 500, -1000.00024, 250.43115)

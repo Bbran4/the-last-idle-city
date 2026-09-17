@@ -1,10 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://1u7huy0vyiix"]
 
-[ext_resource type="Texture2D" path="res://assets/Tent.png" id="1_tent"]
+[ext_resource type="Texture2D" uid="uid://bv25v48f1mxel" path="res://assets/Tent.png" id="1_tent"]
 
-[node name="CustomizationTent" type="Node2D"]
+[node name="CustomizationTent" type="Node2D" unique_id=235872371]
 
-[node name="TentSprite" type="Sprite2D" parent="."]
+[node name="TentSprite" type="Sprite2D" parent="." unique_id=1155743412]
+position = Vector2(0, -227)
 texture = ExtResource("1_tent")
-scale = Vector2(0.25, 0.25)
-
