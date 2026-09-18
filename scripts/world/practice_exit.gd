@@ -35,4 +35,4 @@ func _unhandled_input(event: InputEvent) -> void:
 			prompt_label.visible = false
 			TravelState.return_spawn = "ARCHERY_RANGE"
 			TravelState.destination = "TRAINING GROUNDS"
-			get_tree().change_scene_to_file("res://scenes/hub.tscn")
+			get_tree().change_scene_to_file("res://scenes/world/hub.tscn")
