@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/ground.tscn" id="6_85g3d"]
 [ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/tent.tscn" id="7_tent"]
 [ext_resource type="PackedScene" path="res://scenes/range_decor.tscn" id="8_range_decor"]
-[ext_resource type="PackedScene" path="res://scenes/training_grounds.tscn" id="9_training_grounds"]
+[ext_resource type="PackedScene" uid="uid://dinq4qaeg8qxi" path="res://scenes/training_grounds.tscn" id="9_training_grounds"]
 
 [node name="Main" type="Node2D" unique_id=324881482]
 script = ExtResource("1_main")
