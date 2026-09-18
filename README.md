@@ -2,11 +2,11 @@
 
 A small active skill-based archery progression game for itch.io and Kongregate.
 
-The player is an archer practicing for tournaments. Shoot targets, improve technique, buy better equipment, expand the practice range, and eventually compete in increasingly difficult tournaments.
+The player is an archer living out of a growing Training Grounds hub. Practice at the range, customize and equip your character, buy and upgrade bows, visit the Fletcher, use the kingdom map to travel, and eventually compete in increasingly difficult tournaments and other activities.
 
 ## Core Loop
 
-**Practice → Improve Strength & Accuracy → Unlock Better Equipment → Expand Practice Range → Enter Tournament → Earn Prize Money → Purchase Upgrades → Practice More Efficiently → Enter More Difficult Tournaments**
+**Training Grounds → Practice → Improve Strength & Accuracy → Equip Better Gear → Travel → Compete → Earn → Upgrade the Grounds → Explore More Activities**
 
 The game combines player skill with character progression. Upgrades improve capability without turning shooting into an automatic process.
 
@@ -26,7 +26,7 @@ The game combines player skill with character progression. Upgrades improve capa
 
 The archer faces the mouse cursor and the bow follows the facing direction. Moving while aiming introduces a small amount of bow wobble, while crouching extends the trajectory preview by 20%. The trajectory preview is disabled while airborne.
 
-Holding Right Mouse Button draws the bow. Releasing it does not fire. Left Mouse Button fires the current draw strength. Holding right mouse through shot recovery automatically begins the next draw when recovery finishes.
+Holding Left Mouse Button draws the bow and releasing it fires. Right Mouse Button performs a quick shot at 80% draw strength. Quick shots become more accurate with the Accuracy skill, do not grant Strength or Accuracy XP, and enter a short cooldown after three quick shots.
 
 ## Development Roadmap
 
@@ -193,9 +193,9 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 
 **Design rule:** No tournament-specific complexity should be added until the practice loop can be saved, resumed and balanced reliably.
 
-### Milestone 13 - First Tournament
+### Milestone 13 - Training Grounds Hub
 
-**Goal:** Introduce the first structured competitive activity without replacing the core shooting mechanics.**
+**Goal:** Make the Training Grounds the player's persistent home base and the central navigation layer for the game.**
 
 - [ ] Tournament entry system
 - [ ] Tournament requirements
@@ -207,7 +207,21 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 - [ ] Entry/restart flow
 - [ ] Tournament rewards feed back into the existing economy
 
-### Milestone 14 - Tournament Rewards & Progression
+### Milestone 14 - First Tournament
+
+**Goal:** Introduce the first structured competitive activity without replacing the core shooting mechanics.**
+
+- [ ] Tournament entry system from the kingdom map
+- [ ] Tournament requirements
+- [ ] Tournament rounds and attempt limits
+- [ ] Tournament-specific target layouts
+- [ ] Tournament scoring rules
+- [ ] Opponent score generation
+- [ ] Results and tournament UI
+- [ ] Entry/restart flow
+- [ ] Tournament rewards feed back into the existing economy
+
+### Milestone 15 - Tournament Rewards & Progression
 
 - [ ] Prize structures
 - [ ] Tournament money
@@ -216,7 +230,7 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 - [ ] Entry/reward balancing
 - [ ] Clear relationship between practice progression and tournament progression
 
-### Milestone 15 - Advanced Targets & Challenges
+### Milestone 16 - Advanced Targets & Challenges
 
 - [ ] Moving targets
 - [ ] Long-distance targets
@@ -224,14 +238,14 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 - [ ] Multi-target challenges
 - [ ] Precision targets
 
-### Milestone 16 - Advanced Archery Systems
+### Milestone 17 - Advanced Archery Systems
 
 - [ ] Evaluate wind
 - [ ] Evaluate arrow types
 - [ ] Evaluate Speed and Endurance
 - [ ] Add only systems that strengthen the core loop
 
-### Milestone 17 - Progression Balance
+### Milestone 18 - Progression Balance
 
 - [ ] Balance Strength and Accuracy
 - [ ] Balance trajectory assistance
@@ -240,7 +254,7 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 - [ ] Balance overall pacing
 - [ ] Test early, mid and long-term progression
 
-### Milestone 18 - UI, Audio & Visual Polish
+### Milestone 19 - UI, Audio & Visual Polish
 
 - [ ] Polish HUD and menus
 - [ ] Improve archer, bow, arrow and target visuals
@@ -249,7 +263,7 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 - [ ] Add sound effects and music where appropriate
 - [ ] Add settings and accessibility improvements
 
-### Milestone 19 - Release Preparation
+### Milestone 21 - Release Preparation
 
 - [ ] Finalize save system and migration handling
 - [ ] Reliable loading and reset-save support
@@ -261,7 +275,7 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 
 ## MVP
 
-The first playable MVP ends at **Milestone 8**.
+The first playable MVP ends at **Milestone 8**. The current game is now beyond the MVP and is being expanded from the practice range into a persistent Training Grounds hub.
 
 The MVP contains one archer, one bow, one target, mouse-controlled drawing, arrow physics, target collision, Strength progression, Accuracy progression, trajectory assistance, practice HUD and clear shot feedback.
 
@@ -285,13 +299,13 @@ If the answer is not yes, improve the shooting experience before expanding the g
 8. Do not add complexity simply because other idle games traditionally use it.
 9. Player skill must always matter.
 10. The README is the roadmap, but gameplay testing can change the design.
-11. Do not start tournament implementation until the practice loop is persistent and balanced.
+11. Do not start tournament implementation until the Training Grounds hub can serve as the stable home base for practice, equipment and travel.\n12. Keep the Training Grounds extensible so future activities do not require rebuilding the hub.
 
 ## Current Status
 
-**Current Stage: Milestone 13 - First Tournament**
+**Current Stage: Milestone 13 - Training Grounds Hub**
 
-Milestones 0 through 12 are now complete. The practice foundation includes persistent progression, four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, the training tent hub, bows and equipment, and stable projectile interactions.
+Milestones 0 through 12 are now complete, and Milestone 13 is in active development. The practice foundation includes persistent progression, four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, the training tent hub, bows and equipment, and stable projectile interactions.
 
 The arrow system includes explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, target embedding, dummy embedding and dummy nock replacement. Successful ring passes score normally without producing a later contradictory MISS.
 
@@ -299,7 +313,7 @@ Strength and Accuracy progression has been finalized for the practice phase. The
 
 The unified save foundation restores money, Strength, Accuracy, owned bows, equipped bow and range progression between sessions. Legacy range-only saves are migrated when the range is next saved. A deliberate `Ctrl + Shift + R` reset flow remains available for development testing.
 
-The player-facing HUD has been cleaned up so prototype session telemetry is no longer presented as part of the game interface. The visible HUD now focuses on persistent progression, economy, active shooting feedback, upgrades and contextual tent interaction.
+The player-facing HUD has been cleaned up so prototype session telemetry is no longer presented as part of the game interface. The visible HUD now focuses on persistent progression, economy, active shooting feedback, upgrades and contextual interaction. Quick shots now use the right mouse button, while normal drawing and firing use the left mouse button. Quick shots do not grant Strength or Accuracy XP.
 
 ### Next Step
 
