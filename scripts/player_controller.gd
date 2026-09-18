@@ -168,6 +168,25 @@ func get_bow_aim_angle(world_angle: float) -> float:
 func get_bow() -> Bow:
 	return bow
 
+func get_bow_data() -> BowData:
+	return bow_inventory.get_equipped()
+
+func get_bow_max_draw_strength() -> float:
+	var data: BowData = get_bow_data()
+	return data.max_draw_strength if data != null else 0.0
+
+func get_bow_draw_speed() -> float:
+	var data: BowData = get_bow_data()
+	return data.draw_speed if data != null else 0.0
+
+func get_bow_min_launch_speed() -> float:
+	var data: BowData = get_bow_data()
+	return data.min_launch_speed if data != null else 0.0
+
+func get_bow_max_launch_speed() -> float:
+	var data: BowData = get_bow_data()
+	return data.max_launch_speed if data != null else 0.0
+
 func set_recovery_progress(progress: float) -> void:
 	recovery_progress = clamp(progress, 0.0, 1.0)
 	queue_redraw()
@@ -199,7 +218,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		_start_drawing()
 		if is_drawing:
-			draw_strength = bow.max_draw_strength * QUICK_SHOT_DRAW_RATIO
+			draw_strength = get_bow_max_draw_strength() * QUICK_SHOT_DRAW_RATIO
 			_fire_arrow(true)
 
 func _update_drawing(delta: float) -> void:
@@ -207,7 +226,7 @@ func _update_drawing(delta: float) -> void:
 		return
 	var ratio: float = draw_strength / bow.max_draw_strength
 	var multiplier: float = SLOW_DRAW_SPEED_MULTIPLIER if slow_draw_held else (FAST_DRAW_SPEED_MULTIPLIER if ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER)
-	draw_strength = min(draw_strength + bow.draw_speed * multiplier * delta, bow.max_draw_strength)
+	draw_strength = min(draw_strength + get_bow_draw_speed() * multiplier * delta, bow.max_draw_strength)
 	if draw_strength / bow.max_draw_strength >= 1.0:
 		full_draw_timer += delta
 	else:
@@ -241,7 +260,7 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 		strength_ratio = QUICK_SHOT_DRAW_RATIO
 		var spread: float = QUICK_SHOT_SPREAD * (1.0 - Skills.get_quick_shot_accuracy())
 		shot_angle += randf_range(-spread, spread)
-	var launch_speed: float = lerpf(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
+	var launch_speed: float = lerpf(get_bow_min_launch_speed(), get_bow_max_launch_speed(), strength_ratio)
 	launch_speed = Stats.get_max_launch_speed(launch_speed) * lerpf(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, clamp((strength_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0))
 	if not is_quick_shot:
 		Stats.award_strength_release_xp(strength_ratio, Skills.get_xp_multiplier())
