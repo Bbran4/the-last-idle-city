@@ -26,7 +26,7 @@ The game combines player skill with character progression. Upgrades improve capa
 
 The archer faces the mouse cursor and the bow follows the facing direction. Moving while aiming introduces a small amount of bow wobble, while crouching extends the trajectory preview by 20%. The trajectory preview is disabled while airborne.
 
-Holding Left Mouse Button draws the bow and releasing it fires. Right Mouse Button performs a single quick shot at 80% draw strength. Every shot starts a 1-second reload cooldown, shown as a circular timer above the player. Quick shots do not grant Strength or Accuracy XP. Normal draw speed is doubled through the first 80% of the draw and slows for the final 20%. Holding Ctrl while drawing applies slow draw at 80% of the current normal draw speed for the entire draw. If Left Mouse Button remains held during reload, drawing automatically begins when the reload completes.
+Holding Left Mouse Button draws the bow and releasing it fires. Right Mouse Button performs a single quick shot at 80% draw strength. Every shot starts a 1-second reload cooldown, shown as a circular timer above the player. Quick shots do not grant Strength or Accuracy XP. Normal draw speed is doubled again, reaching 4x the original draw speed through the first 80% of the draw, then remaining at 1.3x the original speed for the final 20%. Holding Ctrl while drawing applies slow draw at 80% of the current normal draw speed for the entire draw. If Left Mouse Button remains held during reload, drawing automatically begins when the reload completes.
 
 ## Development Roadmap
 
