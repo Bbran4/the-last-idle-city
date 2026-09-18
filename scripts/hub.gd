@@ -7,6 +7,8 @@ const MAP_X: float = -300.0
 const TENT_X: float = -1000.0
 const FLETCHER_X: float = 850.0
 const CAMERA_SMOOTHING: float = 8.0
+const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
+
 @onready var player: Player = $Player
 
 var map_open := false
@@ -16,21 +18,23 @@ var ui_layer: CanvasLayer
 var map_panel: PanelContainer
 var equipment_panel: PanelContainer
 var status_label: Label
+var coins_label: Label
 var camera_base_x := 0.0
-var stats: PlayerStats = PlayerStats.new()
-var economy: PlayerEconomy = PlayerEconomy.new()
-var bow_inventory: BowInventory = BowInventory.new()
+var arrows: Array[Arrow] = []
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
 	if TravelState.return_spawn == "ARCHERY_RANGE":
 		player.position = Vector2(RANGE_X, player.GROUND_Y)
 		TravelState.return_spawn = ""
+	player.shot_requested.connect(_on_player_shot)
 	_create_ui()
 
 func _process(delta: float) -> void:
 	_update_camera(delta)
 	_update_interaction_prompt()
+	_cleanup_arrows()
+	coins_label.text = "COINS  %d" % Economy.money
 	if status_timer > 0.0:
 		status_timer = max(status_timer - delta, 0.0)
 		if status_timer <= 0.0 and not map_open and not equipment_open:
@@ -42,16 +46,14 @@ func _update_camera(delta: float) -> void:
 	position.x = camera_base_x
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE:
-			if map_open or equipment_open:
-				_close_all_panels()
-			return
-		if event.keycode == KEY_E:
-			_handle_interaction()
-			return
-		if event.keycode == KEY_R:
-			player.position = Vector2(0.0, player.GROUND_Y)
+	if not event is InputEventKey or not event.pressed or event.echo:
+		return
+	if event.keycode == KEY_ESCAPE and (map_open or equipment_open):
+		_close_all_panels()
+	elif event.keycode == KEY_E:
+		_handle_interaction()
+	elif event.keycode == KEY_R:
+		player.position = Vector2(0.0, player.GROUND_Y)
 
 func _handle_interaction() -> void:
 	var x := player.position.x
@@ -60,12 +62,12 @@ func _handle_interaction() -> void:
 	elif abs(x - MAP_X) <= INTERACTION_RADIUS:
 		map_open = true
 		equipment_open = false
-		player.set_process_mode(Node.PROCESS_MODE_DISABLED)
+		player.set_input_enabled(false)
 		map_panel.visible = true
 	elif abs(x - TENT_X) <= INTERACTION_RADIUS:
 		equipment_open = true
 		map_open = false
-		player.set_process_mode(Node.PROCESS_MODE_DISABLED)
+		player.set_input_enabled(false)
 		equipment_panel.visible = true
 		_refresh_equipment_panel()
 	elif abs(x - FLETCHER_X) <= INTERACTION_RADIUS:
@@ -97,7 +99,72 @@ func _close_all_panels() -> void:
 	equipment_open = false
 	map_panel.visible = false
 	equipment_panel.visible = false
-	player.set_process_mode(Node.PROCESS_MODE_INHERIT)
+	player.set_input_enabled(true)
+
+func _refresh_equipment_panel() -> void:
+	for child in equipment_panel.get_children():
+		child.queue_free()
+	var box := VBoxContainer.new()
+	equipment_panel.add_child(box)
+	var title := Label.new()
+	title.text = "EQUIPMENT TENT"
+	title.add_theme_font_size_override("font_size", 22)
+	box.add_child(title)
+	var stats_label := Label.new()
+	stats_label.text = "STRENGTH %d    ACCURACY %d\nCOINS %d" % [Stats.strength_level, Stats.accuracy_level, Economy.money]
+	box.add_child(stats_label)
+	for bow: BowData in player.bow_inventory.get_all_bows():
+		var button := Button.new()
+		var owned := player.bow_inventory.is_owned(bow.id)
+		if bow.id == player.bow_inventory.equipped_bow_id:
+			button.text = "%s  [EQUIPPED]" % bow.display_name
+			button.disabled = true
+		elif owned:
+			button.text = "%s  [EQUIP]" % bow.display_name
+			button.pressed.connect(_equip_bow.bind(bow.id))
+		else:
+			button.text = "%s  $%d  STR %d" % [bow.display_name, bow.price, bow.required_strength]
+			button.disabled = Economy.money < bow.price or Stats.strength_level < bow.required_strength
+			button.pressed.connect(_buy_bow.bind(bow.id))
+		box.add_child(button)
+	var close := Button.new()
+	close.text = "CLOSE"
+	close.pressed.connect(_close_all_panels)
+	box.add_child(close)
+
+func _equip_bow(bow_id: String) -> void:
+	if player.equip_bow(bow_id):
+		_show_status("EQUIPPED %s" % player.bow_inventory.get_bow(bow_id).display_name)
+		_refresh_equipment_panel()
+
+func _buy_bow(bow_id: String) -> void:
+	var bow := player.bow_inventory.get_bow(bow_id)
+	if bow == null or not player.bow_inventory.can_purchase(bow_id, Economy.money, Stats.strength_level):
+		return
+	if not Economy.spend_money(bow.price):
+		return
+	if player.bow_inventory.unlock(bow_id) and player.equip_bow(bow_id):
+		_show_status("PURCHASED %s" % bow.display_name)
+	else:
+		Economy.add_money(bow.price)
+		_show_status("PURCHASE FAILED")
+	_refresh_equipment_panel()
+
+func _on_player_shot(direction: Vector2, launch_speed: float, _is_quick_shot: bool) -> void:
+	var arrow := ARROW_SCENE.instantiate() as Arrow
+	arrow.position = to_local(player.get_bow().get_arrow_spawn_position())
+	add_child(arrow)
+	arrows.append(arrow)
+	arrow.tree_exited.connect(_on_arrow_exited.bind(arrow), CONNECT_ONE_SHOT)
+	arrow.launch(direction * launch_speed, [], player.position.y, -5000.0, 5000.0)
+
+func _on_arrow_exited(arrow: Arrow) -> void:
+	arrows.erase(arrow)
+
+func _cleanup_arrows() -> void:
+	for i in range(arrows.size() - 1, -1, -1):
+		if not is_instance_valid(arrows[i]):
+			arrows.remove_at(i)
 
 func _create_ui() -> void:
 	ui_layer = CanvasLayer.new()
@@ -119,13 +186,12 @@ func _create_ui() -> void:
 	subtitle.text = "THE HUB"
 	subtitle.add_theme_font_size_override("font_size", 13)
 	ui_layer.add_child(subtitle)
-	var coins := Label.new()
-	coins.position = Vector2(1040, 22)
-	coins.size = Vector2(210, 32)
-	coins.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	coins.text = "COINS  %d" % economy.money
-	coins.add_theme_font_size_override("font_size", 20)
-	ui_layer.add_child(coins)
+	coins_label = Label.new()
+	coins_label.position = Vector2(1040, 22)
+	coins_label.size = Vector2(210, 32)
+	coins_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	coins_label.add_theme_font_size_override("font_size", 20)
+	ui_layer.add_child(coins_label)
 	map_panel = PanelContainer.new()
 	map_panel.position = Vector2(250, 80)
 	map_panel.size = Vector2(780, 560)
@@ -156,50 +222,6 @@ func _create_map_contents() -> void:
 	close.text = "CLOSE MAP"
 	close.pressed.connect(_close_all_panels)
 	box.add_child(close)
-
-func _refresh_equipment_panel() -> void:
-	for child in equipment_panel.get_children():
-		child.queue_free()
-	var box := VBoxContainer.new()
-	equipment_panel.add_child(box)
-	var title := Label.new()
-	title.text = "EQUIPMENT TENT"
-	title.add_theme_font_size_override("font_size", 22)
-	box.add_child(title)
-	var stats_label := Label.new()
-	stats_label.text = "STRENGTH %d    ACCURACY %d\\nCOINS %d" % [stats.strength_level, stats.accuracy_level, economy.money]
-	box.add_child(stats_label)
-	for bow: BowData in bow_inventory.get_all_bows():
-		var button := Button.new()
-		var owned := bow_inventory.is_owned(bow.id)
-		if bow.id == bow_inventory.equipped_bow_id:
-			button.text = "%s  [EQUIPPED]" % bow.display_name
-			button.disabled = true
-		elif owned:
-			button.text = "%s  [EQUIP]" % bow.display_name
-			button.pressed.connect(_equip_bow.bind(bow.id))
-		else:
-			button.text = "%s  $%d  STR %d" % [bow.display_name, bow.price, bow.required_strength]
-			button.disabled = economy.money < bow.price or stats.strength_level < bow.required_strength
-			button.pressed.connect(_buy_bow.bind(bow.id))
-		box.add_child(button)
-	var close := Button.new()
-	close.text = "CLOSE"
-	close.pressed.connect(_close_all_panels)
-	box.add_child(close)
-
-func _equip_bow(bow_id: String) -> void:
-	if bow_inventory.equip(bow_id, stats.strength_level):
-		_show_status("EQUIPPED %s" % bow_inventory.get_bow(bow_id).display_name)
-		_refresh_equipment_panel()
-
-func _buy_bow(bow_id: String) -> void:
-	var bow: BowData = bow_inventory.get_bow(bow_id)
-	if bow == null or not bow_inventory.can_purchase(bow_id, economy.money, stats.strength_level):
-		return
-	if economy.spend_money(bow.price) and bow_inventory.unlock(bow_id) and bow_inventory.equip(bow_id, stats.strength_level):
-		_show_status("PURCHASED %s" % bow.display_name)
-		_refresh_equipment_panel()
 
 func _travel_to(destination: String) -> void:
 	TravelState.destination = destination
