@@ -109,11 +109,16 @@ func _unhandled_input(event: InputEvent) -> void:
 				_start_drawing()
 		else:
 			if is_drawing:
-				if draw_strength <= 0.0:
-					draw_strength = bow_inventory.get_equipped().max_draw_strength * QUICK_SHOT_DRAW_RATIO
-					_fire_arrow(true)
-				else:
-					_fire_arrow()
+				_fire_arrow()
+		return
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if not is_drawing:
+			_start_drawing()
+		if is_drawing:
+			var bow: BowData = bow_inventory.get_equipped()
+			draw_strength = bow.max_draw_strength * QUICK_SHOT_DRAW_RATIO
+			_fire_arrow(true)
 		return
 
 func _toggle_equipment() -> void:
@@ -149,7 +154,7 @@ func _update_aim() -> void:
 	world_view.aim_bow(world_view.player.get_bow_aim_angle(aim_angle))
 
 func _fire_arrow(is_quick_shot: bool = false) -> void:
-	if not is_drawing or shot_recovery_timer > 0.0:
+	if not is_drawing:
 		return
 
 	is_drawing = false
