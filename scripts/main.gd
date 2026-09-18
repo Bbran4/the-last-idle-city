@@ -7,8 +7,10 @@ const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
 const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
 const QUICK_SHOT_DRAW_RATIO: float = 0.80
 const QUICK_SHOT_SPREAD: float = 0.38
-const QUICK_SHOT_MAX_SHOTS: int = 3
-const QUICK_SHOT_COOLDOWN: float = 1.0
+const SHOT_COOLDOWN: float = 1.0
+const FAST_DRAW_RATIO: float = 0.80
+const FAST_DRAW_SPEED_MULTIPLIER: float = 2.0
+const FINAL_DRAW_SPEED_MULTIPLIER: float = 0.65
 const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
 const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
@@ -34,8 +36,7 @@ var aim_angle: float = 0.0
 var shot_result_timer: float = 0.0
 var range_level: int = 1
 var equipment_open: bool = false
-var quick_shots_fired: int = 0
-var quick_shot_cooldown_timer: float = 0.0
+var shot_cooldown_timer: float = 0.0
 
 var total_coins_earned: int = 0
 var shots_fired: int = 0
@@ -57,12 +58,12 @@ func _process(delta: float) -> void:
 	_update_aim()
 	var bow: BowData = bow_inventory.get_equipped()
 	if is_drawing and left_mouse_held:
-		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
+		var draw_ratio: float = draw_strength / bow.max_draw_strength
+		var draw_multiplier: float = FAST_DRAW_SPEED_MULTIPLIER if draw_ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER
+		draw_strength = min(draw_strength + bow.draw_speed * draw_multiplier * delta, bow.max_draw_strength)
 
-	if quick_shot_cooldown_timer > 0.0:
-		quick_shot_cooldown_timer = max(quick_shot_cooldown_timer - delta, 0.0)
-		if quick_shot_cooldown_timer <= 0.0:
-			quick_shots_fired = 0
+	if shot_cooldown_timer > 0.0:
+		shot_cooldown_timer = max(shot_cooldown_timer - delta, 0.0)
 
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
 	if draw_ratio >= 1.0:
@@ -92,6 +93,7 @@ func _process(delta: float) -> void:
 	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, trajectory_quality, trajectory_visible)
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
+	hud.set_reload_progress(shot_cooldown_timer)
 	var near_tent: bool = _is_near_tent()
 	if not near_tent and equipment_open:
 		equipment_open = false
@@ -118,6 +120,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		left_mouse_held = event.pressed
 		if event.pressed:
+			if shot_cooldown_timer > 0.0:
+				return
 			if not is_drawing:
 				_start_drawing()
 		else:
@@ -126,7 +130,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		if quick_shot_cooldown_timer > 0.0:
+		if shot_cooldown_timer > 0.0:
 			return
 		if not is_drawing:
 			_start_drawing()
@@ -147,7 +151,7 @@ func _is_near_tent() -> bool:
 	return world_view.player.position.distance_to(tent.position) <= TENT_INTERACTION_RADIUS
 
 func _start_drawing() -> void:
-	if is_drawing:
+	if is_drawing or shot_cooldown_timer > 0.0:
 		return
 	is_drawing = true
 	draw_strength = 0.0
@@ -171,7 +175,7 @@ func _update_aim() -> void:
 func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if not is_drawing:
 		return
-	if is_quick_shot and quick_shot_cooldown_timer > 0.0:
+	if shot_cooldown_timer > 0.0:
 		return
 
 	is_drawing = false
@@ -188,9 +192,7 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 		var quick_shot_accuracy: float = stats.get_quick_shot_accuracy()
 		var quick_shot_spread: float = QUICK_SHOT_SPREAD * (1.0 - quick_shot_accuracy)
 		shot_angle += randf_range(-quick_shot_spread, quick_shot_spread)
-		quick_shots_fired += 1
-		if quick_shots_fired >= QUICK_SHOT_MAX_SHOTS:
-			quick_shot_cooldown_timer = QUICK_SHOT_COOLDOWN
+		shot_cooldown_timer = SHOT_COOLDOWN
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
 	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
 	var strength_xp: int = 0
@@ -322,8 +324,7 @@ func _reset_session() -> void:
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
-	quick_shots_fired = 0
-	quick_shot_cooldown_timer = 0.0
+	shot_cooldown_timer = 0.0
 	equipment_open = false
 	hud.set_equipment_visible(false)
 	total_coins_earned = 0
