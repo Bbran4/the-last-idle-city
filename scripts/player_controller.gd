@@ -6,8 +6,8 @@ const RECOVERY_RADIUS: float = 32.0
 const RECOVERY_RING_WIDTH: float = 7.0
 const RECOVERY_Y_OFFSET: float = -158.0
 const RECOVERY_START_ANGLE: float = -PI / 2.0
-const RECOVERY_BACKGROUND_COLOR := Color(0.12, 0.14, 0.17, 0.75)
-const RECOVERY_PROGRESS_COLOR := Color("d7a449")
+const RECOVERY_BACKGROUND_COLOR: Color = Color(0.12, 0.14, 0.17, 0.75)
+const RECOVERY_PROGRESS_COLOR: Color = Color("d7a449")
 
 const WALK_SPEED: float = 520.0
 const RUN_SPEED: float = 820.0
