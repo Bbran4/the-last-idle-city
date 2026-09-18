@@ -2,11 +2,10 @@ extends Node2D
 
 const IMPACT_FLASH_DURATION: float = 0.18
 const SHOT_RESULT_DURATION: float = 1.5
-const SHOT_RECOVERY_TIME: float = 1.0
 const MIN_PROJECTILE_SPEED_MULTIPLIER: float = 1.0
 const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
 const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
-const QUICK_SHOT_DRAW_RATIO: float = 0.12
+const QUICK_SHOT_DRAW_RATIO: float = 0.80
 const QUICK_SHOT_SPREAD: float = 0.38
 const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
@@ -27,7 +26,6 @@ var draw_strength: float = 0.0
 var is_drawing: bool = false
 var left_mouse_held: bool = false
 var full_draw_timer: float = 0.0
-var shot_recovery_timer: float = 0.0
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
 var aim_angle: float = 0.0
@@ -54,9 +52,6 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_update_aim()
 	var bow: BowData = bow_inventory.get_equipped()
-	shot_recovery_timer = max(shot_recovery_timer - delta, 0.0)
-	world_view.set_recovery_progress(shot_recovery_timer / SHOT_RECOVERY_TIME)
-
 	if is_drawing and left_mouse_held:
 		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
 
@@ -110,7 +105,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		left_mouse_held = event.pressed
 		if event.pressed:
-			if not is_drawing and shot_recovery_timer <= 0.0:
+			if not is_drawing:
 				_start_drawing()
 		else:
 			if is_drawing:
@@ -132,7 +127,7 @@ func _is_near_tent() -> bool:
 	return world_view.player.position.distance_to(tent.position) <= TENT_INTERACTION_RADIUS
 
 func _start_drawing() -> void:
-	if is_drawing or shot_recovery_timer > 0.0:
+	if is_drawing:
 		return
 	is_drawing = true
 	draw_strength = 0.0
@@ -163,7 +158,6 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
 		return
-	shot_recovery_timer = SHOT_RECOVERY_TIME
 	var bow: BowData = bow_inventory.get_equipped()
 	var strength_ratio: float = draw_strength / bow.max_draw_strength
 	var shot_angle: float = aim_angle
@@ -293,8 +287,6 @@ func _reset_session() -> void:
 	left_mouse_held = false
 	draw_strength = 0.0
 	full_draw_timer = 0.0
-	shot_recovery_timer = 0.0
-	world_view.set_recovery_progress(0.0)
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
