@@ -41,7 +41,7 @@ func _process(delta: float) -> void:
 			status_label.visible = false
 
 func _update_camera(delta: float) -> void:
-	var target_x := get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
+	var target_x: float = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
 	camera_base_x = lerp(camera_base_x, target_x, 1.0 - exp(-CAMERA_SMOOTHING * delta))
 	position.x = camera_base_x
 
@@ -56,7 +56,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		player.position = Vector2(0.0, player.GROUND_Y)
 
 func _handle_interaction() -> void:
-	var x := player.position.x
+	var x: float = player.position.x
 	if abs(x - RANGE_X) <= INTERACTION_RADIUS:
 		get_tree().change_scene_to_file("res://scenes/practice.tscn")
 	elif abs(x - MAP_X) <= INTERACTION_RADIUS:
