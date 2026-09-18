@@ -66,11 +66,13 @@ func _process(delta: float) -> void:
 
 	if is_drawing and left_mouse_held:
 		var draw_ratio: float = draw_strength / bow.max_draw_strength
-		var draw_multiplier: float = FAST_DRAW_SPEED_MULTIPLIER if draw_ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER
+		var draw_multiplier: float
 		if slow_draw_held:
-			draw_multiplier *= SLOW_DRAW_SPEED_MULTIPLIER
+			draw_multiplier = SLOW_DRAW_SPEED_MULTIPLIER
+		else:
+			draw_multiplier = FAST_DRAW_SPEED_MULTIPLIER if draw_ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER
 		draw_strength = min(draw_strength + bow.draw_speed * draw_multiplier * delta, bow.max_draw_strength)
-
+		
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
 	if draw_ratio >= 1.0:
 		full_draw_timer += delta
