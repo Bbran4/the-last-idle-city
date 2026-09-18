@@ -8,15 +8,17 @@ signal range_upgrade_requested
 const DRAW_BAR_WIDTH: float = 360.0
 
 var reload_timer: float = 0.0
+var reload_position: Vector2 = Vector2.ZERO
 
-func set_reload_progress(remaining: float, duration: float = 1.0) -> void:
+func set_reload_progress(remaining: float, player_screen_position: Vector2, duration: float = 1.0) -> void:
 	reload_timer = clamp(remaining / duration, 0.0, 1.0)
+	reload_position = player_screen_position + Vector2(0.0, -65.0)
 	queue_redraw()
 
 func _draw() -> void:
 	if reload_timer <= 0.0:
 		return
-	var center := Vector2(0, -55)
+	var center := reload_position
 	var radius := 18.0
 	draw_circle(center, radius, Color(0.08, 0.08, 0.08, 0.85))
 	draw_arc(center, radius, -PI / 2.0, -PI / 2.0 + TAU * reload_timer, 32, Color(0.9, 0.75, 0.35), 5.0)
