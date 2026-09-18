@@ -121,7 +121,7 @@ func fire_arrow(direction: Vector2, launch_speed: float) -> Arrow:
 	arrow.launch(
 		direction * launch_speed,
 		get_active_targets(),
-		ground.position.y,
+		player.position.y,
 		0.0,
 		to_local(Vector2(get_viewport_rect().size.x, 0.0)).x,
 		training_dummy if training_dummy.visible else null
@@ -284,7 +284,7 @@ func _draw_trajectory() -> void:
 	for index: int in range(steps + 1):
 		var t: float = min(float(index) * TRAJECTORY_STEP, prediction_time)
 		var point: Vector2 = origin + velocity * t + Vector2(0.0, 0.5 * GRAVITY * t * t)
-		if point.y >= ground.position.y:
+		if point.y >= player.position.y:
 			break
 		points.append(point)
 	if points.size() < 2:
