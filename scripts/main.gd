@@ -44,8 +44,7 @@ func _process(delta: float) -> void:
 		if shot_result_timer <= 0.0:
 			hud.hide_shot_result()
 	var draw_ratio: float = player.get_draw_ratio()
-	var bow: BowData = player.get_equipped_bow()
-	var preview_speed: float = 0.0 if bow == null else Stats.get_max_launch_speed(lerpf(bow.min_launch_speed, bow.max_launch_speed, draw_ratio))
+	var preview_speed: float = player.get_launch_speed_for_draw_ratio(draw_ratio)
 	var quality: float = Skills.get_trajectory_prediction_quality()
 	if player.is_crouched():
 		quality = clamp(quality + CROUCH_TRAJECTORY_BOOST, 0.0, 1.0)
