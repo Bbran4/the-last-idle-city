@@ -121,7 +121,7 @@ func set_draw_ratio(ratio: float) -> void:
 func set_recovery_progress(progress: float) -> void:
 	player.set_recovery_progress(progress)
 
-func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, quality: float, visible: bool) -> void:
+func set_trajectory(direction: Vector2, draw_ratio: float, launch_speed: float, quality: float, visible: bool) -> void:
 	trajectory_direction = direction.normalized() if direction.length_squared() > 0.000001 else Vector2.RIGHT
 	trajectory_draw_ratio = clamp(draw_ratio, 0.0, 1.0)
 	trajectory_speed = max(launch_speed, 0.0)
