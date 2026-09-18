@@ -18,7 +18,7 @@ var accuracy_level: int = STARTING_LEVEL
 var accuracy_xp: int = 0
 
 func _ready() -> void:
-	var data: Dictionary = SaveGame.load_data()
+	var data: Dictionary = SaveManager.load_data()
 	strength_level = clamp(int(data.get("strength_level", STARTING_LEVEL)), STARTING_LEVEL, MAX_LEVEL)
 	strength_xp = max(0, int(data.get("strength_xp", 0)))
 	accuracy_level = clamp(int(data.get("accuracy_level", STARTING_LEVEL)), STARTING_LEVEL, MAX_LEVEL)
@@ -69,9 +69,9 @@ func _add_accuracy_xp(amount: int) -> void:
 	_save()
 
 func _save() -> void:
-	var data: Dictionary = SaveGame.load_data()
+	var data: Dictionary = SaveManager.load_data()
 	data["strength_level"] = strength_level
 	data["strength_xp"] = strength_xp
 	data["accuracy_level"] = accuracy_level
 	data["accuracy_xp"] = accuracy_xp
-	SaveGame.save_data(data)
+	SaveManager.save_data(data)
