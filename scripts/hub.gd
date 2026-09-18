@@ -23,6 +23,9 @@ var bow_inventory: BowInventory = BowInventory.new()
 
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
+	if TravelState.return_spawn == "ARCHERY_RANGE":
+		player.position = Vector2(RANGE_X, player.GROUND_Y)
+		TravelState.return_spawn = ""
 	_create_ui()
 
 func _process(delta: float) -> void:
@@ -164,7 +167,7 @@ func _refresh_equipment_panel() -> void:
 	title.add_theme_font_size_override("font_size", 22)
 	box.add_child(title)
 	var stats_label := Label.new()
-	stats_label.text = "STRENGTH %d    ACCURACY %d\nCOINS %d" % [stats.strength_level, stats.accuracy_level, economy.money]
+	stats_label.text = "STRENGTH %d    ACCURACY %d\\nCOINS %d" % [stats.strength_level, stats.accuracy_level, economy.money]
 	box.add_child(stats_label)
 	for bow: BowData in bow_inventory.get_all_bows():
 		var button := Button.new()
