@@ -4,7 +4,7 @@ extends Node2D
 ## World-space practice range and projectile visualization.
 
 const WORLD_SCALE: float = 0.40
-const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
+const ARROW_SCENE: PackedScene = preload("res://scenes/weapons/arrow.tscn")
 const IMPACT_FLASH_DURATION: float = 0.18
 const GRAVITY: float = 2500.0
 const TRAJECTORY_STEP: float = 0.055
