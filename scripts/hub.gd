@@ -205,10 +205,10 @@ func _create_ui() -> void:
 	ui_layer.add_child(equipment_panel)
 
 func _create_map_contents() -> void:
-	var box := VBoxContainer.new()
+	var box: VBoxContainer = VBoxContainer.new()
 	box.add_theme_constant_override("separation", 12)
 	map_panel.add_child(box)
-	var title := Label.new()
+	var title: Label = Label.new()
 	title.text = "KINGDOM MAP"
 	title.add_theme_font_size_override("font_size", 28)
 	box.add_child(title)
