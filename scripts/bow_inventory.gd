@@ -14,7 +14,7 @@ var equipped_bow_id: String = STARTING_BOW_ID
 
 func _init() -> void:
 	_load_bow_resources()
-	var data: Dictionary = SaveGame.load_data()
+	var data: Dictionary = SaveManager.load_data()
 	var saved_owned: Variant = data.get("owned_bows", {})
 	if saved_owned is Dictionary:
 		for bow_id: String in saved_owned:
@@ -73,7 +73,7 @@ func equip(bow_id: String, strength_level: int) -> bool:
 	return true
 
 func _save() -> void:
-	var data: Dictionary = SaveGame.load_data()
+	var data: Dictionary = SaveManager.load_data()
 	data["owned_bows"] = owned.duplicate()
 	data["equipped_bow_id"] = equipped_bow_id
-	SaveGame.save_data(data)
+	SaveManager.save_data(data)
