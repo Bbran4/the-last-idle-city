@@ -2,11 +2,24 @@
 
 A small active skill-based archery progression game for itch.io and Kongregate.
 
-The player is an archer living out of a growing Training Grounds hub. Practice at the range, customize and equip your character, buy and upgrade bows, visit the Fletcher, use the kingdom map to travel, and eventually compete in increasingly difficult tournaments and other activities.
+The player is an archer living out of a growing Training Grounds hub. The Training Grounds is the player's home base: the Tent handles character customization, the kingdom map handles travel to cities, the Fletcher handles bow and arrow equipment, and the Practice Grounds provide the place to train. Cities are where new bows can be purchased. A bow can be owned before it can be equipped, but its stat requirements must be met before it can be used.
 
 ## Core Loop
 
-**Training Grounds → Practice → Improve Strength & Accuracy → Equip Better Gear → Travel → Compete → Earn → Upgrade the Grounds → Explore More Activities**
+**Training Grounds → Practice → Improve Strength & Accuracy → Equip Better Gear → Travel to Cities → Buy New Gear → Compete → Earn → Upgrade the Grounds → Explore More Activities**
+
+## Training Grounds Structure
+
+The Training Grounds is the player's persistent home base and the central hub for the game.
+
+| Location | Purpose |
+|---|---|
+| **Tent** | Customize the player's character. |
+| **Kingdom Map** | Travel from the Training Grounds to cities and other destinations as they become available. |
+| **Fletcher** | Modify and equip bows and arrows. |
+| **Practice Grounds** | Practice shooting, improve Strength and Accuracy, and earn practice income. |
+
+Cities are the source of new equipment purchases. Players can buy bows even when they do not yet meet the required stats, but an unequipped bow cannot be equipped until its requirements are satisfied. This separates **ownership** from **equipment eligibility** and lets players purchase future upgrades before they are ready to use them.
 
 The game combines player skill with character progression. Upgrades improve capability without turning shooting into an automatic process.
 
@@ -26,7 +39,7 @@ The game combines player skill with character progression. Upgrades improve capa
 
 The archer faces the mouse cursor and the bow follows the facing direction. Moving while aiming introduces a small amount of bow wobble, while crouching extends the trajectory preview by 20%. The trajectory preview is disabled while airborne.
 
-Holding Left Mouse Button draws the bow and releasing it fires. Right Mouse Button performs a single quick shot at 80% draw strength. Every shot starts a 1-second reload cooldown, shown as a circular timer above the player. Quick shots do not grant Strength or Accuracy XP. Normal draw speed is doubled again, reaching 4x the original draw speed through the first 80% of the draw, then remaining at 1.3x the original speed for the final 20%. Holding Ctrl while drawing applies slow draw at 80% of the current normal draw speed for the entire draw. If Left Mouse Button remains held during reload, drawing automatically begins when the reload completes.
+Right Mouse Button draws the bow and Left Mouse Button fires the current draw strength. Every shot starts a 1-second reload cooldown, shown as a circular timer above the player. Quick-shot behavior is reserved for the current firing system and does not grant Strength or Accuracy XP. Normal draw speed is doubled again, reaching 4x the original draw speed through the first 80% of the draw, then remaining at 1.3x the original speed for the final 20%. Holding Ctrl while drawing applies slow draw at 80% of the current normal draw speed for the entire draw. If the player continues holding draw during reload, drawing automatically begins when the reload completes.
 
 ## Development Roadmap
 
@@ -113,8 +126,12 @@ Training Manual costs are now 125, 250, 375, 500 and 625 coins for levels 1 thro
 - [x] Recurve Bow
 - [x] War Bow
 - [x] Bow prices and Strength requirements
-- [x] Purchase and equip flow
+- [x] Purchase and equip flow foundation
 - [x] Switching between owned bows
+- [ ] Separate city purchases from Fletcher equipment management
+- [ ] Allow ownership of bows before their stat requirements are met
+- [ ] Prevent equipping bows when Strength requirements are not met
+- [ ] Establish arrow purchasing and equipment
 - [x] Equipped bow data drives shooting behavior
 
 Current practice-phase bow prices are 100 coins for the Recurve Bow and 250 coins for the War Bow. These remain subject to the later tournament economy pass.
@@ -204,16 +221,23 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 - [x] Fletcher positioned near the center
 - [x] Archery range entrance positioned on the right
 - [x] Contextual interaction prompts
-- [x] Tent equipment interaction using persistent bow ownership/equipment
+- [x] Tent interaction foundation
 - [x] Map interface with future travel destinations
 - [x] Direct transition from the hub into the dedicated practice scene
+- [x] Distinct Tent, Map, Fletcher and Practice Grounds locations
+- [ ] Full character customization through the Tent
+- [ ] City travel through the kingdom map
+- [ ] Bow and arrow modification/equipment through the Fletcher
+- [ ] City bow purchasing
+- [ ] Allow purchased bows to remain owned while stat-locked
+- [ ] Enforce stat requirements when equipping bows
 - [x] Return from practice scene to the Training Grounds
 - [x] Preserve the existing persistent save/economy foundation
 - [ ] Replace placeholder hub art with final environment art
 - [ ] Add full character customization
 - [ ] Add persistent Training Grounds upgrades
 
-The hub is now the game's main scene. The practice range remains a separate scene and is entered physically from the right side of the grounds. The map is reserved for world travel and future activities, while the range is deliberately excluded from map travel so it remains part of the player's home base.
+The hub is now the game's main scene. The practice range remains a separate scene and is entered physically from the right side of the grounds. The map is reserved for travel to cities and other future destinations, while the range remains physically connected to the Training Grounds rather than becoming a city destination. The Tent, Map, Fletcher and Practice Grounds each have a distinct role in the hub.
 
 ### Milestone 14 - First Tournament
 
@@ -324,7 +348,7 @@ If the answer is not yes, improve the shooting experience before expanding the g
 
 **Current Stage: Milestone 13 - Training Grounds Hub**
 
-Milestones 0 through 12 are now complete, and Milestone 13 is in active development. The practice foundation includes persistent progression, four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, the training tent hub, bows and equipment, and stable projectile interactions.
+Milestones 0 through 12 are now complete, and Milestone 13 is in active development. The practice foundation includes persistent progression, four range levels, multiple targets, target income, the ring challenge, side-scrolling movement, running, jumping, crouching, mouse-facing, movement wobble, distance-based Accuracy XP, the 20% crouch trajectory bonus, range decoration, the training dummy, the Training Grounds hub, bows and equipment, and stable projectile interactions. The hub is now organized around four clear functions: character customization at the Tent, travel through the kingdom map, equipment management at the Fletcher, and practice at the Practice Grounds.
 
 The arrow system includes explicit point/shaft/nock sections, flying-arrow collisions, nock replacement, target embedding, dummy embedding and dummy nock replacement. Successful ring passes score normally without producing a later contradictory MISS.
 
@@ -336,6 +360,6 @@ The player-facing HUD has been cleaned up so prototype session telemetry is no l
 
 ### Next Step
 
-**Milestone 13 - Training Grounds Hub.**
+**Finish the Training Grounds foundation before tournament implementation.**
 
-The next development phase is to polish and expand the new hub foundation. The tent, map table, Fletcher and range should become distinct, useful locations before tournament implementation begins. Once that foundation is stable, tournaments will be entered through the kingdom map in Milestone 14.
+The next development phase is to turn the four hub locations into their intended systems: character customization at the Tent, city travel through the kingdom map, bow and arrow modification/equipment through the Fletcher, and practice at the Practice Grounds. Cities will handle bow purchases, including purchases of bows whose stat requirements the player has not yet reached. Tournament implementation follows once this hub and city foundation is stable.
