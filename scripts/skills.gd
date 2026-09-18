@@ -4,7 +4,7 @@ const TRAINING_MANUAL_BASE_COST: int = 125
 const TRAINING_MANUAL_COST_GROWTH: int = 125
 const MAX_TRAINING_MANUAL_LEVEL: int = 5
 const TRAINING_MANUAL_XP_BONUS: float = 0.10
-var training_manual_level := 0
+var training_manual_level: int = 0
 
 func _ready() -> void:
 	var data: Dictionary = SaveGame.load_data()
@@ -16,7 +16,7 @@ func get_xp_multiplier() -> float:
 func can_buy_training_manual() -> bool:
 	return training_manual_level < MAX_TRAINING_MANUAL_LEVEL and Economy.money >= get_training_manual_cost()
 func buy_training_manual() -> bool:
-	var cost := get_training_manual_cost()
+	var cost: int = get_training_manual_cost()
 	if not can_buy_training_manual() or not Economy.spend_money(cost):
 		return false
 	training_manual_level += 1

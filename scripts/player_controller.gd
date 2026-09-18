@@ -1,5 +1,5 @@
-class_name Player
 extends Node2D
+
 
 const RECOVERY_RADIUS: float = 32.0
 const RECOVERY_RING_WIDTH: float = 7.0
@@ -204,8 +204,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _update_drawing(delta: float) -> void:
 	if not is_drawing or not left_mouse_held:
 		return
-	var ratio := draw_strength / bow.max_draw_strength
-	var multiplier := SLOW_DRAW_SPEED_MULTIPLIER if slow_draw_held else (FAST_DRAW_SPEED_MULTIPLIER if ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER)
+	var ratio: float = draw_strength / bow.max_draw_strength
+	var multiplier: float = SLOW_DRAW_SPEED_MULTIPLIER if slow_draw_held else (FAST_DRAW_SPEED_MULTIPLIER if ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER)
 	draw_strength = min(draw_strength + bow.draw_speed * multiplier * delta, bow.max_draw_strength)
 	if draw_strength / bow.max_draw_strength >= 1.0:
 		full_draw_timer += delta
@@ -234,13 +234,13 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	is_drawing = false
 	left_mouse_held = false
 	full_draw_timer = 0.0
-	var strength_ratio := clamp(draw_strength / bow.max_draw_strength, 0.0, 1.0)
-	var shot_angle := aim_angle
+	var strength_ratio: float = clampf(draw_strength / bow.max_draw_strength, 0.0, 1.0)
+	var shot_angle: float = aim_angle
 	if is_quick_shot:
 		strength_ratio = QUICK_SHOT_DRAW_RATIO
-		var spread := QUICK_SHOT_SPREAD * (1.0 - Skills.get_quick_shot_accuracy())
+		var spread: float = QUICK_SHOT_SPREAD * (1.0 - Skills.get_quick_shot_accuracy())
 		shot_angle += randf_range(-spread, spread)
-	var launch_speed := lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
+	var launch_speed: float = lerpf(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
 	launch_speed = Stats.get_max_launch_speed(launch_speed) * lerp(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, clamp((strength_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0))
 	if not is_quick_shot:
 		Stats.award_strength_release_xp(strength_ratio, Skills.get_xp_multiplier())
@@ -250,7 +250,7 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	shot_requested.emit(Vector2.RIGHT.rotated(shot_angle), launch_speed, is_quick_shot)
 
 func _emit_draw_state() -> void:
-	var ratio := 0.0 if bow == null or bow.max_draw_strength <= 0.0 else draw_strength / bow.max_draw_strength
+	var ratio: float = 0.0 if bow == null or bow.max_draw_strength <= 0.0 else draw_strength / bow.max_draw_strength
 	bow.set_draw_ratio(ratio)
 	draw_changed.emit(ratio, is_drawing)
 	set_recovery_progress(ratio)
@@ -262,7 +262,7 @@ func _cancel_drawing() -> void:
 	full_draw_timer = 0.0
 
 func refresh_equipped_bow() -> void:
-	var equipped := bow_inventory.get_equipped()
+	var equipped: BowData = bow_inventory.get_equipped()
 	if equipped != null:
 		bow.set_data(equipped)
 

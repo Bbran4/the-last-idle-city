@@ -1,7 +1,7 @@
 extends Node
 signal money_changed(amount: int)
 const STARTING_MONEY: int = 250
-var money := STARTING_MONEY
+var money: int = STARTING_MONEY
 func _ready() -> void:
 	var data: Dictionary = SaveGame.load_data()
 	money = max(0, int(data.get("money", STARTING_MONEY)))
