@@ -189,8 +189,11 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 			quick_shot_cooldown_timer = QUICK_SHOT_COOLDOWN
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
 	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
-	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
+	var strength_xp: int = 0
+	if not is_quick_shot:
+		strength_xp = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
 	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(shot_angle), launch_speed)
+	arrow.set_meta("is_quick_shot", is_quick_shot)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
 	shots_fired += 1
@@ -208,7 +211,9 @@ func _on_arrow_hit(position: Vector2, target: Target, arrow: Arrow) -> void:
 	if target.is_bullseye_hit(position):
 		bullseyes += 1
 	var shot_distance: float = arrow.get_shot_distance_to_target(target)
-	var accuracy_xp: int = stats.award_accuracy_hit_xp(shot_distance, economy.get_xp_multiplier())
+	var accuracy_xp: int = 0
+	if not bool(arrow.get_meta("is_quick_shot", false)):
+		accuracy_xp = stats.award_accuracy_hit_xp(shot_distance, economy.get_xp_multiplier())
 	if accuracy_xp > 0:
 		hud.show_accuracy_xp_gain(accuracy_xp)
 	impact_position = position
