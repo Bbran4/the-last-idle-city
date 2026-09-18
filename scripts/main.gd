@@ -20,6 +20,11 @@ const RANGE_LEVEL_COSTS: Array[int] = [0, 75, 175, 350]
 const MAX_RANGE_LEVEL: int = 4
 const CROUCH_TRAJECTORY_BOOST: float = 0.20
 const TENT_INTERACTION_RADIUS: float = 300.0
+const HIT_STOP_DURATION: float = 0.05
+const BULLSEYE_HIT_STOP_DURATION: float = 0.09
+const HIT_SHAKE_STRENGTH: float = 4.0
+const BULLSEYE_SHAKE_STRENGTH: float = 9.0
+const SHAKE_DURATION: float = 0.18
 
 @onready var world_view: WorldView = $WorldView
 @onready var hud: HUD = $HUD
@@ -209,6 +214,7 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if not is_quick_shot:
 		strength_xp = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
 	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(shot_angle), launch_speed)
+	world_view.play_bow_recoil()
 	shot_cooldown_timer = SHOT_COOLDOWN
 	arrow.set_meta("is_quick_shot", is_quick_shot)
 	arrow.hit_target.connect(_on_arrow_hit)
@@ -225,7 +231,8 @@ func _on_arrow_hit(position: Vector2, target: Target, arrow: Arrow) -> void:
 	economy.add_money(coin_reward)
 	total_coins_earned += coin_reward
 	successful_hits += 1
-	if target.is_bullseye_hit(position):
+	var is_bullseye: bool = target.is_bullseye_hit(position)
+	if is_bullseye:
 		bullseyes += 1
 	var shot_distance: float = arrow.get_shot_distance_to_target(target)
 	var accuracy_xp: int = 0
@@ -235,7 +242,14 @@ func _on_arrow_hit(position: Vector2, target: Target, arrow: Arrow) -> void:
 		hud.show_accuracy_xp_gain(accuracy_xp)
 	impact_position = position
 	impact_timer = IMPACT_FLASH_DURATION
+	world_view.trigger_shake(BULLSEYE_SHAKE_STRENGTH if is_bullseye else HIT_SHAKE_STRENGTH, SHAKE_DURATION)
+	_trigger_hit_stop(BULLSEYE_HIT_STOP_DURATION if is_bullseye else HIT_STOP_DURATION)
 	_show_result(target.get_reward_label())
+
+func _trigger_hit_stop(duration: float) -> void:
+	Engine.time_scale = 0.05
+	await get_tree().create_timer(duration, true, false, true).timeout
+	Engine.time_scale = 1.0
 
 func _on_arrow_missed() -> void:
 	_show_result("MISS")

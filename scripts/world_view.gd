@@ -23,6 +23,10 @@ const MID_AIR_INCOMING_RETENTION: float = 0.55
 const MID_AIR_INCOMING_PUSH: float = 80.0
 const MID_AIR_INCOMING_PUSH_SCALE: float = 0.35
 
+const TRAIL_MAX_POINTS: int = 14
+const TRAIL_COLOR: Color = Color("d8d0bb")
+const CAMERA_SMOOTHING: float = 8.0
+
 @onready var player: Player = $Player
 @onready var target: Target = $TrainingGrounds/PracticeTargets/Target
 @onready var target_two: Target = $TrainingGrounds/PracticeTargets/TargetTwo
@@ -31,6 +35,13 @@ const MID_AIR_INCOMING_PUSH_SCALE: float = 0.35
 @onready var training_dummy: Area2D = $TrainingGrounds/TrainingDummy
 @onready var ground: Node2D = $Ground
 @onready var range_decor: Node2D = $RangeDecor
+
+var camera_base_x: float = 0.0
+var shake_timer: float = 0.0
+var shake_duration: float = 0.0
+var shake_strength: float = 0.0
+var shake_offset: Vector2 = Vector2.ZERO
+var arrow_trails: Dictionary = {}
 
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
@@ -44,15 +55,35 @@ var arrows: Array[Arrow] = []
 func _ready() -> void:
 	scale = Vector2.ONE * WORLD_SCALE
 	set_active_targets(1)
-	_update_camera()
+	camera_base_x = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
+	position = Vector2(camera_base_x, 0.0)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_cleanup_arrows()
-	_update_camera()
+	_update_camera(delta)
+	_update_shake(delta)
 	queue_redraw()
 
-func _update_camera() -> void:
-	position.x = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
+func _update_camera(delta: float) -> void:
+	var target_x: float = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
+	camera_base_x = lerp(camera_base_x, target_x, 1.0 - exp(-CAMERA_SMOOTHING * delta))
+	position = Vector2(camera_base_x, 0.0) + shake_offset
+
+func _update_shake(delta: float) -> void:
+	if shake_timer > 0.0:
+		shake_timer = max(shake_timer - delta, 0.0)
+		var falloff: float = shake_timer / shake_duration if shake_duration > 0.0 else 0.0
+		shake_offset = Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * shake_strength * falloff
+	else:
+		shake_offset = Vector2.ZERO
+
+func trigger_shake(strength: float, duration: float) -> void:
+	shake_strength = strength
+	shake_duration = duration
+	shake_timer = duration
+
+func play_bow_recoil() -> void:
+	player.get_bow().play_release_recoil()
 
 func get_world_mouse_position() -> Vector2:
 	return to_local(get_viewport().get_mouse_position())
@@ -157,12 +188,23 @@ func _cleanup_arrows() -> void:
 		if not is_instance_valid(arrows[index]):
 			arrows.remove_at(index)
 
+func _record_trail_point(arrow: Arrow, global_point: Vector2) -> void:
+	var local_point: Vector2 = to_local(global_point)
+	var trail: PackedVector2Array = arrow_trails.get(arrow, PackedVector2Array())
+	trail.append(local_point)
+	if trail.size() > TRAIL_MAX_POINTS:
+		trail.remove_at(0)
+	arrow_trails[arrow] = trail
+
 func _on_arrow_tree_exited(arrow: Arrow) -> void:
 	arrows.erase(arrow)
+	arrow_trails.erase(arrow)
 
 func _on_arrow_flight_segment(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> void:
 	if not is_instance_valid(incoming_arrow) or not incoming_arrow.is_flying():
 		return
+
+	_record_trail_point(incoming_arrow, end)
 
 	var embedded_arrow: Arrow = _find_nock_hit(start, end, incoming_arrow)
 	if is_instance_valid(embedded_arrow):
@@ -265,6 +307,7 @@ func _update_range_decor(range_level: int) -> void:
 	range_decor.get_node("Level4").visible = range_level >= 4
 
 func _draw() -> void:
+	_draw_arrow_trails()
 	_draw_trajectory()
 	if impact_timer <= 0.0:
 		return
@@ -273,6 +316,15 @@ func _draw() -> void:
 	draw_circle(impact_position, radius, Color("d7a449"), false, 2.0 / WORLD_SCALE)
 	draw_circle(impact_position, 2.0, Color("d7a449"))
 
+func _draw_arrow_trails() -> void:
+	for arrow in arrow_trails.keys():
+		var trail: PackedVector2Array = arrow_trails[arrow]
+		if trail.size() < 2:
+			continue
+		for i in range(trail.size() - 1):
+			var t: float = float(i) / float(trail.size() - 1)
+			draw_line(trail[i], trail[i + 1], Color(TRAIL_COLOR.r, TRAIL_COLOR.g, TRAIL_COLOR.b, t * 0.5), lerp(1.0, 3.0, t))
+		
 func _draw_trajectory() -> void:
 	if not trajectory_visible or trajectory_speed <= 0.0:
 		return

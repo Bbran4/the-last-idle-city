@@ -6,7 +6,7 @@ const RANGE_X: float = 1900.0
 const MAP_X: float = -300.0
 const TENT_X: float = -1000.0
 const FLETCHER_X: float = 850.0
-
+const CAMERA_SMOOTHING: float = 8.0
 @onready var player: Player = $Player
 
 var map_open: bool = false
@@ -17,6 +17,7 @@ var map_panel: PanelContainer
 var equipment_panel: PanelContainer
 var status_label: Label
 
+var camera_base_x: float = 0.0
 var stats: PlayerStats = PlayerStats.new()
 var economy: PlayerEconomy = PlayerEconomy.new()
 var bow_inventory: BowInventory = BowInventory.new()
@@ -27,13 +28,18 @@ func _ready() -> void:
 	queue_redraw()
 
 func _process(delta: float) -> void:
-	_update_camera()
+	_update_camera(delta)
 	_update_interaction_prompt()
 	if status_timer > 0.0:
 		status_timer = max(status_timer - delta, 0.0)
 		if status_timer <= 0.0 and not map_open and not equipment_open:
 			status_label.visible = false
 	queue_redraw()
+
+func _update_camera(delta: float) -> void:
+	var target_x: float = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
+	camera_base_x = lerp(camera_base_x, target_x, 1.0 - exp(-CAMERA_SMOOTHING * delta))
+	position.x = camera_base_x
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -68,9 +74,6 @@ func _handle_interaction() -> void:
 		return
 	if abs(x - FLETCHER_X) <= INTERACTION_RADIUS:
 		_show_status("FLETCHER: BOWS AND CRAFTING WILL LIVE HERE")
-
-func _update_camera() -> void:
-	position.x = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
 
 func _update_interaction_prompt() -> void:
 	if map_open or equipment_open:

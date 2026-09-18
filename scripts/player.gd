@@ -18,6 +18,19 @@ const GRAVITY: float = 2500.0
 const MOVEMENT_WOBBLE_ANGLE: float = 0.045
 const MOVEMENT_WOBBLE_SPEED: float = 10.0
 
+## Movement feel tuning: distinct accel/decel so stopping/starting isn't instant.
+const GROUND_ACCEL: float = 4200.0
+const GROUND_DECEL: float = 5200.0
+const AIR_ACCEL: float = 2600.0
+const AIR_DECEL: float = 2200.0
+
+## Jump feel tuning.
+const COYOTE_TIME: float = 0.1
+const JUMP_BUFFER_TIME: float = 0.12
+const JUMP_CUT_MULTIPLIER: float = 0.45
+const FALL_GRAVITY_MULTIPLIER: float = 1.6
+const LOW_JUMP_GRAVITY_MULTIPLIER: float = 1.15
+
 @onready var bow: Bow = $Bow
 
 var recovery_progress: float = 0.0
@@ -26,16 +39,42 @@ var movement_wobble: float = 0.0
 var is_crouching: bool = false
 var facing_right: bool = true
 
+var coyote_timer: float = 0.0
+var jump_buffer_timer: float = 0.0
+var jump_held: bool = false
+
 func _physics_process(delta: float) -> void:
 	var move_input: float = Input.get_axis("move_left", "move_right")
 	var move_speed: float = RUN_SPEED if Input.is_action_pressed("run") else WALK_SPEED
-	velocity.x = move_input * move_speed
+	var target_velocity_x: float = move_input * move_speed
 
-	if Input.is_action_just_pressed("jump") and is_on_ground():
+	var grounded: bool = is_on_ground()
+	var accel: float = GROUND_ACCEL if grounded else AIR_ACCEL
+	var decel: float = GROUND_DECEL if grounded else AIR_DECEL
+	if abs(target_velocity_x) > 0.01:
+		velocity.x = move_toward(velocity.x, target_velocity_x, accel * delta)
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, decel * delta)
+
+	_update_jump_timers(delta, grounded)
+	jump_held = Input.is_action_pressed("jump")
+
+	if Input.is_action_just_released("jump") and velocity.y < 0.0:
+		velocity.y *= JUMP_CUT_MULTIPLIER
+
+	if jump_buffer_timer > 0.0 and coyote_timer > 0.0:
 		velocity.y = JUMP_SPEED
+		jump_buffer_timer = 0.0
+		coyote_timer = 0.0
 
-	if not is_on_ground() or velocity.y < 0.0:
-		velocity.y += GRAVITY * delta
+	var gravity_scale: float = 1.0
+	if velocity.y > 0.0:
+		gravity_scale = FALL_GRAVITY_MULTIPLIER
+	elif velocity.y < 0.0 and not jump_held:
+		gravity_scale = LOW_JUMP_GRAVITY_MULTIPLIER
+
+	if not grounded or velocity.y < 0.0:
+		velocity.y += GRAVITY * gravity_scale * delta
 	else:
 		velocity.y = 0.0
 
@@ -53,6 +92,10 @@ func _physics_process(delta: float) -> void:
 		movement_wobble = 0.0
 
 	queue_redraw()
+
+func _update_jump_timers(delta: float, grounded: bool) -> void:
+	coyote_timer = COYOTE_TIME if grounded else max(coyote_timer - delta, 0.0)
+	jump_buffer_timer = JUMP_BUFFER_TIME if Input.is_action_just_pressed("jump") else max(jump_buffer_timer - delta, 0.0)
 
 func is_on_ground() -> bool:
 	return position.y >= GROUND_Y - 0.5
@@ -88,7 +131,6 @@ func set_recovery_progress(progress: float) -> void:
 func _draw() -> void:
 	if recovery_progress <= 0.0:
 		return
-
 	var center: Vector2 = Vector2(0.0, RECOVERY_Y_OFFSET)
 	draw_arc(center, RECOVERY_RADIUS, 0.0, TAU, 32, RECOVERY_BACKGROUND_COLOR, RECOVERY_RING_WIDTH, true)
 	var end_angle: float = RECOVERY_START_ANGLE + TAU * recovery_progress
