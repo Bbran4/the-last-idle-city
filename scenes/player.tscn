@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ue5t8xlecij8"]
 
 [ext_resource type="Script" path="res://scripts/player_controller.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://scenes/bow.tscn" id="2_bow"]
+[ext_resource type="PackedScene" uid="uid://djyjhkgq0fdfd" path="res://scenes/bow.tscn" id="2_bow"]
 
 [node name="Player" type="Node2D" unique_id=1404126366]
 script = ExtResource("1_player")

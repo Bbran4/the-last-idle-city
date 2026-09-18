@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hubscene001"]
 
-[ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/world/hub.gd" id="1_hub"]
+[ext_resource type="Script" uid="uid://dr4rialx4nyf8" path="res://scripts/world/hub.gd" id="1_sk5sp"]
 [ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/world/ground.tscn" id="3_ground"]
 [ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/hub/tent.tscn" id="4_tent"]
@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/practice_range_entrance.tscn" id="7_range"]
 
 [node name="Main" type="Node2D" unique_id=35592492]
-script = ExtResource("1_hub")
+script = ExtResource("1_sk5sp")
 
 [node name="Ground" parent="." unique_id=409052602 instance=ExtResource("3_ground")]
 position = Vector2(364, 1401)
