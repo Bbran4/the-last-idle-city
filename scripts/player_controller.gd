@@ -318,3 +318,6 @@ func get_reload_progress() -> float:
 
 func get_aim_angle() -> float:
 	return aim_angle
+
+func get_aim_direction() -> Vector2:
+	return Vector2.RIGHT.rotated(aim_angle)
