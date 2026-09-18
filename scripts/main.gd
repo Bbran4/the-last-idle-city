@@ -93,7 +93,7 @@ func _process(delta: float) -> void:
 	world_view.set_trajectory(aim_angle, draw_ratio, preview_speed, trajectory_quality, trajectory_visible)
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, is_drawing)
-	hud.set_reload_progress(shot_cooldown_timer)
+	hud.set_reload_progress(shot_cooldown_timer, world_view.player.get_global_transform_with_canvas().origin)
 	var near_tent: bool = _is_near_tent()
 	if not near_tent and equipment_open:
 		equipment_open = false
