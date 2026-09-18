@@ -135,7 +135,9 @@ func _update_facing_and_bow() -> void:
 	set_facing_from_mouse(mouse_world_position)
 	var aim_vector: Vector2 = mouse_world_position - bow.global_position
 	if aim_vector.length_squared() > 0.001:
-		bow.set_aim(get_bow_aim_angle(aim_vector.angle()))
+		var world_aim_angle: float = aim_vector.angle()
+		aim_angle = world_aim_angle
+		bow.set_aim(get_bow_aim_angle(world_aim_angle))
 
 func _update_jump_timers(delta: float, grounded: bool) -> void:
 	coyote_timer = COYOTE_TIME if grounded else max(coyote_timer - delta, 0.0)
