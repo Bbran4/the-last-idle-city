@@ -6,7 +6,8 @@ const SHOT_RECOVERY_TIME: float = 1.0
 const MIN_PROJECTILE_SPEED_MULTIPLIER: float = 1.0
 const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
 const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
-const RIGHT_MOUSE_DRAW_DECAY: float = 0.225
+const QUICK_SHOT_DRAW_RATIO: float = 0.12
+const QUICK_SHOT_SPREAD: float = 0.38
 const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
 const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
@@ -24,7 +25,7 @@ var economy: PlayerEconomy = PlayerEconomy.new()
 var bow_inventory: BowInventory = BowInventory.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
-var right_mouse_held: bool = false
+var left_mouse_held: bool = false
 var full_draw_timer: float = 0.0
 var shot_recovery_timer: float = 0.0
 var impact_position: Vector2 = Vector2.ZERO
@@ -56,11 +57,8 @@ func _process(delta: float) -> void:
 	shot_recovery_timer = max(shot_recovery_timer - delta, 0.0)
 	world_view.set_recovery_progress(shot_recovery_timer / SHOT_RECOVERY_TIME)
 
-	if is_drawing:
-		if right_mouse_held:
-			draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
-		else:
-			draw_strength = max(draw_strength - bow.max_draw_strength * RIGHT_MOUSE_DRAW_DECAY * delta, 0.0)
+	if is_drawing and left_mouse_held:
+		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
 
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
 	if draw_ratio >= 1.0:
@@ -70,11 +68,6 @@ func _process(delta: float) -> void:
 
 	if is_drawing and full_draw_timer >= FULL_DRAW_AUTO_RELEASE_TIME:
 		_fire_arrow()
-
-	if not is_drawing and shot_recovery_timer <= 0.0 and right_mouse_held:
-		_start_drawing()
-		bow = bow_inventory.get_equipped()
-		draw_ratio = draw_strength / bow.max_draw_strength
 
 	if impact_timer > 0.0:
 		impact_timer = max(impact_timer - delta, 0.0)
@@ -115,14 +108,18 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		left_mouse_held = event.pressed
 		if event.pressed:
-			_fire_arrow()
+			if not is_drawing and shot_recovery_timer <= 0.0:
+				_start_drawing()
+		else:
+			if is_drawing:
+				if draw_strength <= 0.0:
+					draw_strength = bow_inventory.get_equipped().max_draw_strength * QUICK_SHOT_DRAW_RATIO
+					_fire_arrow(true)
+				else:
+					_fire_arrow()
 		return
-
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		right_mouse_held = event.pressed
-		if event.pressed and not is_drawing and shot_recovery_timer <= 0.0:
-			_start_drawing()
 
 func _toggle_equipment() -> void:
 	if not _is_near_tent():
@@ -156,11 +153,12 @@ func _update_aim() -> void:
 				aim_angle += wobble
 	world_view.aim_bow(world_view.player.get_bow_aim_angle(aim_angle))
 
-func _fire_arrow() -> void:
+func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if not is_drawing or shot_recovery_timer > 0.0:
 		return
 
 	is_drawing = false
+	left_mouse_held = false
 	full_draw_timer = 0.0
 	if draw_strength <= 0.0:
 		draw_strength = 0.0
@@ -168,14 +166,18 @@ func _fire_arrow() -> void:
 	shot_recovery_timer = SHOT_RECOVERY_TIME
 	var bow: BowData = bow_inventory.get_equipped()
 	var strength_ratio: float = draw_strength / bow.max_draw_strength
+	var shot_angle: float = aim_angle
+	if is_quick_shot:
+		strength_ratio = QUICK_SHOT_DRAW_RATIO
+		shot_angle += randf_range(-QUICK_SHOT_SPREAD, QUICK_SHOT_SPREAD)
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
 	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
 	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
-	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(aim_angle), launch_speed)
+	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(shot_angle), launch_speed)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
 	shots_fired += 1
-	_show_result("SHOT FIRED")
+	_show_result("QUICK SHOT" if is_quick_shot else "SHOT FIRED")
 	if strength_xp > 0:
 		hud.show_strength_xp_gain(strength_xp)
 	draw_strength = 0.0
@@ -288,7 +290,7 @@ func _refresh_hud() -> void:
 
 func _reset_session() -> void:
 	is_drawing = false
-	right_mouse_held = false
+	left_mouse_held = false
 	draw_strength = 0.0
 	full_draw_timer = 0.0
 	shot_recovery_timer = 0.0
