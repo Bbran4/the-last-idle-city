@@ -97,3 +97,8 @@ func get_trajectory_prediction_quality() -> float:
 	if accuracy_level < 2:
 		return 0.0
 	return clamp(float(accuracy_level - 1) / 19.0, 0.0, 1.0)
+
+## Quick shots become steadily more accurate as the Accuracy skill improves.
+## Level 1 has the full quick-shot spread. Level 100 has zero spread.
+func get_quick_shot_accuracy() -> float:
+	return clamp(float(accuracy_level) / float(MAX_LEVEL), 0.0, 1.0)
