@@ -1,4 +1,3 @@
-class_name Skills
 extends Node
 
 const TRAINING_MANUAL_BASE_COST: int = 125

@@ -1,4 +1,3 @@
-class_name Stats
 extends Node
 
 signal stat_levelled_up(stat_name: String, new_level: int)

@@ -1,4 +1,3 @@
-class_name Economy
 extends Node
 signal money_changed(amount: int)
 const STARTING_MONEY: int = 250
