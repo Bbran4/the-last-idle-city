@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://hubscene001"]
 
-[ext_resource type="Script" path="res://scripts/hub.gd" id="1_hub"]
+[ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/hub.gd" id="1_hub"]
 [ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/ground.tscn" id="3_ground"]
 [ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/tent.tscn" id="4_tent"]
@@ -11,22 +11,22 @@
 [node name="Main" type="Node2D" unique_id=35592492]
 script = ExtResource("1_hub")
 
-[node name="Ground" parent="." instance=ExtResource("3_ground")]
+[node name="Ground" parent="." unique_id=409052602 instance=ExtResource("3_ground")]
 position = Vector2(364, 1401)
 
-[node name="MapTable" parent="." instance=ExtResource("5_map")]
+[node name="MapTable" parent="." unique_id=1636826703 instance=ExtResource("5_map")]
 z_index = 1
 position = Vector2(-300, 1584)
 
-[node name="Fletcher" parent="." instance=ExtResource("6_fletcher")]
+[node name="Fletcher" parent="." unique_id=1119592048 instance=ExtResource("6_fletcher")]
 z_index = 1
 position = Vector2(850, 1584)
 
-[node name="PracticeRange" parent="." instance=ExtResource("7_range")]
+[node name="PracticeRange" parent="." unique_id=233555069 instance=ExtResource("7_range")]
 z_index = 1
 position = Vector2(1900, 1584)
 
-[node name="EquipmentTent" parent="." instance=ExtResource("4_tent")]
+[node name="EquipmentTent" parent="." unique_id=331020757 instance=ExtResource("4_tent")]
 z_index = 2
 position = Vector2(-1000, 1292)
 

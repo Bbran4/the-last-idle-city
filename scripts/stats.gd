@@ -37,7 +37,7 @@ func award_accuracy_hit_xp(distance: float, xp_multiplier: float = 1.0) -> int:
 	if accuracy_level >= MAX_LEVEL:
 		return 0
 	var distance_ratio: float = clampf(distance / ACCURACY_XP_MAX_DISTANCE, 0.0, 1.0)
-	var awarded := max(1, roundi(distance_ratio * ACCURACY_XP_MAX * max(xp_multiplier, 1.0)))
+	var awarded : int = max(1, roundi(distance_ratio * ACCURACY_XP_MAX * max(xp_multiplier, 1.0)))
 	_add_accuracy_xp(awarded)
 	return awarded
 
