@@ -52,7 +52,7 @@ func _load_legacy_range_level(default_level: int) -> int:
 	if config.load(LEGACY_RANGE_SAVE_PATH) != OK:
 		return default_level
 	var saved_level: int = int(config.get_value("range", "level", default_level))
-	return max(saved_level, default_level)
+	return maxi(saved_level, default_level)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not event is InputEventKey:
