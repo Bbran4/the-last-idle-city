@@ -197,15 +197,23 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 
 **Goal:** Make the Training Grounds the player's persistent home base and the central navigation layer for the game.**
 
-- [ ] Tournament entry system
-- [ ] Tournament requirements
-- [ ] Tournament rounds and attempt limits
-- [ ] Tournament-specific target layouts
-- [ ] Tournament scoring rules
-- [ ] Opponent score generation
-- [ ] Results and tournament UI
-- [ ] Entry/restart flow
-- [ ] Tournament rewards feed back into the existing economy
+- [x] Dedicated Training Grounds hub scene
+- [x] Wide horizontal hub layout
+- [x] Tent positioned on the far left
+- [x] Kingdom map table positioned beside the tent
+- [x] Fletcher positioned near the center
+- [x] Archery range entrance positioned on the right
+- [x] Contextual interaction prompts
+- [x] Tent equipment interaction using persistent bow ownership/equipment
+- [x] Map interface with future travel destinations
+- [x] Direct transition from the hub into the dedicated practice scene
+- [x] Return from practice scene to the Training Grounds
+- [x] Preserve the existing persistent save/economy foundation
+- [ ] Replace placeholder hub art with final environment art
+- [ ] Add full character customization
+- [ ] Add persistent Training Grounds upgrades
+
+The hub is now the game's main scene. The practice range remains a separate scene and is entered physically from the right side of the grounds. The map is reserved for world travel and future activities, while the range is deliberately excluded from map travel so it remains part of the player's home base.
 
 ### Milestone 14 - First Tournament
 
@@ -258,10 +266,20 @@ The player-facing HUD has now been cleaned of prototype session telemetry. The t
 
 - [ ] Polish HUD and menus
 - [ ] Improve archer, bow, arrow and target visuals
-- [ ] Improve practice range and tent visuals
+- [ ] Improve practice range and hub visuals
 - [ ] Add animation and impact effects
 - [ ] Add sound effects and music where appropriate
 - [ ] Add settings and accessibility improvements
+
+### Milestone 20 - Additional Game Activities
+
+**Goal:** Expand the game beyond tournaments while keeping the Training Grounds as the player's home base.**
+
+- [ ] World activities accessed from the kingdom map
+- [ ] Non-tournament challenges
+- [ ] Quests or contracts
+- [ ] Special events
+- [ ] Additional progression systems only where they strengthen the core loop
 
 ### Milestone 21 - Release Preparation
 
@@ -299,7 +317,8 @@ If the answer is not yes, improve the shooting experience before expanding the g
 8. Do not add complexity simply because other idle games traditionally use it.
 9. Player skill must always matter.
 10. The README is the roadmap, but gameplay testing can change the design.
-11. Do not start tournament implementation until the Training Grounds hub can serve as the stable home base for practice, equipment and travel.\n12. Keep the Training Grounds extensible so future activities do not require rebuilding the hub.
+11. Do not start tournament implementation until the Training Grounds hub can serve as the stable home base for practice, equipment and travel.
+12. Keep the Training Grounds extensible so future activities do not require rebuilding the hub.
 
 ## Current Status
 
@@ -317,6 +336,6 @@ The player-facing HUD has been cleaned up so prototype session telemetry is no l
 
 ### Next Step
 
-**Milestone 13 - First Tournament.**
+**Milestone 13 - Training Grounds Hub.**
 
-The next development phase introduces the first structured competitive activity while keeping the existing shooting mechanics at its center. Tournament entry, requirements, rounds, attempts, scoring, results and the first tournament reward loop will be added one focused system at a time.
+The next development phase is to polish and expand the new hub foundation. The tent, map table, Fletcher and range should become distinct, useful locations before tournament implementation begins. Once that foundation is stable, tournaments will be entered through the kingdom map in Milestone 14.
