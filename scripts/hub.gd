@@ -245,8 +245,8 @@ func _buy_bow(bow_id: String) -> void:
 		_refresh_equipment_panel()
 
 func _travel_to(destination: String) -> void:
-	_close_all_panels()
-	_show_status("TRAVELLING TO %s  •  WORLD LOCATIONS COMING SOON" % destination)
+	TravelState.destination = destination
+	get_tree().change_scene_to_file("res://scenes/travel_location.tscn")
 
 func _draw() -> void:
 	var ground_y := 1584.0
