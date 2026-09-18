@@ -9,8 +9,8 @@ const QUICK_SHOT_DRAW_RATIO: float = 0.80
 const QUICK_SHOT_SPREAD: float = 0.38
 const SHOT_COOLDOWN: float = 1.0
 const FAST_DRAW_RATIO: float = 0.80
-const FAST_DRAW_SPEED_MULTIPLIER: float = 2.0
-const FINAL_DRAW_SPEED_MULTIPLIER: float = 0.65
+const FAST_DRAW_SPEED_MULTIPLIER: float = 4.0
+const FINAL_DRAW_SPEED_MULTIPLIER: float = 1.30
 const SLOW_DRAW_SPEED_MULTIPLIER: float = 0.80
 const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
@@ -30,6 +30,7 @@ var bow_inventory: BowInventory = BowInventory.new()
 var draw_strength: float = 0.0
 var is_drawing: bool = false
 var left_mouse_held: bool = false
+var slow_draw_held: bool = false
 var full_draw_timer: float = 0.0
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
@@ -66,7 +67,7 @@ func _process(delta: float) -> void:
 	if is_drawing and left_mouse_held:
 		var draw_ratio: float = draw_strength / bow.max_draw_strength
 		var draw_multiplier: float = FAST_DRAW_SPEED_MULTIPLIER if draw_ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER
-		if Input.is_key_pressed(KEY_CTRL):
+		if slow_draw_held:
 			draw_multiplier *= SLOW_DRAW_SPEED_MULTIPLIER
 		draw_strength = min(draw_strength + bow.draw_speed * draw_multiplier * delta, bow.max_draw_strength)
 
@@ -110,9 +111,12 @@ func _get_projectile_speed_multiplier(draw_ratio: float) -> float:
 	return lerp(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, normalized_draw)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
-		get_tree().change_scene_to_file("res://scenes/main.tscn")
-		return
+	if event is InputEventKey:
+		if event.keycode == KEY_CTRL:
+			slow_draw_held = event.pressed
+		if event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+			get_tree().change_scene_to_file("res://scenes/main.tscn")
+			return
 
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
 		_reset_session()
@@ -324,6 +328,7 @@ func _refresh_hud() -> void:
 func _reset_session() -> void:
 	is_drawing = false
 	left_mouse_held = false
+	slow_draw_held = false
 	draw_strength = 0.0
 	full_draw_timer = 0.0
 	impact_position = Vector2.ZERO
