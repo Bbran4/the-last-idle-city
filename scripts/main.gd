@@ -11,6 +11,7 @@ const SHOT_COOLDOWN: float = 1.0
 const FAST_DRAW_RATIO: float = 0.80
 const FAST_DRAW_SPEED_MULTIPLIER: float = 2.0
 const FINAL_DRAW_SPEED_MULTIPLIER: float = 0.65
+const SLOW_DRAW_SPEED_MULTIPLIER: float = 0.80
 const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
 const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
@@ -57,13 +58,17 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	_update_aim()
 	var bow: BowData = bow_inventory.get_equipped()
+	if shot_cooldown_timer > 0.0:
+		shot_cooldown_timer = max(shot_cooldown_timer - delta, 0.0)
+		if shot_cooldown_timer <= 0.0 and left_mouse_held and not is_drawing:
+			_start_drawing()
+
 	if is_drawing and left_mouse_held:
 		var draw_ratio: float = draw_strength / bow.max_draw_strength
 		var draw_multiplier: float = FAST_DRAW_SPEED_MULTIPLIER if draw_ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER
+		if Input.is_key_pressed(KEY_CTRL):
+			draw_multiplier *= SLOW_DRAW_SPEED_MULTIPLIER
 		draw_strength = min(draw_strength + bow.draw_speed * draw_multiplier * delta, bow.max_draw_strength)
-
-	if shot_cooldown_timer > 0.0:
-		shot_cooldown_timer = max(shot_cooldown_timer - delta, 0.0)
 
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
 	if draw_ratio >= 1.0:
@@ -192,13 +197,13 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 		var quick_shot_accuracy: float = stats.get_quick_shot_accuracy()
 		var quick_shot_spread: float = QUICK_SHOT_SPREAD * (1.0 - quick_shot_accuracy)
 		shot_angle += randf_range(-quick_shot_spread, quick_shot_spread)
-		shot_cooldown_timer = SHOT_COOLDOWN
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
 	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
 	var strength_xp: int = 0
 	if not is_quick_shot:
 		strength_xp = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
 	var arrow: Arrow = world_view.fire_arrow(Vector2.RIGHT.rotated(shot_angle), launch_speed)
+	shot_cooldown_timer = SHOT_COOLDOWN
 	arrow.set_meta("is_quick_shot", is_quick_shot)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
