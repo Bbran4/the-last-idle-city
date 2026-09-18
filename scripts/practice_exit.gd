@@ -33,5 +33,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		if player.position.x <= HUB_EXIT_X + INTERACTION_RADIUS:
 			returning = true
 			prompt_label.visible = false
+			TravelState.return_spawn = "ARCHERY_RANGE"
 			TravelState.destination = "TRAINING GROUNDS"
 			get_tree().change_scene_to_file("res://scenes/hub.tscn")
