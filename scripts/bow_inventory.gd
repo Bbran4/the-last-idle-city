@@ -3,9 +3,9 @@ extends RefCounted
 
 const STARTING_BOW_ID: String = "training_bow"
 const BOW_RESOURCE_PATHS: Array[String] = [
-	"res://resources/bows/training_bow.tres",
-	"res://resources/bows/recurve_bow.tres",
-	"res://resources/bows/war_bow.tres"
+	"res://data/bows/training_bow.tres",
+	"res://data/bows/recurve_bow.tres",
+	"res://data/bows/war_bow.tres"
 ]
 
 var bows: Dictionary = {}
