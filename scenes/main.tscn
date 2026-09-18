@@ -16,7 +16,7 @@ script = ExtResource("1_main")
 script = ExtResource("2_world_view")
 
 [node name="Ground" parent="WorldView" unique_id=1284974576 instance=ExtResource("6_85g3d")]
-position = Vector2(364, 1584)
+position = Vector2(364, 1401)
 
 [node name="RangeDecor" parent="WorldView" unique_id=1947352116 instance=ExtResource("8_range_decor")]
 
