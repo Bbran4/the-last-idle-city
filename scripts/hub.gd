@@ -11,15 +11,15 @@ const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
 
 @onready var player: Player = $Player
 
-var map_open := false
-var equipment_open := false
-var status_timer := 0.0
+var map_open: bool = false
+var equipment_open: bool = false
+var status_timer: float = 0.0
 var ui_layer: CanvasLayer
 var map_panel: PanelContainer
 var equipment_panel: PanelContainer
 var status_label: Label
 var coins_label: Label
-var camera_base_x := 0.0
+var camera_base_x: float = 0.0
 var arrows: Array[Arrow] = []
 
 func _ready() -> void:
@@ -36,13 +36,13 @@ func _process(delta: float) -> void:
 	_cleanup_arrows()
 	coins_label.text = "COINS  %d" % Economy.money
 	if status_timer > 0.0:
-		status_timer = max(status_timer - delta, 0.0)
+		status_timer = maxf(status_timer - delta, 0.0)
 		if status_timer <= 0.0 and not map_open and not equipment_open:
 			status_label.visible = false
 
 func _update_camera(delta: float) -> void:
 	var target_x: float = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
-	camera_base_x = lerp(camera_base_x, target_x, 1.0 - exp(-CAMERA_SMOOTHING * delta))
+	camera_base_x = lerpf(camera_base_x, target_x, 1.0 - exp(-CAMERA_SMOOTHING * delta))
 	position.x = camera_base_x
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -76,8 +76,8 @@ func _handle_interaction() -> void:
 func _update_interaction_prompt() -> void:
 	if map_open or equipment_open:
 		return
-	var x := player.position.x
-	var prompt := ""
+	var x: float = player.position.x
+	var prompt: String = ""
 	if abs(x - RANGE_X) <= INTERACTION_RADIUS:
 		prompt = "E  ENTER ARCHERY RANGE"
 	elif abs(x - MAP_X) <= INTERACTION_RADIUS:
@@ -104,18 +104,18 @@ func _close_all_panels() -> void:
 func _refresh_equipment_panel() -> void:
 	for child in equipment_panel.get_children():
 		child.queue_free()
-	var box := VBoxContainer.new()
+	var box: VBoxContainer = VBoxContainer.new()
 	equipment_panel.add_child(box)
-	var title := Label.new()
+	var title: Label = Label.new()
 	title.text = "EQUIPMENT TENT"
 	title.add_theme_font_size_override("font_size", 22)
 	box.add_child(title)
-	var stats_label := Label.new()
+	var stats_label: Label = Label.new()
 	stats_label.text = "STRENGTH %d    ACCURACY %d\nCOINS %d" % [Stats.strength_level, Stats.accuracy_level, Economy.money]
 	box.add_child(stats_label)
 	for bow: BowData in player.bow_inventory.get_all_bows():
-		var button := Button.new()
-		var owned := player.bow_inventory.is_owned(bow.id)
+		var button: Button = Button.new()
+		var owned: bool = player.bow_inventory.is_owned(bow.id)
 		if bow.id == player.bow_inventory.equipped_bow_id:
 			button.text = "%s  [EQUIPPED]" % bow.display_name
 			button.disabled = true
@@ -127,7 +127,7 @@ func _refresh_equipment_panel() -> void:
 			button.disabled = Economy.money < bow.price or Stats.strength_level < bow.required_strength
 			button.pressed.connect(_buy_bow.bind(bow.id))
 		box.add_child(button)
-	var close := Button.new()
+	var close: Button = Button.new()
 	close.text = "CLOSE"
 	close.pressed.connect(_close_all_panels)
 	box.add_child(close)
@@ -138,7 +138,7 @@ func _equip_bow(bow_id: String) -> void:
 		_refresh_equipment_panel()
 
 func _buy_bow(bow_id: String) -> void:
-	var bow := player.bow_inventory.get_bow(bow_id)
+	var bow: BowData = player.bow_inventory.get_bow(bow_id)
 	if bow == null or not player.bow_inventory.can_purchase(bow_id, Economy.money, Stats.strength_level):
 		return
 	if not Economy.spend_money(bow.price):
@@ -151,7 +151,7 @@ func _buy_bow(bow_id: String) -> void:
 	_refresh_equipment_panel()
 
 func _on_player_shot(direction: Vector2, launch_speed: float, _is_quick_shot: bool) -> void:
-	var arrow := ARROW_SCENE.instantiate() as Arrow
+	var arrow: Arrow = ARROW_SCENE.instantiate() as Arrow
 	arrow.position = to_local(player.get_bow().get_arrow_spawn_position())
 	add_child(arrow)
 	arrows.append(arrow)
@@ -176,12 +176,12 @@ func _create_ui() -> void:
 	status_label.add_theme_font_size_override("font_size", 18)
 	status_label.visible = false
 	ui_layer.add_child(status_label)
-	var title := Label.new()
+	var title: Label = Label.new()
 	title.position = Vector2(24, 18)
 	title.text = "THE LAST ARCHER"
 	title.add_theme_font_size_override("font_size", 28)
 	ui_layer.add_child(title)
-	var subtitle := Label.new()
+	var subtitle: Label = Label.new()
 	subtitle.position = Vector2(26, 53)
 	subtitle.text = "THE HUB"
 	subtitle.add_theme_font_size_override("font_size", 13)
@@ -213,12 +213,12 @@ func _create_map_contents() -> void:
 	title.add_theme_font_size_override("font_size", 28)
 	box.add_child(title)
 	for location in [["GREENFIELD", "Local tournament town"], ["BLACKWOOD", "Forest settlement"], ["EASTMERE", "Market town"], ["KING'S CITY", "Royal capital"], ["COASTAL PORT", "Harbour and trade"]]:
-		var button := Button.new()
+		var button: Button = Button.new()
 		button.custom_minimum_size = Vector2(0, 54)
 		button.text = "%s   •   %s" % [location[0], location[1]]
 		button.pressed.connect(_travel_to.bind(location[0]))
 		box.add_child(button)
-	var close := Button.new()
+	var close: Button = Button.new()
 	close.text = "CLOSE MAP"
 	close.pressed.connect(_close_all_panels)
 	box.add_child(close)
