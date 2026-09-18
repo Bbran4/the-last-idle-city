@@ -45,7 +45,7 @@ var arrow_trails: Dictionary = {}
 
 var impact_position: Vector2 = Vector2.ZERO
 var impact_timer: float = 0.0
-var trajectory_angle: float = 0.0
+var trajectory_direction: Vector2 = Vector2.RIGHT
 var trajectory_speed: float = 0.0
 var trajectory_draw_ratio: float = 0.0
 var trajectory_quality: float = 0.0
@@ -122,7 +122,7 @@ func set_recovery_progress(progress: float) -> void:
 	player.set_recovery_progress(progress)
 
 func set_trajectory(angle: float, draw_ratio: float, launch_speed: float, quality: float, visible: bool) -> void:
-	trajectory_angle = angle
+	trajectory_direction = direction.normalized() if direction.length_squared() > 0.000001 else Vector2.RIGHT
 	trajectory_draw_ratio = clamp(draw_ratio, 0.0, 1.0)
 	trajectory_speed = max(launch_speed, 0.0)
 	trajectory_quality = clamp(quality, 0.0, 1.0)
@@ -342,7 +342,7 @@ func _draw_trajectory() -> void:
 	if not trajectory_visible or trajectory_speed <= 0.0:
 		return
 	var origin: Vector2 = get_arrow_spawn_position()
-	var velocity: Vector2 = Vector2.RIGHT.rotated(trajectory_angle) * trajectory_speed
+	var velocity: Vector2 = trajectory_direction * trajectory_speed
 	var prediction_time: float = min(TRAJECTORY_BASE_TIME + TRAJECTORY_EXTRA_TIME * trajectory_quality, TRAJECTORY_MAX_TIME)
 	var points: PackedVector2Array = PackedVector2Array()
 	var steps: int = maxi(2, ceili(prediction_time / TRAJECTORY_STEP))
