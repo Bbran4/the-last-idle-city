@@ -16,15 +16,15 @@ const SHAKE_DURATION: float = 0.18
 @onready var player: Player = $WorldView/Player
 @onready var hud: HUD = $HUD
 
-var impact_position := Vector2.ZERO
-var impact_timer := 0.0
-var shot_result_timer := 0.0
-var range_level := 1
-var equipment_open := false
-var total_coins_earned := 0
-var shots_fired := 0
-var successful_hits := 0
-var bullseyes := 0
+var impact_position: Vector2 = Vector2.ZERO
+var impact_timer: float = 0.0
+var shot_result_timer: float = 0.0
+var range_level: int = 1
+var equipment_open: bool = false
+var total_coins_earned: int = 0
+var shots_fired: int = 0
+var successful_hits: int = 0
+var bullseyes: int = 0
 
 func _ready() -> void:
 	range_level = RangeSave.load_range_level(range_level, MAX_RANGE_LEVEL)
@@ -43,17 +43,17 @@ func _process(delta: float) -> void:
 		shot_result_timer = max(shot_result_timer - delta, 0.0)
 		if shot_result_timer <= 0.0:
 			hud.hide_shot_result()
-	var draw_ratio := player.get_draw_ratio()
-	var bow := player.get_equipped_bow()
-	var preview_speed := 0.0 if bow == null else Stats.get_max_launch_speed(lerp(bow.min_launch_speed, bow.max_launch_speed, draw_ratio))
-	var quality := Skills.get_trajectory_prediction_quality()
+	var draw_ratio: float = player.get_draw_ratio()
+	var bow: BowData = player.get_equipped_bow()
+	var preview_speed: float = 0.0 if bow == null else Stats.get_max_launch_speed(lerpf(bow.min_launch_speed, bow.max_launch_speed, draw_ratio))
+	var quality: float = Skills.get_trajectory_prediction_quality()
 	if player.is_crouched():
 		quality = clamp(quality + CROUCH_TRAJECTORY_BOOST, 0.0, 1.0)
-	world_view.set_trajectory(player.get_aim_angle(), draw_ratio, preview_speed, quality, draw_ratio > 0.0 and not player.is_airborne())
+	world_view.set_trajectory(player.get_aim_direction(), draw_ratio, preview_speed, quality, draw_ratio > 0.0 and not player.is_airborne())
 	world_view.update_impact(impact_position, impact_timer)
 	hud.set_draw_strength(draw_ratio, draw_ratio > 0.0)
 	hud.set_reload_progress(player.get_reload_progress(), player.get_global_transform_with_canvas().origin)
-	var near_tent := _is_near_tent()
+	var near_tent: bool = _is_near_tent()
 	if not near_tent and equipment_open:
 		equipment_open = false
 		hud.set_equipment_visible(false)
@@ -78,11 +78,11 @@ func _toggle_equipment() -> void:
 	player.set_input_enabled(not equipment_open)
 
 func _is_near_tent() -> bool:
-	var tent := world_view.get_node_or_null("CustomizationTent") as Node2D
+	var tent: Node2D = world_view.get_node_or_null("CustomizationTent") as Node2D
 	return tent != null and player.position.distance_to(tent.position) <= TENT_INTERACTION_RADIUS
 
 func _on_player_shot(direction: Vector2, launch_speed: float, is_quick_shot: bool) -> void:
-	var arrow := world_view.fire_arrow(direction, launch_speed)
+	var arrow: Arrow = world_view.fire_arrow(direction, launch_speed)
 	arrow.set_meta("is_quick_shot", is_quick_shot)
 	arrow.hit_target.connect(_on_arrow_hit)
 	arrow.missed.connect(_on_arrow_missed)
@@ -90,11 +90,11 @@ func _on_player_shot(direction: Vector2, launch_speed: float, is_quick_shot: boo
 	_show_result("QUICK SHOT" if is_quick_shot else "SHOT FIRED")
 
 func _on_arrow_hit(position: Vector2, target: Target, arrow: Arrow) -> void:
-	var coin_reward := target.get_coin_reward()
+	var coin_reward: int = target.get_coin_reward()
 	Economy.add_money(coin_reward)
 	total_coins_earned += coin_reward
 	successful_hits += 1
-	var is_bullseye := target.is_bullseye_hit(position)
+	var is_bullseye: bool = target.is_bullseye_hit(position)
 	if is_bullseye:
 		bullseyes += 1
 	if not bool(arrow.get_meta("is_quick_shot", false)):
@@ -114,7 +114,7 @@ func _on_arrow_missed() -> void:
 	_show_result("MISS")
 
 func _on_training_upgrade_pressed() -> void:
-	var cost := Skills.get_training_manual_cost()
+	var cost: int = Skills.get_training_manual_cost()
 	if Skills.buy_training_manual():
 		hud.show_economy_feedback("TRAINING MANUAL %d  +%d%% XP" % [Skills.training_manual_level, int((Skills.get_xp_multiplier() - 1.0) * 100.0)])
 	else:
@@ -122,7 +122,7 @@ func _on_training_upgrade_pressed() -> void:
 	_refresh_hud()
 
 func _on_bow_action_requested(bow_id: String) -> void:
-	var bow := player.bow_inventory.get_bow(bow_id)
+	var bow: BowData = player.bow_inventory.get_bow(bow_id)
 	if bow == null:
 		return
 	if player.bow_inventory.is_owned(bow_id):
@@ -146,8 +146,8 @@ func _on_bow_action_requested(bow_id: String) -> void:
 func _on_range_upgrade_requested() -> void:
 	if range_level >= MAX_RANGE_LEVEL:
 		return
-	var next_level := range_level + 1
-	var cost := RANGE_LEVEL_COSTS[next_level - 1]
+	var next_level: int = range_level + 1
+	var cost: int = RANGE_LEVEL_COSTS[next_level - 1]
 	if not Economy.spend_money(cost):
 		hud.show_economy_feedback("NOT ENOUGH COINS  $%d" % cost)
 		return
