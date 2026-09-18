@@ -224,10 +224,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _update_drawing(delta: float) -> void:
 	if not is_drawing or not left_mouse_held:
 		return
-	var ratio: float = draw_strength / bow.max_draw_strength
+	var max_draw_strength: float = get_bow_max_draw_strength()
+	if max_draw_strength <= 0.0:
+		return
+	var ratio: float = draw_strength / max_draw_strength
 	var multiplier: float = SLOW_DRAW_SPEED_MULTIPLIER if slow_draw_held else (FAST_DRAW_SPEED_MULTIPLIER if ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER)
-	draw_strength = min(draw_strength + get_bow_draw_speed() * multiplier * delta, bow.max_draw_strength)
-	if draw_strength / bow.max_draw_strength >= 1.0:
+	draw_strength = minf(draw_strength + get_bow_draw_speed() * multiplier * delta, max_draw_strength)
+	if draw_strength / max_draw_strength >= 1.0:
 		full_draw_timer += delta
 	else:
 		full_draw_timer = 0.0
@@ -254,7 +257,10 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	is_drawing = false
 	left_mouse_held = false
 	full_draw_timer = 0.0
-	var strength_ratio: float = clampf(draw_strength / bow.max_draw_strength, 0.0, 1.0)
+	var max_draw_strength: float = get_bow_max_draw_strength()
+	if max_draw_strength <= 0.0:
+		return
+	var strength_ratio: float = clampf(draw_strength / max_draw_strength, 0.0, 1.0)
 	var shot_angle: float = aim_angle
 	if is_quick_shot:
 		strength_ratio = QUICK_SHOT_DRAW_RATIO
@@ -270,7 +276,8 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	shot_requested.emit(Vector2.RIGHT.rotated(shot_angle), launch_speed, is_quick_shot)
 
 func _emit_draw_state() -> void:
-	var ratio: float = 0.0 if bow == null or bow.max_draw_strength <= 0.0 else draw_strength / bow.max_draw_strength
+	var max_draw_strength: float = get_bow_max_draw_strength()
+	var ratio: float = 0.0 if max_draw_strength <= 0.0 else draw_strength / max_draw_strength
 	bow.set_draw_ratio(ratio)
 	draw_changed.emit(ratio, is_drawing)
 	set_recovery_progress(ratio)
@@ -301,7 +308,8 @@ func set_input_enabled(enabled: bool) -> void:
 		_cancel_drawing()
 
 func get_draw_ratio() -> float:
-	return 0.0 if bow == null or bow.max_draw_strength <= 0.0 else draw_strength / bow.max_draw_strength
+	var max_draw_strength: float = get_bow_max_draw_strength()
+	return 0.0 if max_draw_strength <= 0.0 else draw_strength / max_draw_strength
 
 func get_reload_progress() -> float:
 	return 1.0 - shot_cooldown_timer / SHOT_COOLDOWN
