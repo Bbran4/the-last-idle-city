@@ -13,10 +13,10 @@ const ACCURACY_XP_MAX: int = 25
 const ACCURACY_XP_MAX_DISTANCE: float = 1000.0
 const STRENGTH_LAUNCH_SPEED_PER_LEVEL: float = 10.0
 
-var strength_level: int = STARTING_LEVEL
-var strength_xp: int = 0
-var accuracy_level: int = STARTING_LEVEL
-var accuracy_xp: int = 0
+var strength_level := STARTING_LEVEL
+var strength_xp := 0
+var accuracy_level := STARTING_LEVEL
+var accuracy_xp := 0
 
 func _ready() -> void:
 	var data: Dictionary = SaveGame.load_data()
@@ -44,16 +44,12 @@ func award_accuracy_hit_xp(distance: float, xp_multiplier: float = 1.0) -> int:
 
 func get_max_launch_speed(base_speed: float) -> float:
 	return base_speed + float(strength_level - 1) * STRENGTH_LAUNCH_SPEED_PER_LEVEL
-
 func strength_xp_to_next_level() -> int:
 	return BASE_XP_TO_LEVEL + (strength_level - 1) * XP_GROWTH_PER_LEVEL
-
 func accuracy_xp_to_next_level() -> int:
 	return BASE_XP_TO_LEVEL + (accuracy_level - 1) * XP_GROWTH_PER_LEVEL
-
 func strength_progress_ratio() -> float:
 	return float(strength_xp) / float(strength_xp_to_next_level())
-
 func accuracy_progress_ratio() -> float:
 	return float(accuracy_xp) / float(accuracy_xp_to_next_level())
 

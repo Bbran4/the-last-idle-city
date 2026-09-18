@@ -1,4 +1,4 @@
-class_name PlayerController
+class_name Player
 extends Node2D
 
 const RECOVERY_RADIUS: float = 32.0
@@ -28,6 +28,24 @@ const JUMP_BUFFER_TIME: float = 0.12
 const JUMP_CUT_MULTIPLIER: float = 0.45
 const FALL_GRAVITY_MULTIPLIER: float = 1.6
 const LOW_JUMP_GRAVITY_MULTIPLIER: float = 1.15
+const SHOT_COOLDOWN: float = 1.0
+const QUICK_SHOT_DRAW_RATIO: float = 0.80
+const QUICK_SHOT_SPREAD: float = 0.38
+const FAST_DRAW_RATIO: float = 0.80
+const FAST_DRAW_SPEED_MULTIPLIER: float = 4.0
+const FINAL_DRAW_SPEED_MULTIPLIER: float = 1.30
+const SLOW_DRAW_SPEED_MULTIPLIER: float = 0.80
+const FULL_DRAW_WOBBLE_DELAY: float = 0.35
+const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
+const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
+const FULL_DRAW_WOBBLE_SPEED: float = 18.0
+const MIN_PROJECTILE_SPEED_MULTIPLIER: float = 1.0
+const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
+const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
+
+signal shot_requested(direction: Vector2, launch_speed: float, is_quick_shot: bool)
+signal draw_changed(ratio: float, drawing: bool)
+signal reload_changed(progress: float)
 
 @onready var bow: Bow = $Bow
 
@@ -39,9 +57,25 @@ var facing_right: bool = true
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
 var jump_held: bool = false
+var bow_inventory: BowInventory = BowInventory.new()
+var draw_strength: float = 0.0
+var is_drawing: bool = false
+var left_mouse_held: bool = false
+var slow_draw_held: bool = false
+var full_draw_timer: float = 0.0
+var shot_cooldown_timer: float = 0.0
+var aim_angle: float = 0.0
+var input_enabled: bool = true
 
-func _process(_delta: float) -> void:
-	_update_facing_and_bow()
+func _ready() -> void:
+	refresh_equipped_bow()
+
+func _process(delta: float) -> void:
+	if input_enabled:
+		_update_facing_and_bow()
+		_update_drawing(delta)
+	_update_reload(delta)
+	_emit_draw_state()
 
 func _physics_process(delta: float) -> void:
 	var move_input: float = Input.get_axis("move_left", "move_right")
@@ -144,3 +178,113 @@ func _draw() -> void:
 	draw_arc(center, RECOVERY_RADIUS, 0.0, TAU, 32, RECOVERY_BACKGROUND_COLOR, RECOVERY_RING_WIDTH, true)
 	var end_angle: float = RECOVERY_START_ANGLE + TAU * recovery_progress
 	draw_arc(center, RECOVERY_RADIUS, RECOVERY_START_ANGLE, end_angle, 32, RECOVERY_PROGRESS_COLOR, RECOVERY_RING_WIDTH, true)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not input_enabled:
+		return
+	if event is InputEventKey and event.keycode == KEY_CTRL:
+		slow_draw_held = event.pressed
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		left_mouse_held = event.pressed
+		if event.pressed:
+			_start_drawing()
+		elif is_drawing:
+			_fire_arrow()
+		return
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if shot_cooldown_timer > 0.0:
+			return
+		_start_drawing()
+		if is_drawing:
+			draw_strength = bow.max_draw_strength * QUICK_SHOT_DRAW_RATIO
+			_fire_arrow(true)
+
+func _update_drawing(delta: float) -> void:
+	if not is_drawing or not left_mouse_held:
+		return
+	var ratio := draw_strength / bow.max_draw_strength
+	var multiplier := SLOW_DRAW_SPEED_MULTIPLIER if slow_draw_held else (FAST_DRAW_SPEED_MULTIPLIER if ratio < FAST_DRAW_RATIO else FINAL_DRAW_SPEED_MULTIPLIER)
+	draw_strength = min(draw_strength + bow.draw_speed * multiplier * delta, bow.max_draw_strength)
+	if draw_strength / bow.max_draw_strength >= 1.0:
+		full_draw_timer += delta
+	else:
+		full_draw_timer = 0.0
+	if full_draw_timer >= FULL_DRAW_AUTO_RELEASE_TIME:
+		_fire_arrow()
+
+func _update_reload(delta: float) -> void:
+	if shot_cooldown_timer > 0.0:
+		shot_cooldown_timer = max(shot_cooldown_timer - delta, 0.0)
+	if shot_cooldown_timer <= 0.0 and left_mouse_held and not is_drawing and input_enabled:
+		_start_drawing()
+	reload_changed.emit(1.0 - shot_cooldown_timer / SHOT_COOLDOWN)
+
+func _start_drawing() -> void:
+	if is_drawing or shot_cooldown_timer > 0.0:
+		return
+	is_drawing = true
+	draw_strength = 0.0
+	full_draw_timer = 0.0
+
+func _fire_arrow(is_quick_shot: bool = false) -> void:
+	if not is_drawing or shot_cooldown_timer > 0.0:
+		return
+	is_drawing = false
+	left_mouse_held = false
+	full_draw_timer = 0.0
+	var strength_ratio := clamp(draw_strength / bow.max_draw_strength, 0.0, 1.0)
+	var shot_angle := aim_angle
+	if is_quick_shot:
+		strength_ratio = QUICK_SHOT_DRAW_RATIO
+		var spread := QUICK_SHOT_SPREAD * (1.0 - Skills.get_quick_shot_accuracy())
+		shot_angle += randf_range(-spread, spread)
+	var launch_speed := lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
+	launch_speed = Stats.get_max_launch_speed(launch_speed) * lerp(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, clamp((strength_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0))
+	if not is_quick_shot:
+		Stats.award_strength_release_xp(strength_ratio, Skills.get_xp_multiplier())
+	shot_cooldown_timer = SHOT_COOLDOWN
+	draw_strength = 0.0
+	bow.play_release_recoil()
+	shot_requested.emit(Vector2.RIGHT.rotated(shot_angle), launch_speed, is_quick_shot)
+
+func _emit_draw_state() -> void:
+	var ratio := 0.0 if bow == null or bow.max_draw_strength <= 0.0 else draw_strength / bow.max_draw_strength
+	bow.set_draw_ratio(ratio)
+	draw_changed.emit(ratio, is_drawing)
+	set_recovery_progress(ratio)
+
+func _cancel_drawing() -> void:
+	is_drawing = false
+	left_mouse_held = false
+	draw_strength = 0.0
+	full_draw_timer = 0.0
+
+func refresh_equipped_bow() -> void:
+	var equipped := bow_inventory.get_equipped()
+	if equipped != null:
+		bow.set_data(equipped)
+
+func equip_bow(bow_id: String) -> bool:
+	if not bow_inventory.equip(bow_id, Stats.strength_level):
+		return false
+	refresh_equipped_bow()
+	return true
+
+func get_equipped_bow() -> BowData:
+	return bow_inventory.get_equipped()
+
+func set_input_enabled(enabled: bool) -> void:
+	input_enabled = enabled
+	if not enabled:
+		_cancel_drawing()
+
+func get_draw_ratio() -> float:
+	return 0.0 if bow == null or bow.max_draw_strength <= 0.0 else draw_strength / bow.max_draw_strength
+
+func get_reload_progress() -> float:
+	return 1.0 - shot_cooldown_timer / SHOT_COOLDOWN
+
+func get_aim_angle() -> float:
+	return aim_angle

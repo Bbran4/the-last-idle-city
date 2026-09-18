@@ -18,6 +18,9 @@ config/icon="res://icon.svg"
 [autoload]
 
 SaveReset="*res://scripts/save_reset.gd"
+Economy="*res://scripts/economy.gd"
+Stats="*res://scripts/stats.gd"
+Skills="*res://scripts/skills.gd"
 
 [display]
 
