@@ -253,6 +253,13 @@ func _start_drawing() -> void:
 	draw_strength = 0.0
 	full_draw_timer = 0.0
 
+func get_launch_speed_for_draw_ratio(strength_ratio: float) -> float:
+	var clamped_ratio: float = clampf(strength_ratio, 0.0, 1.0)
+	var base_speed: float = lerpf(get_bow_min_launch_speed(), get_bow_max_launch_speed(), clamped_ratio)
+	var stat_adjusted_speed: float = Stats.get_max_launch_speed(base_speed)
+	var effective_ratio: float = clampf((clamped_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0)
+	return stat_adjusted_speed * lerpf(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, effective_ratio)
+
 func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if not is_drawing or shot_cooldown_timer > 0.0:
 		return
@@ -268,8 +275,7 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 		strength_ratio = QUICK_SHOT_DRAW_RATIO
 		var spread: float = QUICK_SHOT_SPREAD * (1.0 - Skills.get_quick_shot_accuracy())
 		shot_angle += randf_range(-spread, spread)
-	var launch_speed: float = lerpf(get_bow_min_launch_speed(), get_bow_max_launch_speed(), strength_ratio)
-	launch_speed = Stats.get_max_launch_speed(launch_speed) * lerpf(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, clamp((strength_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0))
+	var launch_speed: float = get_launch_speed_for_draw_ratio(strength_ratio)
 	if not is_quick_shot:
 		Stats.award_strength_release_xp(strength_ratio, Skills.get_xp_multiplier())
 	shot_cooldown_timer = SHOT_COOLDOWN
