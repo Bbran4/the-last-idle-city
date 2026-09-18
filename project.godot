@@ -17,10 +17,10 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-SaveManager="*res://scripts/save_manager.gd"
-Economy="*res://scripts/managers/economy.gd"
+Economy="*uid://c7ys0yakxcojo"
 Stats="*res://scripts/managers/stats.gd"
 Skills="*res://scripts/managers/skills.gd"
+SaveManager="*res://scripts/managers/save_manager.gd"
 
 [display]
 
