@@ -13,7 +13,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		_return_home()
 
 func _return_home() -> void:
-	get_tree().change_scene_to_file("res://scenes/main.tscn")
+	get_tree().change_scene_to_file("res://scenes/world/main.tscn")
 
 func _on_return_pressed() -> void:
 	_return_home()
