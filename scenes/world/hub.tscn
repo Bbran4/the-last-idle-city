@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://hubscene001"]
 
-[ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/hub.gd" id="1_hub"]
-[ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="2_player"]
-[ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/ground.tscn" id="3_ground"]
-[ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/tent.tscn" id="4_tent"]
-[ext_resource type="PackedScene" path="res://scenes/map_table.tscn" id="5_map"]
-[ext_resource type="PackedScene" path="res://scenes/fletcher.tscn" id="6_fletcher"]
-[ext_resource type="PackedScene" path="res://scenes/practice_range_entrance.tscn" id="7_range"]
+[ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/world/hub.gd" id="1_hub"]
+[ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/world/ground.tscn" id="3_ground"]
+[ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/hub/tent.tscn" id="4_tent"]
+[ext_resource type="PackedScene" path="res://scenes/hub/map_table.tscn" id="5_map"]
+[ext_resource type="PackedScene" path="res://scenes/hub/fletcher.tscn" id="6_fletcher"]
+[ext_resource type="PackedScene" path="res://scenes/world/practice_range_entrance.tscn" id="7_range"]
 
 [node name="Main" type="Node2D" unique_id=35592492]
 script = ExtResource("1_hub")
