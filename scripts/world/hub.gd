@@ -7,7 +7,7 @@ const MAP_X: float = -300.0
 const TENT_X: float = -1000.0
 const FLETCHER_X: float = 850.0
 const CAMERA_SMOOTHING: float = 8.0
-const ARROW_SCENE: PackedScene = preload("res://scenes/arrow.tscn")
+const ARROW_SCENE: PackedScene = preload("res://scenes/weapons/arrow.tscn")
 
 @onready var player: Player = $Player
 
@@ -58,7 +58,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _handle_interaction() -> void:
 	var x: float = player.position.x
 	if abs(x - RANGE_X) <= INTERACTION_RADIUS:
-		get_tree().change_scene_to_file("res://scenes/practice.tscn")
+		get_tree().change_scene_to_file("res://scenes/world/practice.tscn")
 	elif abs(x - MAP_X) <= INTERACTION_RADIUS:
 		map_open = true
 		equipment_open = false
@@ -225,4 +225,4 @@ func _create_map_contents() -> void:
 
 func _travel_to(destination: String) -> void:
 	TravelState.destination = destination
-	get_tree().change_scene_to_file("res://scenes/travel_location.tscn")
+	get_tree().change_scene_to_file("res://scenes/world/travel_location.tscn")
