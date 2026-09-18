@@ -18,9 +18,9 @@ config/icon="res://icon.svg"
 [autoload]
 
 SaveManager="*res://scripts/save_manager.gd"
-Economy="*res://scripts/economy.gd"
-Stats="*res://scripts/stats.gd"
-Skills="*res://scripts/skills.gd"
+Economy="*res://scripts/managers/economy.gd"
+Stats="*res://scripts/managers/stats.gd"
+Skills="*res://scripts/managers/skills.gd"
 
 [display]
 
