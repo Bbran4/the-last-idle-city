@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bsrlsgo0167me"]
 
-[ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/hub.gd" id="1_hub"]
-[ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/world/hub.gd" id="1_hub"]
+[ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player/player.tscn" id="2_player"]
 
 [node name="Main" type="Node2D" unique_id=1984006661]
 script = ExtResource("1_hub")
