@@ -7,6 +7,8 @@ const MAX_PROJECTILE_SPEED_MULTIPLIER: float = 10.0
 const MIN_EFFECTIVE_DRAW_RATIO: float = 0.05
 const QUICK_SHOT_DRAW_RATIO: float = 0.80
 const QUICK_SHOT_SPREAD: float = 0.38
+const QUICK_SHOT_MAX_SHOTS: int = 3
+const QUICK_SHOT_COOLDOWN: float = 1.0
 const FULL_DRAW_WOBBLE_DELAY: float = 0.35
 const FULL_DRAW_AUTO_RELEASE_TIME: float = 2.0
 const FULL_DRAW_WOBBLE_MAX_ANGLE: float = 0.14
@@ -32,6 +34,8 @@ var aim_angle: float = 0.0
 var shot_result_timer: float = 0.0
 var range_level: int = 1
 var equipment_open: bool = false
+var quick_shots_fired: int = 0
+var quick_shot_cooldown_timer: float = 0.0
 
 var total_coins_earned: int = 0
 var shots_fired: int = 0
@@ -54,6 +58,11 @@ func _process(delta: float) -> void:
 	var bow: BowData = bow_inventory.get_equipped()
 	if is_drawing and left_mouse_held:
 		draw_strength = min(draw_strength + bow.draw_speed * delta, bow.max_draw_strength)
+
+	if quick_shot_cooldown_timer > 0.0:
+		quick_shot_cooldown_timer = max(quick_shot_cooldown_timer - delta, 0.0)
+		if quick_shot_cooldown_timer <= 0.0:
+			quick_shots_fired = 0
 
 	var draw_ratio: float = draw_strength / bow.max_draw_strength
 	if draw_ratio >= 1.0:
@@ -113,6 +122,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if quick_shot_cooldown_timer > 0.0:
+			return
 		if not is_drawing:
 			_start_drawing()
 		if is_drawing:
@@ -156,6 +167,8 @@ func _update_aim() -> void:
 func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if not is_drawing:
 		return
+	if is_quick_shot and quick_shot_cooldown_timer > 0.0:
+		return
 
 	is_drawing = false
 	left_mouse_held = false
@@ -169,6 +182,9 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	if is_quick_shot:
 		strength_ratio = QUICK_SHOT_DRAW_RATIO
 		shot_angle += randf_range(-QUICK_SHOT_SPREAD, QUICK_SHOT_SPREAD)
+		quick_shots_fired += 1
+		if quick_shots_fired >= QUICK_SHOT_MAX_SHOTS:
+			quick_shot_cooldown_timer = QUICK_SHOT_COOLDOWN
 	var launch_speed: float = lerp(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
 	launch_speed = stats.get_max_launch_speed(launch_speed) * _get_projectile_speed_multiplier(strength_ratio)
 	var strength_xp: int = stats.award_strength_release_xp(strength_ratio, economy.get_xp_multiplier())
@@ -295,6 +311,8 @@ func _reset_session() -> void:
 	impact_position = Vector2.ZERO
 	impact_timer = 0.0
 	shot_result_timer = 0.0
+	quick_shots_fired = 0
+	quick_shot_cooldown_timer = 0.0
 	equipment_open = false
 	hud.set_equipment_visible(false)
 	total_coins_earned = 0
