@@ -1,3 +1,4 @@
+class_name Player
 extends Node2D
 
 
@@ -130,9 +131,9 @@ func _physics_process(delta: float) -> void:
 func _update_facing_and_bow() -> void:
 	if bow == null:
 		return
-	var mouse_world_position := get_global_mouse_position()
+	var mouse_world_position: Vector2 = get_global_mouse_position()
 	set_facing_from_mouse(mouse_world_position)
-	var aim_vector := mouse_world_position - bow.global_position
+	var aim_vector: Vector2 = mouse_world_position - bow.global_position
 	if aim_vector.length_squared() > 0.001:
 		bow.set_aim(get_bow_aim_angle(aim_vector.angle()))
 
@@ -241,7 +242,7 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 		var spread: float = QUICK_SHOT_SPREAD * (1.0 - Skills.get_quick_shot_accuracy())
 		shot_angle += randf_range(-spread, spread)
 	var launch_speed: float = lerpf(bow.min_launch_speed, bow.max_launch_speed, strength_ratio)
-	launch_speed = Stats.get_max_launch_speed(launch_speed) * lerp(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, clamp((strength_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0))
+	launch_speed = Stats.get_max_launch_speed(launch_speed) * lerpf(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, clamp((strength_ratio - MIN_EFFECTIVE_DRAW_RATIO) / (1.0 - MIN_EFFECTIVE_DRAW_RATIO), 0.0, 1.0))
 	if not is_quick_shot:
 		Stats.award_strength_release_xp(strength_ratio, Skills.get_xp_multiplier())
 	shot_cooldown_timer = SHOT_COOLDOWN
