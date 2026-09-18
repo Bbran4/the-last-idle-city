@@ -103,6 +103,10 @@ func _get_projectile_speed_multiplier(draw_ratio: float) -> float:
 	return lerp(MIN_PROJECTILE_SPEED_MULTIPLIER, MAX_PROJECTILE_SPEED_MULTIPLIER, normalized_draw)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+		get_tree().change_scene_to_file("res://scenes/main.tscn")
+		return
+
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_R:
 		_reset_session()
 		return
