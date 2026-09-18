@@ -181,7 +181,9 @@ func _fire_arrow(is_quick_shot: bool = false) -> void:
 	var shot_angle: float = aim_angle
 	if is_quick_shot:
 		strength_ratio = QUICK_SHOT_DRAW_RATIO
-		shot_angle += randf_range(-QUICK_SHOT_SPREAD, QUICK_SHOT_SPREAD)
+		var quick_shot_accuracy: float = stats.get_quick_shot_accuracy()
+		var quick_shot_spread: float = QUICK_SHOT_SPREAD * (1.0 - quick_shot_accuracy)
+		shot_angle += randf_range(-quick_shot_spread, quick_shot_spread)
 		quick_shots_fired += 1
 		if quick_shots_fired >= QUICK_SHOT_MAX_SHOTS:
 			quick_shot_cooldown_timer = QUICK_SHOT_COOLDOWN
