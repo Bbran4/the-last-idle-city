@@ -59,10 +59,25 @@ func _ready() -> void:
 	position = Vector2(camera_base_x, 0.0)
 
 func _process(delta: float) -> void:
+	_update_arrow_trails()
 	_cleanup_arrows()
 	_update_camera(delta)
 	_update_shake(delta)
 	queue_redraw()
+
+func _update_arrow_trails() -> void:
+	for arrow in get_arrows():
+		if not is_instance_valid(arrow):
+			continue
+		if arrow.is_embedded() or arrow.is_broken():
+			arrow_trails.erase(arrow)
+			continue
+		var local_point: Vector2 = to_local(arrow.global_position)
+		var trail: PackedVector2Array = arrow_trails.get(arrow, PackedVector2Array())
+		trail.append(local_point)
+		if trail.size() > TRAIL_MAX_POINTS:
+			trail.remove_at(0)
+		arrow_trails[arrow] = trail
 
 func _update_camera(delta: float) -> void:
 	var target_x: float = get_viewport_rect().size.x * 0.5 - player.position.x * WORLD_SCALE
@@ -203,8 +218,6 @@ func _on_arrow_tree_exited(arrow: Arrow) -> void:
 func _on_arrow_flight_segment(start: Vector2, end: Vector2, incoming_arrow: Arrow) -> void:
 	if not is_instance_valid(incoming_arrow) or not incoming_arrow.is_flying():
 		return
-
-	_record_trail_point(incoming_arrow, end)
 
 	var embedded_arrow: Arrow = _find_nock_hit(start, end, incoming_arrow)
 	if is_instance_valid(embedded_arrow):
