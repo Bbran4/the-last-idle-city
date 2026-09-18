@@ -347,9 +347,18 @@ func _draw_trajectory() -> void:
 	var points: PackedVector2Array = PackedVector2Array()
 	var steps: int = maxi(2, ceili(prediction_time / TRAJECTORY_STEP))
 	for index: int in range(steps + 1):
-		var t: float = min(float(index) * TRAJECTORY_STEP, prediction_time)
+		var t: float = minf(float(index) * TRAJECTORY_STEP, prediction_time)
 		var point: Vector2 = origin + velocity * t + Vector2(0.0, 0.5 * GRAVITY * t * t)
 		if point.y >= player.position.y:
+			var previous_point: Vector2 = origin
+			if points.size() > 0:
+				previous_point = points[points.size() - 1]
+			var ground_delta: float = point.y - previous_point.y
+			if absf(ground_delta) > 0.000001:
+				var ground_t: float = clampf((player.position.y - previous_point.y) / ground_delta, 0.0, 1.0)
+				points.append(previous_point.lerp(point, ground_t))
+			else:
+				points.append(point)
 			break
 		points.append(point)
 	if points.size() < 2:
