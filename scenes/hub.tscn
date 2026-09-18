@@ -2,9 +2,22 @@
 
 [ext_resource type="Script" uid="uid://dp5xvv8jvas5q" path="res://scripts/hub.gd" id="1_hub"]
 [ext_resource type="PackedScene" uid="uid://cbe30ghx47fnv" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://dfuv8f4ltwd47" path="res://scenes/ground.tscn" id="3_ground"]
+[ext_resource type="PackedScene" uid="uid://1u7huy0vyiix" path="res://scenes/tent.tscn" id="4_tent"]
+[ext_resource type="PackedScene" path="res://scenes/hub_landmarks.tscn" id="5_landmarks"]
 
 [node name="Main" type="Node2D" unique_id=35592492]
 script = ExtResource("1_hub")
+
+[node name="Ground" parent="." instance=ExtResource("3_ground")]
+position = Vector2(364, 1401)
+
+[node name="HubLandmarks" parent="." instance=ExtResource("5_landmarks")]
+z_index = 1
+
+[node name="EquipmentTent" parent="." instance=ExtResource("4_tent")]
+z_index = 2
+position = Vector2(-1000, 1292)
 
 [node name="Player" parent="." unique_id=206132230 instance=ExtResource("2_player")]
 z_index = 5
